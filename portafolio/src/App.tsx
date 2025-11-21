@@ -1,10 +1,10 @@
-import Button from './components/Button/Button';
 import './App.css';
+import ProfileAnimation from './components/Hero/ProfileAnimation/ProfileAnimation';
 
 function App() {
   return (
     <>
-      <Button label='Test' />
+      <ProfileAnimation />
     </>
   );
 }
