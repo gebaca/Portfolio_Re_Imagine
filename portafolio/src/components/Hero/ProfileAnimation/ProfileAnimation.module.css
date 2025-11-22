@@ -1,0 +1,38 @@
+/* src/components/Hero/ProfileAnimation/ProfileAnimation.module.css */
+
+.imageContainer {
+  /* 🛑 HACERLO FLUIDO: Usar un ancho que sea un porcentaje del contenedor padre. */
+  width: 20vw; /* El ancho será el 20% del ancho del viewport */
+
+  /* MANTENER PROPORCIÓN 3:4: Usamos un truco CSS con padding para mantener la proporción. */
+  padding-bottom: calc(
+    20vw / 0.75
+  ); /* Altura = Ancho / (3/4) = Ancho * 1.333 */
+  height: 0; /* Anulamos el height fijo para que el padding lo defina */
+
+  /* CONTROL DE TAMAÑO MÁXIMO (Para que no sea gigante en monitores 4K) */
+  max-width: 700px;
+  max-height: 933px; /* 300 * 1.333 */
+
+  position: relative;
+  margin: auto; /* Centrarlo si el padre lo permite */
+}
+
+.frameOverlay {
+  /* El overlay ahora debe ser absoluto para ocupar el padding-bottom */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Borde de la simulación del marco */
+  border: 5px solid black;
+}
+
+/* La imagen debe ser 100% del contenedor para llenar el espacio */
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

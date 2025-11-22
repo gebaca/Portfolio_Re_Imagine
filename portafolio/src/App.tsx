@@ -4,7 +4,7 @@ import ProfileAnimation from './components/Hero/ProfileAnimation/ProfileAnimatio
 function App() {
   return (
     <>
-      <ProfileAnimation />
+      <ProfileAnimation animationIntervalMs={900} />
     </>
   );
 }
