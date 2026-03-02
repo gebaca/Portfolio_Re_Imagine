@@ -14,7 +14,7 @@ export const Logo = () => {
   const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingCollapse = useRef(false);
 
-  const EXPAND_DURATION = 500;
+  const EXPAND_DURATION = 1500;
   const LEAVE_DELAY = 200;
 
   // --- LÓGICA DE GSAP ---
@@ -123,7 +123,7 @@ export const Logo = () => {
           overflow: 'hidden',
           whiteSpace: 'nowrap',
         }}
-        className='text-white font-bold text-xl tracking-tighter inline-block'
+        className='text-black font-bold text-xl tracking-tighter inline-block'
       >
         {renderLetters('GERARD')}
       </span>
@@ -142,7 +142,7 @@ export const Logo = () => {
           overflow: 'hidden',
           whiteSpace: 'nowrap',
         }}
-        className='text-white font-bold text-xl tracking-tighter inline-block'
+        className='text-black font-bold text-xl tracking-tighter inline-block'
       >
         {renderLetters('BATALLER')}
       </span>
