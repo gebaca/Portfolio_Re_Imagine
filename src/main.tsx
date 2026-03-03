@@ -7,6 +7,7 @@ import About from './routes/About.tsx';
 import Work from './routes/Work.tsx';
 import Contacts from './routes/Contacts.tsx';
 import './index.css';
+import { CircleTransitionProvider } from './components/Circle/CircleTransitionContext.tsx';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <CircleTransitionProvider>
+      <RouterProvider router={router} />
+    </CircleTransitionProvider>
   </React.StrictMode>
 );

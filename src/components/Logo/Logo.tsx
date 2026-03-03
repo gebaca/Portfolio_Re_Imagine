@@ -1,151 +1,172 @@
-//ENTERAMENTE HECHO CON IA
-//TODO CAMBIARLO Y REDISEÑO
-
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { useNavigate } from 'react-router-dom';
+
+/*
+  Logo — Gerard Bataller
+  ──────────────────────
+  Reposo:  G · B  (iniciales, discretas)
+  Hover:   Gerard Bataller  (expansión suave + wiggle letra a letra)
+
+  Font: DM Serif Display italic — añadir en index.html:
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+*/
+
+const FONT: React.CSSProperties = {
+  fontFamily: "'DM Serif Display', Georgia, serif",
+  fontStyle: 'italic',
+  fontSize: '30px',
+  lineHeight: 1,
+  color: '#111',
+};
+
+const EXPAND_MS = 1380;
+const LEAVE_DELAY = 100;
 
 export const Logo = () => {
   const [hovered, setHovered] = useState(false);
   const container = useRef<HTMLDivElement>(null);
-
-  // Referencias para el control de tiempos original
-  const animTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navigate = useNavigate();
   const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingCollapse = useRef(false);
 
-  const EXPAND_DURATION = 1500;
-  const LEAVE_DELAY = 200;
-
-  // --- LÓGICA DE GSAP ---
   const { contextSafe } = useGSAP({ scope: container });
 
-  // Función para iniciar el temblor letra por letra
   const startWiggle = contextSafe(() => {
-    const chars = container.current?.querySelectorAll('.wiggle-char');
+    const chars = container.current?.querySelectorAll('.gb-char');
     if (!chars) return;
-
-    gsap.killTweensOf(chars); // Limpiar cualquier animación previa
-
-    chars.forEach((char) => {
-      gsap.to(char, {
-        x: 'random(-1.5, 1.5)',
-        y: 'random(-1.5, 1.5)',
-        rotation: 'random(-3, 3)',
-        duration: 0.1,
+    gsap.killTweensOf(chars);
+    chars.forEach((el, i) => {
+      gsap.to(el, {
+        x: 'random(-1.3, 1.3)',
+        y: 'random(-1.3, 1.3)',
+        rotation: 'random(-2.8, 2.8)',
+        duration: 0.11,
         repeat: -1,
         yoyo: true,
         ease: 'none',
-        delay: Math.random() * 0.1,
+        delay: i * 0.018,
       });
     });
   });
 
-  // Función para resetear las letras a su posición original
   const stopWiggle = contextSafe(() => {
-    const chars = container.current?.querySelectorAll('.wiggle-char');
+    const chars = container.current?.querySelectorAll('.gb-char');
     if (!chars) return;
-
     gsap.killTweensOf(chars);
     gsap.to(chars, {
       x: 0,
       y: 0,
       rotation: 0,
-      duration: 0.3,
-      ease: 'power2.out',
+      duration: 0.45,
+      ease: 'power3.out',
     });
   });
 
-  // Sincronización: Cuando cambia el estado 'hovered', disparamos GSAP
   useEffect(() => {
-    if (hovered) {
-      startWiggle();
-    } else {
-      stopWiggle();
-    }
-  }, [hovered, startWiggle, stopWiggle]);
+    if (hovered) startWiggle();
+    else stopWiggle();
+  }, [hovered]);
 
-  // --- TUS HANDLERS ORIGINALES ---
   const handlePointerEnter = () => {
     if (leaveTimeout.current) {
       clearTimeout(leaveTimeout.current);
       leaveTimeout.current = null;
     }
-    pendingCollapse.current = false;
     setHovered(true);
-
-    if (animTimeout.current) clearTimeout(animTimeout.current);
-    animTimeout.current = setTimeout(() => {
-      animTimeout.current = null;
-      if (pendingCollapse.current) {
-        pendingCollapse.current = false;
-        setHovered(false);
-      }
-    }, EXPAND_DURATION);
   };
 
   const handlePointerLeave = () => {
-    if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
     leaveTimeout.current = setTimeout(() => {
+      setHovered(false);
       leaveTimeout.current = null;
-      if (animTimeout.current) {
-        pendingCollapse.current = true;
-      } else {
-        setHovered(false);
-      }
     }, LEAVE_DELAY);
   };
 
-  // Función para envolver cada letra en un span animable
-  const renderLetters = (text: string) => {
-    return text.split('').map((char, i) => (
+  const letters = (text: string) =>
+    text.split('').map((char, i) => (
       <span
         key={i}
-        className='wiggle-char inline-block'
-        style={{ willChange: 'transform', display: 'inline-block' }}
+        className='gb-char'
+        style={{ display: 'inline-block', willChange: 'transform' }}
       >
-        {char === ' ' ? '\u00A0' : char}
+        {char}
       </span>
     ));
-  };
 
   return (
     <div
       ref={container}
-      className='fixed top-8 left-8 z-50 flex items-center gap-3 group cursor-pointer'
+      className='fixed top-7 left-7 z-50 cursor-pointer select-none flex items-baseline'
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
+      onClick={() => navigate('/')}
+      aria-label='Gerard Bataller — inicio'
     >
+      {/* GERARD */}
+      <div className='flex items-baseline overflow-hidden'>
+        <span
+          className='gb-char'
+          style={{
+            ...FONT,
+            display: 'inline-block',
+            willChange: 'transform',
+            flexShrink: 0,
+          }}
+        >
+          G
+        </span>
+        <span
+          style={{
+            ...FONT,
+            display: 'flex',
+            overflow: 'hidden',
+            maxWidth: hovered ? '120px' : '0px',
+            opacity: hovered ? 1 : 0,
+            transition: `max-width ${EXPAND_MS}ms cubic-bezier(0.22,1,0.36,1), opacity ${hovered ? 300 : 200}ms ease ${hovered ? '80ms' : '0ms'}`,
+          }}
+        >
+          {letters('erard')}
+        </span>
+      </div>
+
+      {/* Punto separador (desaparece en hover) */}
+      {/* Espacio entre nombre y apellido */}
       <span
         style={{
-          maxWidth: hovered ? '160px' : '24px',
-          transition: `max-width ${EXPAND_DURATION}ms ease`,
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
+          display: 'inline-block',
+          width: hovered ? '15px' : '0px',
+          transition: `width ${EXPAND_MS}ms cubic-bezier(0.22,1,0.36,1)`,
+          flexShrink: 0,
         }}
-        className='text-black font-bold text-xl tracking-tighter inline-block'
-      >
-        {renderLetters('GERARD')}
-      </span>
-
-      <span
-        className={
-          'h-[2px] bg-white transition-all duration-500 ' +
-          (hovered ? 'w-0' : 'w-8')
-        }
       />
 
-      <span
-        style={{
-          maxWidth: hovered ? '200px' : '24px',
-          transition: `max-width ${EXPAND_DURATION}ms ease`,
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-        }}
-        className='text-black font-bold text-xl tracking-tighter inline-block'
-      >
-        {renderLetters('BATALLER')}
-      </span>
+      {/* BATALLER */}
+      <div className='flex items-baseline overflow-hidden'>
+        <span
+          className='gb-char'
+          style={{
+            ...FONT,
+            display: 'inline-block',
+            willChange: 'transform',
+            flexShrink: 0,
+          }}
+        >
+          B
+        </span>
+        <span
+          style={{
+            ...FONT,
+            display: 'flex',
+            overflow: 'hidden',
+            maxWidth: hovered ? '160px' : '0px',
+            opacity: hovered ? 1 : 0,
+            transition: `max-width ${EXPAND_MS}ms cubic-bezier(0.22,1,0.36,1), opacity ${hovered ? 260 : 200}ms ease ${hovered ? '80ms' : '0ms'}`,
+          }}
+        >
+          {letters('ataller')}
+        </span>
+      </div>
     </div>
   );
 };

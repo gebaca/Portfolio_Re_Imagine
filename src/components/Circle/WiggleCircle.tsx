@@ -1,18 +1,20 @@
 import CircleSVG from './circleSVG';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { useFrameLoop } from '../../hooks/useFrameLoop'; // 👈 Nuevo hook
+import { useCircleTransition } from './CircleTransitionContext';
 
 interface WiggleCircleProps {
   color: string;
   label: string;
   route: string;
   size?: number;
-  // Puedes personalizar el efecto por círculo si quieres variedad:
-  fps?: number; // Velocidad de los fotogramas (default: 8)
-  rotRange?: number; // Grados de rotación máximos (default: 12)
+  fps?: number;
+  rotRange?: number;
+  activeRoute: string | null;
+  onActivate: (route: string) => void;
 }
 
 const WiggleCircle = ({
@@ -20,19 +22,22 @@ const WiggleCircle = ({
   label,
   route,
   size = 180,
-  fps = 4,
+  fps = 3.7,
   rotRange = 1,
+  activeRoute,
+  onActivate,
 }: WiggleCircleProps) => {
   const container = useRef<HTMLDivElement>(null);
   const circleWrapperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { setCircleState } = useCircleTransition();
 
   const { contextSafe } = useGSAP({ scope: container });
 
   const { startFrameLoop, stopFrameLoop } = useFrameLoop(circleWrapperRef, {
     fps,
     rotRange,
-    driftRange: 1, // Drift mínimo — el efecto es principalmente rotación
+    driftRange: 1,
   });
 
   useGSAP(
@@ -42,23 +47,38 @@ const WiggleCircle = ({
     { scope: container }
   );
 
+  // Reacciona cuando OTRO círculo es activado
+  useEffect(() => {
+    if (activeRoute === null) return;
+    if (activeRoute !== route) {
+      stopFrameLoop();
+      gsap.to(container.current, {
+        opacity: 0,
+        duration: 0.15, // 👈 brusco
+        ease: 'none',
+      });
+    }
+  }, [activeRoute]);
+
   const handleClick = contextSafe(() => {
-    // 1. Para la animación de fotogramas (incluye reset suave a rotation: 0)
+    onActivate(route); // Notifica a Home cuál fue clickeado
     stopFrameLoop();
 
-    // 2. Pequeña pausa para que el reset termine antes de expandirse
     gsap.delayedCall(0.15, () => {
       gsap.to(circleWrapperRef.current, {
-        scale: 50,
-        duration: 0.8,
+        scale: 10,
+        duration: 2,
         ease: 'power4.inOut',
         onComplete: () => {
+          const rect = circleWrapperRef.current?.getBoundingClientRect();
+          if (rect) {
+            setCircleState({ color, rect });
+          }
           navigate(route);
         },
       });
     });
 
-    // 3. Desvanece label
     const ctx = container.current;
     if (ctx) {
       gsap.to(ctx.querySelectorAll('.wiggle-char, h2'), {
@@ -73,6 +93,7 @@ const WiggleCircle = ({
       ref={container}
       onClick={handleClick}
       className='flex flex-col items-center gap-6 cursor-pointer select-none'
+      style={{ transformOrigin: 'center center' }}
     >
       <div
         ref={circleWrapperRef}
@@ -82,7 +103,10 @@ const WiggleCircle = ({
           transformOrigin: 'center center',
         }}
       >
-        <CircleSVG color={color} style={{ width: '100%', height: '100%' }} />
+        <CircleSVG
+          color={color}
+          style={{ width: '100%', height: '100%', opacity: 1 }}
+        />
       </div>
 
       <h2 className='wiggle-char text-black text-xl font-bold tracking-wide'>

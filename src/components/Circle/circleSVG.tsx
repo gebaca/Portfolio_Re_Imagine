@@ -5,6 +5,7 @@ interface CircleSVGProps {
   color: string;
   className?: string;
   style?: React.CSSProperties;
+  children?: React.ReactNode;
 }
 
 /**
@@ -15,7 +16,12 @@ interface CircleSVGProps {
  *   <CircleSVG color="#FF5733" />
  *   <CircleSVG color="var(--brand-primary)" />
  */
-export const CircleSVG = ({ color, className, style }: CircleSVGProps) => (
+export const CircleSVG = ({
+  color,
+  className,
+  style,
+  children,
+}: CircleSVGProps) => (
   <svg
     viewBox='0 0 192.72716 187.01184'
     xmlns='http://www.w3.org/2000/svg'
@@ -83,6 +89,19 @@ export const CircleSVG = ({ color, className, style }: CircleSVGProps) => (
       fillOpacity='0.245421'
       fillRule='nonzero'
     />
+    {children && (
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {children}
+      </div>
+    )}
   </svg>
 );
 
