@@ -1,12 +1,14 @@
-import CircleSatellites from '../components/Circle/CircleSatellites ';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
+import ProjectCard from '../components/Projects/ProjectCard';
+import { projects } from '../components/Projects/projects';
 
 function Work() {
   const { circleState } = useCircleTransition();
 
   return (
-    <div>
+    <div className='w-full flex flex-col items-center'>
+      {/* FONDO */}
       {circleState?.rect && (
         <div
           style={{
@@ -16,6 +18,7 @@ function Work() {
             width: circleState.rect.width,
             height: circleState.rect.height,
             pointerEvents: 'none',
+            transformOrigin: 'center center',
             zIndex: 0,
           }}
         >
@@ -25,13 +28,20 @@ function Work() {
           />
         </div>
       )}
-      <CircleSatellites
-        color={circleState?.color || '#fff'}
-        count={100}
-        positionY={400}
-        positionX={200}
-      />
+
+      {/* PROYECTOS */}
+      <div className='relative z-10 w-full max-w-4xl px-6 py-20 flex flex-col gap-60'>
+        {projects.map((project, index) => (
+          <div
+            key={project.id}
+            className={`flex w-full ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}
+          >
+            <ProjectCard color={project.color} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
+
 export default Work;
