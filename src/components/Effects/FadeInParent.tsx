@@ -11,9 +11,9 @@ interface FadeInParentProps {
 
 export const FadeInParent: React.FC<FadeInParentProps> = ({
   children,
-  duration = 1,
-  stagger = 0,
-  delay = 0,
+  duration = 0.6,
+  stagger = 0.15,
+  delay = 0.2,
   className = '',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -21,7 +21,6 @@ export const FadeInParent: React.FC<FadeInParentProps> = ({
   useFadeIn(ref, {
     duration,
     stagger,
-    delay,
     animateChildren: true,
   });
 

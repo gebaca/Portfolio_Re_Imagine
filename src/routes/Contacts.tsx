@@ -3,6 +3,13 @@ import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 
+const contactLinks = [
+  { label: 'LinkedIn', url: 'https://linkedin.com/in/tu-usuario' },
+  { label: 'GitHub', url: 'https://github.com/tu-usuario' },
+  { label: 'Email', url: 'mailto:tu-correo@ejemplo.com' },
+  { label: 'Instagram', url: 'https://instagram.com/tu-usuario' },
+];
+
 function Contacts() {
   const { circleState, bgCircleRef } = useCircleTransition();
 
@@ -10,21 +17,14 @@ function Contacts() {
     (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
   };
 
-  const contactLinks = [
-    { label: 'LinkedIn', url: 'https://linkedin.com/in/tu-usuario' },
-    { label: 'GitHub', url: 'https://github.com/tu-usuario' },
-    { label: 'Email', url: 'mailto:tu-correo@ejemplo.com' },
-    { label: 'Instagram', url: 'https://instagram.com/tu-usuario' },
-  ];
-
   return (
-    <div className='flex flex-col items-center'>
-      {/* FONDO — fixed para no afectar al scroll */}
+    <div className='w-full flex flex-col items-center'>
+      {/* FONDO */}
       {circleState?.rect && (
         <div
           ref={setBgRef}
           style={{
-            position: 'fixed',
+            position: 'absolute',
             top: circleState.rect.top,
             left: circleState.rect.left,
             width: circleState.rect.width,
@@ -43,12 +43,11 @@ function Contacts() {
 
       <CircleSatellites
         color={circleState?.color || '#fff'}
-        count={10}
-        positionY={10}
-        positionX={100}
+        count={50}
+        positionY={100}
+        positionX={10}
       />
 
-      {/* CONTENIDO */}
       <FadeInParent stagger={1} delay={2}>
         <div className='relative z-10 flex flex-col items-center w-full max-w-2xl px-6'>
           <header className='text-center mb-16'>
@@ -60,7 +59,6 @@ function Contacts() {
             </h1>
           </header>
 
-          {/* ENLACES EN ZIGZAG */}
           <div className='w-full flex flex-col gap-6'>
             {contactLinks.map((link, index) => (
               <div
@@ -69,14 +67,14 @@ function Contacts() {
               >
                 <button
                   onClick={() => window.open(link.url, '_blank')}
-                  className='relative cursor-pointer hover:opacity-80 transition-opacity flex flex-col items-center'
+                  className='relative cursor-pointer hover:opacity-80 transition-opacity'
                   title={link.label}
                 >
                   <CircleSVG
                     color='#000000'
                     style={{ width: '120px', height: '120px' }}
                   />
-                  <span className='text-2xl font-bold text-zinc-800'>
+                  <span className='absolute inset-0 flex items-center justify-center text-2xl font-bold text-zinc-800'>
                     {link.label}
                   </span>
                 </button>
