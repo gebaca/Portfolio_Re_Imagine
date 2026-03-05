@@ -26,8 +26,7 @@ function Work() {
   }, []);
 
   return (
-    <div ref={setContentRef} className='w-full flex flex-col items-center'>
-      {/* FONDO */}
+    <div className='w-full flex flex-col items-center'>
       {circleState?.rect && (
         <div
           ref={setBgRef}
@@ -49,36 +48,39 @@ function Work() {
         </div>
       )}
 
-      <CircleSatellites
-        color={circleState?.color || '#fff'}
-        count={30}
-        positionY={100}
-        positionX={100}
-      />
+      <div ref={setContentRef}>
+        {/* FONDO */}
+        <CircleSatellites
+          color={circleState?.color || '#fff'}
+          count={30}
+          positionY={100}
+          positionX={100}
+        />
 
-      {/* PROYECTOS */}
-      <FadeInParent stagger={0.15} delay={0.3}>
-        <div className='relative z-10 w-full'>
-          {projects.map((project, index) => {
-            const side = index % 2 === 0 ? 'left' : 'right';
-            return (
-              <div
-                key={project.id}
-                className={`snap-center h-screen flex items-center px-6 w-full ${
-                  side === 'left' ? 'justify-start' : 'justify-end'
-                }`}
-              >
-                <ProjectCard
-                  color={project.color}
-                  side={side}
-                  summary={project.summary}
-                  extraCount={project.extraCount}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </FadeInParent>
+        {/* PROYECTOS */}
+        <FadeInParent stagger={0.15} delay={0.3}>
+          <div className='relative z-10 w-full'>
+            {projects.map((project, index) => {
+              const side = index % 2 === 0 ? 'left' : 'right';
+              return (
+                <div
+                  key={project.id}
+                  className={`snap-center h-screen flex items-center px-6 w-full ${
+                    side === 'left' ? 'justify-start' : 'justify-end'
+                  }`}
+                >
+                  <ProjectCard
+                    color={project.color}
+                    side={side}
+                    summary={project.summary}
+                    extraCount={project.extraCount}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </FadeInParent>
+      </div>
     </div>
   );
 }

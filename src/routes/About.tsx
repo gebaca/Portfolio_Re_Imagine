@@ -69,12 +69,32 @@ function About() {
               />
             </div>
 
-            <p className='max-w-2xl text-center text-[1.125rem] leading-[1.8] text-zinc-800 font-medium mb-40'>
-              I'm a passionate web developer with a love for creating dynamic
-              and engaging user experiences. With a background in design and a
-              knack for animation, I specialize in crafting visually stunning
-              websites...
-            </p>
+            {/* BIO SECTION */}
+            <div className='max-w-2xl flex flex-col items-center mb-40'>
+              <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8 '>
+                Frontend Developer bridging the gap between
+                <span className='text-zinc-500'> interactive design</span> and
+                clean code.
+              </h2>
+
+              <p className='text-center text-[1.125rem] leading-[1.8] text-zinc-700 font-medium'>
+                With a strong foundation in{' '}
+                <span className='text-zinc-900 font-bold'>
+                  Game Design and Development
+                </span>
+                , I learned early on that an interface is more than just
+                buttons—it's an experience. Today, I channel that interactive
+                mindset and my specialization in
+                <span className='text-zinc-900 font-bold'>UX/UI</span>
+                to build digital products where technical precision meets visual
+                harmony.
+              </p>
+
+              <p className='mt-6 text-center text-[1rem] text-zinc-500'>
+                Based in Spain, crafting fluid and user-centered digital
+                experiences.
+              </p>
+            </div>
 
             <div className='w-full flex flex-col gap-32'>
               <div className='flex w-full justify-start'>
