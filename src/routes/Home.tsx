@@ -1,15 +1,24 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import WiggleCircle from '../components/Circle/WiggleCircle';
-
-// Home NO necesita min-h-screen ni flex layout propio —
-// App ya se encarga de centrar el contenido en pantalla completa.
-// Aquí solo defines QUÉ se muestra, no CÓMO se posiciona en la página.
+import { useFadeIn } from '../hooks/useFadeIn';
+import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 
 function Home() {
   const [activeRoute, setActiveRoute] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { isReversingRef } = useCircleTransition();
+
+  useFadeIn(containerRef, {
+    duration: 0.8,
+    delay: 0,
+    skipRef: isReversingRef,
+  });
 
   return (
-    <div className='flex gap-16 items-center justify-center p-32'>
+    <div
+      ref={containerRef}
+      className='flex gap-16 items-center justify-center p-32'
+    >
       <WiggleCircle
         route='/about'
         color='#FDDA0D'

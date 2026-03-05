@@ -2,6 +2,7 @@ import CircleSatellites from '../components/Circle/CircleSatellites ';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { FadeInParent } from '../components/Effects/FadeInParent';
+import { Tooltip } from '../components/Tooltip/Tooltip';
 
 const contactLinks = [
   { label: 'LinkedIn', url: 'https://linkedin.com/in/tu-usuario' },
@@ -61,24 +62,26 @@ function Contacts() {
 
           <div className='w-full flex flex-col gap-6'>
             {contactLinks.map((link, index) => (
-              <div
-                key={link.label}
-                className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} px-6`}
-              >
-                <button
-                  onClick={() => window.open(link.url, '_blank')}
-                  className='relative cursor-pointer hover:opacity-80 transition-opacity'
-                  title={link.label}
+              <Tooltip text={link.label}>
+                <div
+                  key={link.label}
+                  className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} px-6`}
                 >
-                  <CircleSVG
-                    color='#000000'
-                    style={{ width: '120px', height: '120px' }}
-                  />
-                  <span className='absolute inset-0 flex items-center justify-center text-2xl font-bold text-zinc-800'>
-                    {link.label}
-                  </span>
-                </button>
-              </div>
+                  <button
+                    onClick={() => window.open(link.url, '_blank')}
+                    className='relative cursor-pointer hover:opacity-80 transition-opacity'
+                    title={link.label}
+                  >
+                    <CircleSVG
+                      color='#000000'
+                      style={{ width: '120px', height: '120px' }}
+                    />
+                    <span className='absolute inset-0 flex items-center justify-center text-2xl font-bold text-zinc-800'>
+                      {link.label}
+                    </span>
+                  </button>
+                </div>
+              </Tooltip>
             ))}
           </div>
 

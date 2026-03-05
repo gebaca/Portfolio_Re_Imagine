@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useCircleTransition } from '../Circle/CircleTransitionContext';
 
 /*
   Logo — Gerard Bataller
@@ -29,6 +30,9 @@ export const Logo = () => {
   const container = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { circleState, reverseTransition } = useCircleTransition();
+  const location = useLocation();
 
   const { contextSafe } = useGSAP({ scope: container });
 
@@ -83,6 +87,15 @@ export const Logo = () => {
     }, LEAVE_DELAY);
   };
 
+  const handleClick = () => {
+    if (location.pathname === '/') return;
+    if (circleState) {
+      reverseTransition(navigate);
+    } else {
+      navigate('/');
+    }
+  };
+
   const letters = (text: string) =>
     text.split('').map((char, i) => (
       <span
@@ -100,7 +113,7 @@ export const Logo = () => {
       className='fixed top-7 left-7 z-50 cursor-pointer select-none flex items-baseline'
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      onClick={() => navigate('/')}
+      onClick={() => handleClick()}
       aria-label='Gerard Bataller — inicio'
     >
       {/* GERARD */}

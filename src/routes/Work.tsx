@@ -1,18 +1,23 @@
 import { useEffect } from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
+import CircleSatellites from '../components/Circle/CircleSatellites ';
+import { FadeInParent } from '../components/Effects/FadeInParent';
 import ProjectCard from '../components/Projects/ProjectCard';
 import { projects } from '../components/Projects/projects';
-import CircleSatellites from '../components/Circle/CircleSatellites ';
 
 function Work() {
-  const { circleState, bgCircleRef } = useCircleTransition();
+  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
 
   const setBgRef = (el: HTMLDivElement | null) => {
     (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
   };
 
-  // Activa snap solo mientras Work está montado
+  const setContentRef = (el: HTMLDivElement | null) => {
+    (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
+      el;
+  };
+
   useEffect(() => {
     document.documentElement.classList.add('snap-y', 'snap-mandatory');
     return () => {
@@ -21,7 +26,7 @@ function Work() {
   }, []);
 
   return (
-    <div className='w-full flex flex-col items-center'>
+    <div ref={setContentRef} className='w-full flex flex-col items-center'>
       {/* FONDO */}
       {circleState?.rect && (
         <div
@@ -41,29 +46,39 @@ function Work() {
             color={circleState.color}
             style={{ width: '100%', height: '100%' }}
           />
-
-          <CircleSatellites
-            color={circleState?.color || '#fff'}
-            count={10}
-            positionY={400}
-            positionX={50}
-          />
         </div>
       )}
 
+      <CircleSatellites
+        color={circleState?.color || '#fff'}
+        count={30}
+        positionY={100}
+        positionX={100}
+      />
+
       {/* PROYECTOS */}
-      <div className='relative z-10 w-full'>
-        {projects.map((project, index) => (
-          <div
-            key={project.id}
-            className={`snap-center h-screen flex items-center px-6 w-full ${
-              index % 2 === 0 ? 'justify-start' : 'justify-end'
-            }`}
-          >
-            <ProjectCard color={project.color} />
-          </div>
-        ))}
-      </div>
+      <FadeInParent stagger={0.15} delay={0.3}>
+        <div className='relative z-10 w-full'>
+          {projects.map((project, index) => {
+            const side = index % 2 === 0 ? 'left' : 'right';
+            return (
+              <div
+                key={project.id}
+                className={`snap-center h-screen flex items-center px-6 w-full ${
+                  side === 'left' ? 'justify-start' : 'justify-end'
+                }`}
+              >
+                <ProjectCard
+                  color={project.color}
+                  side={side}
+                  summary={project.summary}
+                  extraCount={project.extraCount}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </FadeInParent>
     </div>
   );
 }

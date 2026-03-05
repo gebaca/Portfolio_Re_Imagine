@@ -13,12 +13,17 @@ interface CircleTransitionContextType {
   // Ref al div del círculo de fondo en la página actual
   // Each page registers its background circle here
   bgCircleRef: React.RefObject<HTMLDivElement | null>;
+  isReversingRef: React.RefObject<boolean>;
+
+  pageContentRef: React.RefObject<HTMLDivElement | null>;
   // Llama esto desde el Logo (u otro trigger) para animar la vuelta a Home
   reverseTransition: (navigate: NavigateFunction) => void;
 }
 
 const CircleTransitionContext = createContext<CircleTransitionContextType>({
   circleState: null,
+  isReversingRef: { current: false },
+  pageContentRef: { current: null },
   setCircleState: () => {},
   bgCircleRef: { current: null },
   reverseTransition: () => {},
@@ -36,6 +41,8 @@ export const CircleTransitionProvider = ({
 
   // Ref compartido: la página activa lo asigna a su círculo de fondo
   const bgCircleRef = useRef<HTMLDivElement | null>(null);
+  const pageContentRef = useRef<HTMLDivElement | null>(null); // ← aquí
+  const isReversingRef = useRef(false);
 
   const setCircleState = (s: CircleState) => {
     sessionStorage.setItem('circleState', JSON.stringify(s));
@@ -48,33 +55,46 @@ export const CircleTransitionProvider = ({
   };
 
   const reverseTransition = (navigate: NavigateFunction) => {
+    isReversingRef.current = true;
     const el = bgCircleRef.current;
 
     if (!el) {
-      // Sin círculo de fondo registrado — navega directamente
       clearCircleState();
       navigate('/');
       return;
     }
 
-    // ── ANIMACIÓN INVERSA ──────────────────────────────────────────
-    // El círculo de fondo se contrae de vuelta al centro,
-    // espejando la expansión original (scale 10 → 0.1, power4.inOut)
+    const content = pageContentRef.current;
+    if (content) {
+      gsap.to(content, { opacity: 0, duration: 0.4, ease: 'power2.in' });
+    }
+
     gsap.to(el, {
       scale: 0.1,
-      duration: 1.6, // misma duración que la expansión (2s aprox)
+      duration: 1.6,
       ease: 'power4.inOut',
       onComplete: () => {
-        clearCircleState();
-        navigate('/');
+        navigate('/'); // ← navega primero
+        // Limpia el estado en el siguiente tick, después de que React
+        // haya montado Home — así el círculo no desaparece antes de tiempo
+        setTimeout(() => {
+          clearCircleState();
+          isReversingRef.current = false;
+        }, 50);
       },
     });
-    // ──────────────────────────────────────────────────────────────
   };
 
   return (
     <CircleTransitionContext.Provider
-      value={{ circleState, setCircleState, bgCircleRef, reverseTransition }}
+      value={{
+        isReversingRef,
+        circleState,
+        setCircleState,
+        bgCircleRef,
+        pageContentRef,
+        reverseTransition,
+      }}
     >
       {children}
     </CircleTransitionContext.Provider>

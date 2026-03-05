@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,21 +9,36 @@ gsap.registerPlugin(ScrollTrigger);
 interface ProjectCardProps {
   color: string;
   size?: number;
-  expandScale?: number; // escala máxima al entrar en viewport
+  expandScale?: number;
+  side?: 'left' | 'right'; // Work.tsx lo pasa según el índice
+  summary?: string; // texto breve sobre el círculo secundario
+  extraCount?: number; // SVGs extra que aparecen en grid al click
 }
+
+// ── Parámetros ────────────────────────────────────────────────
+const SECONDARY_APPEAR_PROGRESS = 0.85; // % del scroll que dispara el secundario
+const GRID_COLS = 2; // columnas del grid
+// ──────────────────────────────────────────────────────────────
 
 const ProjectCard = ({
   color,
   size = 200,
   expandScale = 1.6,
+  side = 'left',
+  summary = '',
+  extraCount = 3,
 }: ProjectCardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const secondaryRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
 
   useGSAP(
     () => {
       const el = containerRef.current;
-      if (!el) return;
+      const sec = secondaryRef.current;
+      if (!el || !sec) return;
 
+      // FASE 1 — expansión del círculo principal con scroll
       gsap.fromTo(
         el,
         { scale: 1 },
@@ -32,11 +47,29 @@ const ProjectCard = ({
           ease: 'power2.out',
           scrollTrigger: {
             trigger: el,
-            // empieza a expandirse cuando el borde inferior del SVG entra en viewport
             start: 'top bottom',
-            // termina de expandirse cuando llega al centro de la pantalla
             end: 'center center',
-            scrub: 1, // sigue el scroll suavemente
+            scrub: 1,
+            onUpdate: (self) => {
+              // FASE 2 — secundario aparece cuando el scroll llega al umbral
+              if (self.progress >= SECONDARY_APPEAR_PROGRESS) {
+                gsap.to(sec, {
+                  opacity: 1,
+                  scale: 1,
+                  duration: 0.5,
+                  ease: 'power2.out',
+                  overwrite: true,
+                });
+              } else {
+                gsap.to(sec, {
+                  opacity: 0,
+                  scale: 0.85,
+                  duration: 0.3,
+                  ease: 'power2.in',
+                  overwrite: true,
+                });
+              }
+            },
           },
         }
       );
@@ -44,9 +77,100 @@ const ProjectCard = ({
     { scope: containerRef }
   );
 
+  const secondarySize = size * expandScale;
+
+  // Opacidad decreciente por cada SVG extra
+  const extraSvgs = Array.from({ length: extraCount }, (_, i) => ({
+    id: i,
+    opacity: 0.5 - i * (0.3 / Math.max(extraCount - 1, 1)),
+  }));
+
+  const secondary = (
+    <div
+      ref={secondaryRef}
+      style={{
+        opacity: 0,
+        display: 'flex',
+        alignItems: 'center',
+        flexShrink: 0,
+      }}
+    >
+      {/* Círculo secundario con texto */}
+      <div
+        onClick={() => setExpanded((p) => !p)}
+        style={{
+          position: 'relative',
+          width: secondarySize,
+          height: secondarySize,
+          cursor: 'pointer',
+          flexShrink: 0,
+        }}
+      >
+        <CircleSVG
+          color={color}
+          style={{ width: '100%', height: '100%', opacity: 0.6 }}
+        />
+        {summary && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20%',
+              textAlign: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: '#111',
+              lineHeight: 1.4,
+            }}
+          >
+            {summary}
+          </div>
+        )}
+      </div>
+
+      {/* Grid de SVGs extra — aparecen al click */}
+      {expanded && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${GRID_COLS}, ${secondarySize}px)`,
+            flexShrink: 0,
+          }}
+        >
+          {extraSvgs.map((s) => (
+            <div
+              key={s.id}
+              style={{ width: secondarySize, height: secondarySize }}
+            >
+              <CircleSVG
+                color={color}
+                style={{ width: '100%', height: '100%', opacity: s.opacity }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div ref={containerRef} style={{ width: size, height: size }}>
-      <CircleSVG color={color} style={{ width: '100%', height: '100%' }} />
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      {/* Secundario a la izquierda cuando el principal está a la derecha */}
+      {side === 'right' && secondary}
+
+      {/* Círculo principal */}
+      <div
+        ref={containerRef}
+        style={{ width: size, height: size, flexShrink: 0 }}
+      >
+        <CircleSVG color={color} style={{ width: '100%', height: '100%' }} />
+      </div>
+
+      {/* Secundario a la derecha cuando el principal está a la izquierda */}
+      {side === 'left' && secondary}
     </div>
   );
 };
