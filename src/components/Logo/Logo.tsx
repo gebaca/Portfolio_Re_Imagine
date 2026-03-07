@@ -15,9 +15,9 @@ import { useCircleTransition } from '../Circle/CircleTransitionContext';
 */
 
 const FONT: React.CSSProperties = {
-  fontFamily: "'DM Serif Display', Georgia, serif",
+  fontFamily: 'Pencil-Regular',
   fontStyle: 'italic',
-  fontSize: '30px',
+  fontSize: '40px',
   lineHeight: 1,
   color: '#111',
 };
@@ -59,8 +59,8 @@ export const Logo = () => {
     if (!chars) return;
     gsap.killTweensOf(chars);
     gsap.to(chars, {
-      x: 0,
-      y: 0,
+      x: 0.1,
+      y: 0.1,
       rotation: 0,
       duration: 0.45,
       ease: 'power3.out',
@@ -134,7 +134,9 @@ export const Logo = () => {
             ...FONT,
             display: 'flex',
             overflow: 'hidden',
-            maxWidth: hovered ? '120px' : '0px',
+            paddingLeft: '4px',
+            paddingRight: '4px',
+            maxWidth: hovered ? '160px' : '0px',
             opacity: hovered ? 1 : 0,
             transition: `max-width ${EXPAND_MS}ms cubic-bezier(0.22,1,0.36,1), opacity ${hovered ? 300 : 200}ms ease ${hovered ? '80ms' : '0ms'}`,
           }}
@@ -172,7 +174,9 @@ export const Logo = () => {
             ...FONT,
             display: 'flex',
             overflow: 'hidden',
-            maxWidth: hovered ? '160px' : '0px',
+            paddingLeft: '4px',
+            paddingRight: '4px',
+            maxWidth: hovered ? '200px' : '0px',
             opacity: hovered ? 1 : 0,
             transition: `max-width ${EXPAND_MS}ms cubic-bezier(0.22,1,0.36,1), opacity ${hovered ? 260 : 200}ms ease ${hovered ? '80ms' : '0ms'}`,
           }}

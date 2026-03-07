@@ -7,7 +7,7 @@ function App() {
       style={{ position: 'relative' }}
       className='min-h-screen flex flex-col bg-white overflow-x-hidden'
     >
-      <nav className='pointer-events-none fixed top-0 left-0 z-50'>
+      <nav className='pointer-events-none fixed top-0 left-0 z-50 pr-10 pt-10'>
         <div className='pointer-events-auto'>
           <Logo />
         </div>

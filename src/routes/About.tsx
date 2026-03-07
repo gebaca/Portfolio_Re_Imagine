@@ -2,6 +2,7 @@ import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import CircleSatellites from '../components/Circle/CircleSatellites ';
 import { FadeInParent } from '../components/Effects/FadeInParent';
+import { ICONS } from '../components/Icons/Icons';
 
 const artTools = ['Photoshop', 'Illustrator', 'Blender', 'Procreate'];
 const codeTools = ['React', 'TypeScript', 'Node.js', 'Next.js', 'Tailwind'];
@@ -71,7 +72,7 @@ function About() {
 
             {/* BIO SECTION */}
             <div className='max-w-2xl flex flex-col items-center mb-40'>
-              <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8 '>
+              <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8'>
                 Frontend Developer bridging the gap between
                 <span className='text-zinc-500'> interactive design</span> and
                 clean code.

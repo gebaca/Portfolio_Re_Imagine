@@ -22,21 +22,21 @@ function Home() {
       <WiggleCircle
         route='/about'
         color='#FDDA0D'
-        label='About'
+        label='ABOUT'
         activeRoute={activeRoute}
         onActivate={setActiveRoute}
       />
       <WiggleCircle
         route='/works'
         color='#DE0A00'
-        label='Works'
+        label='WORKS'
         activeRoute={activeRoute}
         onActivate={setActiveRoute}
       />
       <WiggleCircle
         route='/contacts'
         color='#00C4FF'
-        label='Contacts'
+        label='CONTACTS'
         activeRoute={activeRoute}
         onActivate={setActiveRoute}
       />

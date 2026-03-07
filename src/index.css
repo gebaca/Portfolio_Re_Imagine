@@ -2,12 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Importación de Amatic SC desde Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Inter:wght@400;500;700;900&display=swap');
+/* Importamos Plus Jakarta Sans para el cuerpo (Sustituye a Inter por ser más legible) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Registramos tu fuente de DaFont */
+@font-face {
+  font-family: 'Pencil-Regular';
+  src: url('./assets/fonts/Pencil-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  /* Fuente de lectura por defecto */
-  font-family: 'Inter', system-ui, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
 body {
@@ -15,38 +23,14 @@ body {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  /* Aplicamos Inter como base del body */
-  @apply font-sans text-zinc-900;
+  /* Aplicamos la fuente legible por defecto */
+  @apply font-sans text-zinc-900 antialiased;
 }
 
-/* Utilidad opcional para suavizar Amatic */
-.font-hand {
-  font-family: 'TheSkinny-bold';
-}
-
-@font-face {
-  font-family: 'DK Crayon Crumble'; /* El nombre que tú quieras darle */
-  src: url('./assets/fonts/DK Crayon Crumble.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap; /* Importante para que no desaparezca el texto mientras carga */
-}
-@font-face {
-  font-family: 'Pencil-Regular'; /* El nombre que tú quieras darle */
-  src: url('./assets/fonts/Pencil-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap; /* Importante para que no desaparezca el texto mientras carga */
-}
-@font-face {
-  font-family: 'TheSkinny-bold'; /* El nombre que tú quieras darle */
-  src: url('./assets/fonts/TheSkinny-bold.otf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap; /* Importante para que no desaparezca el texto mientras carga */
-}
-
-h2 {
-  /* Aseguramos que los títulos usen Amatic */
-  @apply font-hand;
+/* Forzamos que los títulos grandes usen la de lápiz por defecto */
+h1,
+h2,
+.font-pencil {
+  font-family: 'Pencil-Regular', cursive;
+  @apply tracking-wide; /* La fuente de lápiz suele necesitar aire */
 }

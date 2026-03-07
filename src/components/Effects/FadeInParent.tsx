@@ -13,7 +13,6 @@ export const FadeInParent: React.FC<FadeInParentProps> = ({
   children,
   duration = 0.6,
   stagger = 0.15,
-  delay = 0.2,
   className = '',
 }) => {
   const ref = useRef<HTMLDivElement>(null);

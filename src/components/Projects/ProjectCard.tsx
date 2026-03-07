@@ -26,7 +26,6 @@ const ProjectCard = ({
   expandScale = 1.6,
   side = 'left',
   summary = '',
-  extraCount = 3,
 }: ProjectCardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const secondaryRef = useRef<HTMLDivElement>(null);
@@ -55,7 +54,7 @@ const ProjectCard = ({
               if (self.progress >= SECONDARY_APPEAR_PROGRESS) {
                 gsap.to(sec, {
                   opacity: 1,
-                  scale: 1,
+                  scale: 2,
                   duration: 0.5,
                   ease: 'power2.out',
                   overwrite: true,
@@ -78,12 +77,6 @@ const ProjectCard = ({
   );
 
   const secondarySize = size * expandScale;
-
-  // Opacidad decreciente por cada SVG extra
-  const extraSvgs = Array.from({ length: extraCount }, (_, i) => ({
-    id: i,
-    opacity: 0.5 - i * (0.3 / Math.max(extraCount - 1, 1)),
-  }));
 
   const secondary = (
     <div
@@ -139,19 +132,7 @@ const ProjectCard = ({
             gridTemplateColumns: `repeat(${GRID_COLS}, ${secondarySize}px)`,
             flexShrink: 0,
           }}
-        >
-          {extraSvgs.map((s) => (
-            <div
-              key={s.id}
-              style={{ width: secondarySize, height: secondarySize }}
-            >
-              <CircleSVG
-                color={color}
-                style={{ width: '100%', height: '100%', opacity: s.opacity }}
-              />
-            </div>
-          ))}
-        </div>
+        ></div>
       )}
     </div>
   );
