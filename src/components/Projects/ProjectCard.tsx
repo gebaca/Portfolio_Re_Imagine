@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,26 +11,75 @@ interface ProjectCardProps {
   color: string;
   size?: number;
   expandScale?: number;
-  side?: 'left' | 'right'; // Work.tsx lo pasa según el índice
-  summary?: string; // texto breve sobre el círculo secundario
-  extraCount?: number; // SVGs extra que aparecen en grid al click
+  side?: 'left' | 'right';
+  primaryContent?: ReactNode;
+  summaryContent?: ReactNode;
+  mediaContent?: ReactNode;
+  extraCount?: number;
 }
 
-// ── Parámetros ────────────────────────────────────────────────
-const SECONDARY_APPEAR_PROGRESS = 0.85; // % del scroll que dispara el secundario
-const GRID_COLS = 2; // columnas del grid
-// ──────────────────────────────────────────────────────────────
+const SECONDARY_APPEAR_PROGRESS = 0.4;
 
 const ProjectCard = ({
   color,
   size = 200,
   expandScale = 1.6,
   side = 'left',
-  summary = '',
+  primaryContent,
+  summaryContent,
+  mediaContent,
 }: ProjectCardProps) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const secondaryRef = useRef<HTMLDivElement>(null);
-  const [expanded, setExpanded] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const [bottomVisible, setBottomVisible] = useState(false);
+
+  const handleCircleClick = () => {
+    if (!bottomVisible) {
+      setBottomVisible(true);
+      requestAnimationFrame(() => {
+        const el = bottomRef.current;
+        if (!el) return;
+        gsap.fromTo(
+          el,
+          { opacity: 0, scale: 0 },
+          { opacity: 1, scale: 3, duration: 0.6, ease: 'back.out(1.4)' }
+        );
+      });
+    } else {
+      const el = bottomRef.current;
+      if (!el) return;
+      gsap.to(el, {
+        opacity: 0,
+        scale: 0,
+        duration: 0.35,
+        ease: 'power2.in',
+        onComplete: () => setBottomVisible(false),
+      });
+    }
+  };
+
+  const hideSecondaryAndBottom = (sec: HTMLDivElement) => {
+    gsap.to(sec, {
+      opacity: 0,
+      scale: 0.85,
+      duration: 0.3,
+      ease: 'power2.in',
+      overwrite: true,
+    });
+    const ter = bottomRef.current;
+    if (ter) {
+      gsap.to(ter, {
+        opacity: 0,
+        scale: 0,
+        duration: 0.3,
+        ease: 'power2.in',
+        overwrite: true,
+        onComplete: () => setBottomVisible(false),
+      });
+    }
+  };
 
   useGSAP(
     () => {
@@ -37,7 +87,6 @@ const ProjectCard = ({
       const sec = secondaryRef.current;
       if (!el || !sec) return;
 
-      // FASE 1 — expansión del círculo principal con scroll
       gsap.fromTo(
         el,
         { scale: 1 },
@@ -47,10 +96,19 @@ const ProjectCard = ({
           scrollTrigger: {
             trigger: el,
             start: 'top bottom',
-            end: 'center center',
+            end: 'top -20%',
             scrub: 1,
+            onLeave: () => hideSecondaryAndBottom(sec),
+            onEnterBack: () => {
+              gsap.to(sec, {
+                opacity: 1,
+                scale: 2,
+                duration: 0.5,
+                ease: 'power2.out',
+                overwrite: true,
+              });
+            },
             onUpdate: (self) => {
-              // FASE 2 — secundario aparece cuando el scroll llega al umbral
               if (self.progress >= SECONDARY_APPEAR_PROGRESS) {
                 gsap.to(sec, {
                   opacity: 1,
@@ -60,98 +118,159 @@ const ProjectCard = ({
                   overwrite: true,
                 });
               } else {
-                gsap.to(sec, {
-                  opacity: 0,
-                  scale: 0.85,
-                  duration: 0.3,
-                  ease: 'power2.in',
-                  overwrite: true,
-                });
+                hideSecondaryAndBottom(sec);
               }
             },
           },
         }
       );
     },
-    { scope: containerRef }
+    { scope: wrapperRef }
   );
 
   const secondarySize = size * expandScale;
 
   const secondary = (
     <div
-      ref={secondaryRef}
+      onClick={handleCircleClick}
       style={{
-        opacity: 0,
-        display: 'flex',
-        alignItems: 'center',
+        position: 'relative',
+        width: secondarySize,
+        height: secondarySize,
         flexShrink: 0,
+        marginLeft: side === 'left' ? 40 : 0,
+        marginRight: side === 'right' ? 40 : 0,
+        cursor: 'pointer',
       }}
     >
-      {/* Círculo secundario con texto */}
       <div
-        onClick={() => setExpanded((p) => !p)}
+        ref={secondaryRef}
         style={{
-          position: 'relative',
-          width: secondarySize,
-          height: secondarySize,
-          cursor: 'pointer',
-          flexShrink: 0,
+          position: 'absolute',
+          inset: 0,
+          opacity: 0,
+          transformOrigin: 'center center',
         }}
       >
         <CircleSVG
           color={color}
           style={{ width: '100%', height: '100%', opacity: 0.6 }}
         />
-        {summary && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '20%',
-              textAlign: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: '#111',
-              lineHeight: 1.4,
-            }}
-          >
-            {summary}
-          </div>
-        )}
-      </div>
-
-      {/* Grid de SVGs extra — aparecen al click */}
-      {expanded && (
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${GRID_COLS}, ${secondarySize}px)`,
-            flexShrink: 0,
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '25%',
+            overflow: 'hidden',
+            gap: 8,
           }}
-        ></div>
-      )}
+        >
+          {summaryContent}
+          <span
+            style={{
+              fontFamily: 'Pencil-Regular',
+              fontSize: '0.5rem',
+              color: 'rgba(1,1,1,1)',
+              marginTop: 4,
+              flexShrink: 0,
+            }}
+          >
+            Click Here
+          </span>
+        </div>
+      </div>
     </div>
   );
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {/* Secundario a la izquierda cuando el principal está a la derecha */}
-      {side === 'right' && secondary}
+    <div
+      ref={wrapperRef}
+      style={{
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {side === 'right' && secondary}
 
-      {/* Círculo principal */}
-      <div
-        ref={containerRef}
-        style={{ width: size, height: size, flexShrink: 0 }}
-      >
-        <CircleSVG color={color} style={{ width: '100%', height: '100%' }} />
+        {/* Círculo 1: principal */}
+        <div
+          ref={containerRef}
+          style={{
+            width: size,
+            height: size,
+            flexShrink: 0,
+            position: 'relative',
+          }}
+        >
+          <CircleSVG color={color} style={{ width: '100%', height: '100%' }} />
+          {primaryContent && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '15%',
+                overflow: 'hidden',
+              }}
+            >
+              {primaryContent}
+            </div>
+          )}
+        </div>
+
+        {side === 'left' && secondary}
       </div>
 
-      {/* Secundario a la derecha cuando el principal está a la izquierda */}
-      {side === 'left' && secondary}
+      {/* Círculo 3: toggle al clickar el círculo 2 */}
+      {bottomVisible && (
+        <div
+          ref={bottomRef}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: secondarySize,
+            height: secondarySize,
+            opacity: 0,
+            transformOrigin: 'center center',
+            pointerEvents: 'auto',
+          }}
+        >
+          <div
+            style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+          >
+            <CircleSVG
+              color={color}
+              style={{ width: '100%', height: '100%', opacity: 0.6 }}
+            />
+          </div>
+          {mediaContent && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '20%',
+                overflow: 'visible',
+                pointerEvents: 'auto',
+              }}
+            >
+              {mediaContent}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

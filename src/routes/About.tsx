@@ -1,21 +1,56 @@
+import React, { useRef } from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import CircleSatellites from '../components/Circle/CircleSatellites ';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 import { ICONS } from '../components/Icons/Icons';
 
-const artTools = ['Photoshop', 'Illustrator', 'Blender', 'Procreate'];
-const codeTools = ['React', 'TypeScript', 'Node.js', 'Next.js', 'Tailwind'];
-const officeTools = ['Git', 'Jira', 'Confluence', 'Trello', 'Slack'];
+const artTools = [
+  { name: 'Autodesk', icon: ICONS.autodesk },
+  { name: 'Creative Cloud', icon: ICONS.creative_cloud },
+  { name: 'Figma', icon: ICONS.figma },
+  { name: 'Unity', icon: ICONS.unity },
+];
+
+const codeTools = [
+  { name: 'React', icon: ICONS.react },
+  { name: 'TypeScript', icon: ICONS.ts },
+  { name: 'JavaScript', icon: ICONS.js },
+  { name: 'Python', icon: ICONS.py },
+  { name: 'C#', icon: ICONS.csharp },
+  { name: 'GSAP', icon: ICONS.gsap },
+];
+
+const officeTools = [
+  { name: 'Git', icon: ICONS.git },
+  { name: 'Jira', icon: ICONS.jira },
+  { name: 'Trello', icon: ICONS.trello },
+  { name: 'Bitbucket', icon: ICONS.bitbucket },
+];
+
+const experiences = [
+  {
+    title: 'FICIV',
+    subtitle: 'Festival Internacional de Cine Infantil de Valencia',
+    description:
+      'Apoyo tecnológico y creativo en un entorno cultural dinámico. Una experiencia clave para entender la unión entre el arte visual y la ejecución técnica.',
+  },
+  {
+    title: 'Mutua Madrileña',
+    subtitle: 'Programador Junior',
+    description:
+      'Primer contacto con desarrollo corporativo de alto nivel. Aprendizaje intensivo sobre flujos de trabajo profesionales, resolución de bugs y despliegues en entornos reales.',
+  },
+];
 
 function About() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setBgRef = (el: HTMLDivElement | null) => {
     (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
   };
 
-  // Apunta al div raíz — cubre todo: satélites, contenido, hero
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
       el;
@@ -45,12 +80,10 @@ function About() {
       )}
 
       <div ref={setContentRef} className='w-full flex flex-col items-center'>
-        {/* FONDO */}
-
         <CircleSatellites
           color={circleState?.color || '#fff'}
           count={40}
-          positionY={100}
+          positionY={400}
           positionX={100}
         />
 
@@ -72,7 +105,7 @@ function About() {
 
             {/* BIO SECTION */}
             <div className='max-w-2xl flex flex-col items-center mb-40'>
-              <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8'>
+              <h2 className='text-zinc-900 text-3xl md:text-4xl tracking-tighter text-center mb-8'>
                 Frontend Developer bridging the gap between
                 <span className='text-zinc-500'> interactive design</span> and
                 clean code.
@@ -90,103 +123,107 @@ function About() {
                 to build digital products where technical precision meets visual
                 harmony.
               </p>
-
-              <p className='mt-6 text-center text-[1rem] text-zinc-500'>
-                Based in Spain, crafting fluid and user-centered digital
-                experiences.
-              </p>
             </div>
 
-            <div className='w-full flex flex-col gap-32'>
-              <div className='flex w-full justify-start'>
-                <div className='flex items-center gap-6 max-w-xl'>
-                  <div className='w-32 h-32 rounded-3xl bg-yellow-100 border-2 border-yellow-200 flex items-center justify-center text-sm font-black text-yellow-700 uppercase tracking-tighter shadow-inner flex-shrink-0'>
-                    Arte
-                  </div>
-                  <div className='flex gap-3 flex-wrap'>
-                    {artTools.map((name) => (
-                      <SkillBox key={name} name={name} />
-                    ))}
-                  </div>
+            <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8 mt-32'>
+              TOOLS
+            </h2>
+
+            <div className='w-full flex flex-col gap-32 -ml-6'>
+              <div className='flex items-center gap-8'>
+                <div className='flex-shrink-0 w-60 h-60'>{ICONS.ART}</div>
+                <div className='flex flex-wrap gap-5'>
+                  {artTools.map(({ name, icon }) => (
+                    <IconItem key={name} name={name} icon={icon} />
+                  ))}
                 </div>
               </div>
 
-              <div className='flex w-full justify-end'>
-                <div className='flex items-center gap-6 max-w-xl flex-row-reverse'>
-                  <div className='w-32 h-32 rounded-3xl bg-blue-100 border-2 border-blue-200 flex items-center justify-center text-sm font-black text-blue-700 uppercase tracking-tighter shadow-inner flex-shrink-0'>
-                    Code
-                  </div>
-                  <div className='flex gap-3 flex-wrap justify-end text-right'>
-                    {codeTools.map((name) => (
-                      <SkillBox key={name} name={name} />
-                    ))}
-                  </div>
+              <div className='flex items-center gap-8'>
+                <div className='flex-shrink-0 w-60 h-60'>
+                  {ICONS.ProgrammingCircle}
+                </div>
+                <div className='flex flex-wrap gap-5'>
+                  {codeTools.map(({ name, icon }) => (
+                    <IconItem key={name} name={name} icon={icon} />
+                  ))}
                 </div>
               </div>
 
-              <div className='flex w-full justify-start'>
-                <div className='flex items-center gap-6 max-w-xl'>
-                  <div className='w-32 h-32 rounded-3xl bg-zinc-100 border-2 border-zinc-200 flex items-center justify-center text-sm font-black text-zinc-600 uppercase tracking-tighter shadow-inner flex-shrink-0'>
-                    Gestión
-                  </div>
-                  <div className='flex gap-3 flex-wrap'>
-                    {officeTools.map((name) => (
-                      <SkillBox key={name} name={name} />
-                    ))}
-                  </div>
+              <div className='flex items-center gap-8'>
+                <div className='flex-shrink-0 w-60 h-60'>
+                  {ICONS.workCircle}
+                </div>
+                <div className='flex flex-wrap gap-5'>
+                  {officeTools.map(({ name, icon }) => (
+                    <IconItem key={name} name={name} icon={icon} />
+                  ))}
                 </div>
               </div>
             </div>
 
+            {/* EXPERIENCE */}
             <div className='w-full flex flex-col items-center mt-60 mb-40'>
-              <h3 className='text-zinc-400 uppercase tracking-[0.5em] text-[10px] font-black mb-20'>
-                Experiencia
-              </h3>
-              <div className='relative w-full max-w-2xl border-l border-zinc-200 ml-6 pl-10 flex flex-col gap-24'>
-                <div className='relative'>
-                  <div className='absolute -left-[45px] top-1 w-4 h-4 rounded-full border-2 border-zinc-950 bg-zinc-200' />
-                  <div>
-                    <h4 className='text-xl font-bold text-zinc-800'>FICIV</h4>
-                    <p className='text-zinc-500 text-sm font-medium'>
-                      Festival Internacional de Cine Infantil de Valencia
-                    </p>
-                    <p className='mt-4 text-zinc-600 leading-relaxed text-[15px]'>
-                      Apoyo tecnológico y creativo en un entorno cultural
-                      dinámico. Una experiencia clave para entender la unión
-                      entre el arte visual y la ejecución técnica.
-                    </p>
-                  </div>
+              <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-16 mt-32'>
+                EXPERIENCE
+              </h2>
+
+              <div className='relative w-full max-w-2xl ml-6 pl-12 flex flex-col gap-24'>
+                {/* Línea SVG — cubre toda la altura del contenedor */}
+                <div
+                  className='absolute left-0 top-0 h-full'
+                  style={{ width: '14px' }}
+                >
+                  <img
+                    src='/Vector_17.svg'
+                    alt=''
+                    className='w-full h-full'
+                    style={{ objectFit: 'fill' }}
+                  />
                 </div>
-                <div className='relative'>
-                  <div className='absolute -left-[45px] top-1 w-4 h-4 rounded-full border-2 border-zinc-950 bg-zinc-200' />
-                  <div>
+
+                {/* Items — los círculos están dentro pero alineados a la línea */}
+                {experiences.map((exp, i) => (
+                  <div
+                    key={exp.title}
+                    className='relative'
+                    ref={(el) => (itemRefs.current[i] = el)}
+                  >
+                    {/* Círculo centrado sobre la línea (left-0 + 7px centro - 20px mitad círculo = -13px) */}
+                    <div
+                      className='absolute w-10 h-10'
+                      style={{ left: '-55px', top: '0px' }}
+                    >
+                      <CircleSVG
+                        color='#FFC000'
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </div>
                     <h4 className='text-xl font-bold text-zinc-800'>
-                      Mutua Madrileña
+                      {exp.title}
                     </h4>
                     <p className='text-zinc-500 text-sm font-medium'>
-                      Programador Junior
+                      {exp.subtitle}
                     </p>
                     <p className='mt-4 text-zinc-600 leading-relaxed text-[15px]'>
-                      Primer contacto con desarrollo corporativo de alto nivel.
-                      Aprendizaje intensivo sobre flujos de trabajo
-                      profesionales, resolución de bugs y despliegues en
-                      entornos reales.
+                      {exp.description}
                     </p>
                   </div>
-                </div>
+                ))}
               </div>
 
+              {/* EDUCATION */}
               <div className='w-full flex flex-col items-center mt-60 mb-40'>
-                <h2 className='text-black uppercase tracking-[0.5em] text-[10px] font-black'>
-                  Estudios
+                <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8 mt-32'>
+                  EDUCATION
                 </h2>
-                <h3 className='text-zinc-950 text-m font-medium mt-2'>
-                  Universidad Politécnica de Valencia — Grado en Ingeniería
-                  Informática
-                </h3>
-                <h3 className='text-zinc-950 text-m font-medium mt-2'>
+                <p className='text-zinc-950 text-lg font-medium mt-2'>
+                  Universidad Politécnica de Valencia — Diseño y Desarrollo de
+                  Experiencias interactivas
+                </p>
+                <p className='text-zinc-950 text-lg font-medium mt-2'>
                   ESAT — Diseño y Desarrollo Web
-                </h3>
+                </p>
               </div>
             </div>
           </div>
@@ -196,10 +233,11 @@ function About() {
   );
 }
 
-function SkillBox({ name }: { name: string }) {
+function IconItem({ name, icon }: { name: string; icon?: React.ReactNode }) {
   return (
-    <div className='px-4 py-2 h-12 min-w-[3rem] rounded-xl bg-white/50 backdrop-blur-sm border border-zinc-200 flex items-center justify-center text-[11px] font-bold text-zinc-500 hover:border-zinc-400 hover:text-zinc-800 transition-all duration-300 shadow-sm'>
-      {name}
+    <div className='flex flex-col items-center gap-1'>
+      <div className='w-20 h-20'>{icon}</div>
+      <span className='text-[10px] font-bold text-zinc-500'>{name}</span>
     </div>
   );
 }

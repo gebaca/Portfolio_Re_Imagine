@@ -1,3 +1,4 @@
+import React from 'react';
 import CircleSatellites from '../components/Circle/CircleSatellites ';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
@@ -5,10 +6,23 @@ import { FadeInParent } from '../components/Effects/FadeInParent';
 import { Tooltip } from '../components/Tooltip/Tooltip';
 
 const contactLinks = [
-  { label: 'LinkedIn', url: 'https://linkedin.com/in/tu-usuario' },
-  { label: 'GitHub', url: 'https://github.com/tu-usuario' },
-  { label: 'Email', url: 'mailto:tu-correo@ejemplo.com' },
-  { label: 'Instagram', url: 'https://instagram.com/tu-usuario' },
+  {
+    label: 'LinkedIn',
+    url: 'https://linkedin.com/in/gerard-bataller-canet-963394372',
+    icon: (
+      <img src='/socials/linkedin.svg' alt='LinkedIn' className='w-8 h-8' />
+    ),
+  },
+  {
+    label: 'GitHub',
+    url: 'https://github.com/gebaca',
+    icon: <img src='/socials/github.svg' alt='GitHub' className='w-8 h-8' />,
+  },
+  {
+    label: 'Email',
+    url: 'mailto:gerard.bataller.canet@gmail.com',
+    icon: <img src='/socials/gmail.svg' alt='Email' className='w-8 h-8' />,
+  },
 ];
 
 function Contacts() {
@@ -23,8 +37,8 @@ function Contacts() {
   };
 
   return (
-    <div className='w-full flex flex-col items-center'>
-      {/* FONDO */}
+    /* 1. h-screen: ocupa toda la pantalla. 2. overflow-hidden: elimina el scroll. 3. justify-center: centra el contenido verticalmente. */
+    <div className='w-full h-screen flex flex-col items-center justify-center overflow-hidden relative'>
       {circleState?.rect && (
         <div
           ref={setBgRef}
@@ -46,57 +60,50 @@ function Contacts() {
         </div>
       )}
 
-      <div ref={setContentRef}>
+      {/* Contenedor del contenido con ref para las transiciones */}
+      <div
+        ref={setContentRef}
+        className='w-full flex flex-col items-center z-10'
+      >
         <CircleSatellites
           color={circleState?.color || '#fff'}
-          count={50}
-          positionY={100}
-          positionX={10}
+          count={10}
+          positionY={100} // Ajustado a 50 para centrar satélites si el diseño es fijo
+          positionX={100}
         />
 
         <FadeInParent stagger={1} delay={2}>
-          <div className='relative z-10 flex flex-col items-center w-full max-w-2xl px-6'>
-            <header className='text-center mb-16'>
-              <h2 className='text-zinc-500 uppercase tracking-[0.6em] text-[10px] font-black mb-4'>
-                ¿Hablamos?
-              </h2>
-              <h1 className='text-5xl font-bold text-zinc-900 italic tracking-tighter'>
+          <div className='relative flex flex-col items-center w-full max-w-2xl px-6'>
+            <header className='text-center mb-56'>
+              <h1 className='text-5xl text-zinc-900 italic tracking-tighter mb-20'>
                 Get in touch.
               </h1>
             </header>
 
-            <div className='w-full flex flex-col gap-6'>
-              {contactLinks.map((link, index) => (
-                <Tooltip text={link.label}>
-                  <div
-                    key={link.label}
-                    className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'} px-6`}
+            <div className='grid grid-cols-3 gap-6 md:gap-12 mb-60'>
+              {/* Cambiado a 3 columnas para que los 3 iconos queden en fila si prefieres */}
+              {contactLinks.map((link) => (
+                <Tooltip key={link.label} text={link.label}>
+                  <button
+                    onClick={() => window.open(link.url, '_blank')}
+                    className='relative cursor-pointer hover:opacity-80 transition-opacity'
+                    title={link.label}
                   >
-                    <button
-                      onClick={() => window.open(link.url, '_blank')}
-                      className='relative cursor-pointer hover:opacity-80 transition-opacity'
-                      title={link.label}
-                    >
-                      <CircleSVG
-                        color='#000000'
-                        style={{ width: '120px', height: '120px' }}
-                      />
-                      <span className='absolute inset-0 flex items-center justify-center text-2xl font-bold text-zinc-800'>
-                        {link.label}
-                      </span>
-                    </button>
-                  </div>
+                    <CircleSVG
+                      color='#ffffff'
+                      style={{ width: '100px', height: '100px' }}
+                    />
+                    <span className='absolute inset-0 flex items-center justify-center'>
+                      {link.icon}
+                    </span>
+                  </button>
                 </Tooltip>
               ))}
             </div>
 
-            <footer className='mt-24 text-center'>
-              <p className='text-zinc-400 text-sm font-medium'>
-                Valencia, España.
-              </p>
-              <p className='text-zinc-300 text-[10px] uppercase tracking-widest mt-2'>
-                Disponible para nuevos proyectos
-              </p>
+            <footer className='text-center font-pencil'>
+              <p className='text-black text-lg'>+34 615 180 314</p>
+              <p className='text-black text-lg'>Valencia/Madrid, España.</p>
             </footer>
           </div>
         </FadeInParent>

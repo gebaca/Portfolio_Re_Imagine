@@ -127,9 +127,9 @@ export const Tooltip = ({ text, children }: TooltipProps) => {
       >
         <div
           style={{
-            fontFamily: "'DM Serif Display', Georgia, serif",
-            fontStyle: 'italic',
-            fontSize: '13px',
+            fontFamily: 'Pencil-Regular',
+            fontStyle: 'normal',
+            fontSize: '30px',
             color: '#111',
             whiteSpace: 'nowrap',
             display: 'flex',

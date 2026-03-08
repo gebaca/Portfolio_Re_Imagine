@@ -30,6 +30,7 @@ body {
 /* Forzamos que los títulos grandes usen la de lápiz por defecto */
 h1,
 h2,
+h3,
 .font-pencil {
   font-family: 'Pencil-Regular', cursive;
   @apply tracking-wide; /* La fuente de lápiz suele necesitar aire */

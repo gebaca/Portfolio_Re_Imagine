@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import CircleSatellites from '../components/Circle/CircleSatellites ';
@@ -19,10 +20,7 @@ function Work() {
   };
 
   useEffect(() => {
-    document.documentElement.classList.add('snap-y', 'snap-mandatory');
-    return () => {
-      document.documentElement.classList.remove('snap-y', 'snap-mandatory');
-    };
+    ScrollTrigger.refresh();
   }, []);
 
   return (
@@ -48,33 +46,42 @@ function Work() {
         </div>
       )}
 
-      <div ref={setContentRef}>
-        {/* FONDO */}
+      <div ref={setContentRef} className='w-full'>
         <CircleSatellites
           color={circleState?.color || '#fff'}
           count={30}
-          positionY={100}
+          positionY={500}
           positionX={100}
         />
 
-        {/* PROYECTOS */}
         <FadeInParent stagger={0.15} delay={0.3}>
           <div className='relative z-10 w-full'>
+            <div style={{ height: '20vh' }} />
             {projects.map((project, index) => {
               const side = index % 2 === 0 ? 'left' : 'right';
               return (
-                <div
-                  key={project.id}
-                  className={`snap-center h-screen flex items-center px-6 w-full ${
-                    side === 'left' ? 'justify-start' : 'justify-end'
-                  }`}
-                >
-                  <ProjectCard
-                    color={project.color}
-                    side={side}
-                    summary={project.summary}
-                    extraCount={project.extraCount}
-                  />
+                <div key={project.id} style={{ height: '140vh' }}>
+                  <div
+                    className={`sticky top-0 h-screen flex items-center px-6 w-full ${
+                      side === 'left' ? 'justify-start' : 'justify-end'
+                    }`}
+                    style={{
+                      transform: project.offsetX
+                        ? `translateX(${project.offsetX}px)`
+                        : undefined,
+                    }}
+                  >
+                    <ProjectCard
+                      color={project.color}
+                      side={side}
+                      size={project.size}
+                      expandScale={project.expandScale}
+                      extraCount={project.extraCount}
+                      primaryContent={project.primaryContent}
+                      summaryContent={project.summaryContent}
+                      mediaContent={project.mediaContent}
+                    />
+                  </div>
                 </div>
               );
             })}
