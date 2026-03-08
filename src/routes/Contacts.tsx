@@ -37,7 +37,6 @@ function Contacts() {
   };
 
   return (
-    /* 1. h-screen: ocupa toda la pantalla. 2. overflow-hidden: elimina el scroll. 3. justify-center: centra el contenido verticalmente. */
     <div className='w-full h-screen flex flex-col items-center justify-center overflow-hidden relative'>
       {circleState?.rect && (
         <div
@@ -60,7 +59,6 @@ function Contacts() {
         </div>
       )}
 
-      {/* Contenedor del contenido con ref para las transiciones */}
       <div
         ref={setContentRef}
         className='w-full flex flex-col items-center z-10'
@@ -68,20 +66,19 @@ function Contacts() {
         <CircleSatellites
           color={circleState?.color || '#fff'}
           count={10}
-          positionY={100} // Ajustado a 50 para centrar satélites si el diseño es fijo
+          positionY={100}
           positionX={100}
         />
 
         <FadeInParent stagger={1} delay={2}>
           <div className='relative flex flex-col items-center w-full max-w-2xl px-6'>
-            <header className='text-center mb-56'>
-              <h1 className='text-5xl text-zinc-900 italic tracking-tighter mb-20'>
+            <header className='text-center mb-16'>
+              <h1 className='text-5xl text-zinc-900 italic tracking-tighter'>
                 Get in touch.
               </h1>
             </header>
 
-            <div className='grid grid-cols-3 gap-6 md:gap-12 mb-60'>
-              {/* Cambiado a 3 columnas para que los 3 iconos queden en fila si prefieres */}
+            <div className='grid grid-cols-3 gap-6 md:gap-12 mb-16'>
               {contactLinks.map((link) => (
                 <Tooltip key={link.label} text={link.label}>
                   <button

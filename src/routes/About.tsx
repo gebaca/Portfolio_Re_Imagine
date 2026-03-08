@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import CircleSatellites from '../components/Circle/CircleSatellites ';
@@ -45,7 +45,6 @@ const experiences = [
 
 function About() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setBgRef = (el: HTMLDivElement | null) => {
     (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
@@ -118,10 +117,9 @@ function About() {
                 </span>
                 , I learned early on that an interface is more than just
                 buttons—it's an experience. Today, I channel that interactive
-                mindset and my specialization in
-                <span className='text-zinc-900 font-bold'>UX/UI</span>
-                to build digital products where technical precision meets visual
-                harmony.
+                mindset and my specialization in{' '}
+                <span className='text-zinc-900 font-bold'>UX/UI</span> to build
+                digital products where technical precision meets visual harmony.
               </p>
             </div>
 
@@ -169,7 +167,7 @@ function About() {
               </h2>
 
               <div className='relative w-full max-w-2xl ml-6 pl-12 flex flex-col gap-24'>
-                {/* Línea SVG — cubre toda la altura del contenedor */}
+                {/* Línea SVG */}
                 <div
                   className='absolute left-0 top-0 h-full'
                   style={{ width: '14px' }}
@@ -182,14 +180,8 @@ function About() {
                   />
                 </div>
 
-                {/* Items — los círculos están dentro pero alineados a la línea */}
-                {experiences.map((exp, i) => (
-                  <div
-                    key={exp.title}
-                    className='relative'
-                    ref={(el) => (itemRefs.current[i] = el)}
-                  >
-                    {/* Círculo centrado sobre la línea (left-0 + 7px centro - 20px mitad círculo = -13px) */}
+                {experiences.map((exp) => (
+                  <div key={exp.title} className='relative'>
                     <div
                       className='absolute w-10 h-10'
                       style={{ left: '-55px', top: '0px' }}

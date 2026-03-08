@@ -1,11 +1,11 @@
+/* Google Fonts — debe ir ANTES de las directivas de Tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Importamos Plus Jakarta Sans para el cuerpo (Sustituye a Inter por ser más legible) */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
-/* Registramos tu fuente de DaFont */
+/* Fuente local */
 @font-face {
   font-family: 'Pencil-Regular';
   src: url('./assets/fonts/Pencil-Regular.ttf') format('truetype');
@@ -23,15 +23,13 @@ body {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  /* Aplicamos la fuente legible por defecto */
   @apply font-sans text-zinc-900 antialiased;
 }
 
-/* Forzamos que los títulos grandes usen la de lápiz por defecto */
 h1,
 h2,
 h3,
 .font-pencil {
   font-family: 'Pencil-Regular', cursive;
-  @apply tracking-wide; /* La fuente de lápiz suele necesitar aire */
+  @apply tracking-wide;
 }

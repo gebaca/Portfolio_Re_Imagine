@@ -65,7 +65,7 @@ const VideoCircle = ({
       target='_blank'
       rel='noreferrer'
       style={{
-        fontSize: '0.55rem',
+        fontSize: '0.6rem',
         fontWeight: 100,
         color: linkColor,
         marginTop: 8,

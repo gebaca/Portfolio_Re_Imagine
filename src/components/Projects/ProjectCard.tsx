@@ -173,7 +173,7 @@ const ProjectCard = ({
           <span
             style={{
               fontFamily: 'Pencil-Regular',
-              fontSize: '0.5rem',
+              fontSize: '0.9rem',
               color: 'rgba(1,1,1,1)',
               marginTop: 4,
               flexShrink: 0,
