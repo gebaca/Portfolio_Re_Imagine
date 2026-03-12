@@ -17,7 +17,7 @@ function Home() {
   return (
     <div
       ref={containerRef}
-      className='flex gap-16 items-center justify-center p-32 mt-36'
+      className='flex flex-col md:flex-row gap-10 md:gap-16 items-center justify-center p-10 md:p-32 min-h-screen'
     >
       <WiggleCircle
         route='/about'
