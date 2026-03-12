@@ -53,7 +53,7 @@ function Contacts() {
           }}
         >
           <CircleSVG
-            color={circleState.color}
+            color='#00C4FF'
             style={{ width: '100%', height: '100%' }}
           />
         </div>
@@ -64,7 +64,7 @@ function Contacts() {
         className='w-full flex flex-col items-center z-10'
       >
         <CircleSatellites
-          color={circleState?.color || '#fff'}
+          color={'#00C4FF'}
           count={10}
           positionY={100}
           positionX={100}

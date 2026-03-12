@@ -1,5 +1,5 @@
 import CircleSVG from './circleSVG';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
@@ -27,6 +27,7 @@ const WiggleCircle = ({
   activeRoute,
   onActivate,
 }: WiggleCircleProps) => {
+  const [finished, setFinished] = useState<null | boolean>(true);
   const container = useRef<HTMLDivElement>(null);
   const circleWrapperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const WiggleCircle = ({
   }, [activeRoute]);
 
   const handleClick = contextSafe(() => {
+    setFinished(false);
     onActivate(route);
     stopFrameLoop();
 
@@ -92,6 +94,7 @@ const WiggleCircle = ({
               } as DOMRect,
             });
           }
+          setFinished(true);
           navigate(route);
         },
       });
@@ -109,7 +112,7 @@ const WiggleCircle = ({
   return (
     <div
       ref={container}
-      onClick={handleClick}
+      onClick={finished ? handleClick : undefined}
       className='flex flex-col items-center gap-6 cursor-pointer select-none'
       style={{ transformOrigin: 'center center' }}
     >

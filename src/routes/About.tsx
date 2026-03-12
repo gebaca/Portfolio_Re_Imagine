@@ -72,7 +72,7 @@ function About() {
           }}
         >
           <CircleSVG
-            color={circleState.color}
+            color={'#FDDA0D'}
             style={{ width: '100%', height: '100%' }}
           />
         </div>
@@ -80,7 +80,7 @@ function About() {
 
       <div ref={setContentRef} className='w-full flex flex-col items-center'>
         <CircleSatellites
-          color={circleState?.color || '#fff'}
+          color={'#FDDA0D'}
           count={40}
           positionY={400}
           positionX={100}
