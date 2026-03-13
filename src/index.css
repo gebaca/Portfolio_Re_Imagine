@@ -30,6 +30,6 @@ h1,
 h2,
 h3,
 .font-pencil {
-  font-family: 'Pencil-Regular', cursive;
+  font-family: 'Pencil-Regular', sans-serif;
   @apply tracking-wide;
 }
