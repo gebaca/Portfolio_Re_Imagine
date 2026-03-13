@@ -214,7 +214,7 @@ function Work() {
           }}
         >
           <CircleSVG
-            color={circleState.color}
+            color={'#DE0A00'}
             style={{ width: '100%', height: '100%' }}
           />
         </div>
