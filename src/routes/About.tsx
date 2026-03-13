@@ -103,9 +103,10 @@ function About() {
                 />
               </div>
               <img
-                src='/Foto.png'
+                src='/ger.png'
                 alt='Profile'
-                className='relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl'
+                className='relative z-10 w-3/4 h-3/4 object-cover drop-shadow-2xl'
+                style={{ borderRadius: '40%', objectPosition: 'center top' }}
               />
             </div>
 
