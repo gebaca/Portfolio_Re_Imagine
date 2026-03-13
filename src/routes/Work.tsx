@@ -222,7 +222,7 @@ function Work() {
 
       <div ref={setContentRef} className='w-full'>
         <CircleSatellites
-          color={circleState?.color || '#fff'}
+          color={'#DE0A00'}
           count={30}
           positionY={500}
           positionX={100}
