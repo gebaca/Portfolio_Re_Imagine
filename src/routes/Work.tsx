@@ -203,7 +203,7 @@ function Work() {
         <div
           ref={setBgRef}
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: circleState.rect.top,
             left: circleState.rect.left,
             width: circleState.rect.width,
@@ -221,13 +221,6 @@ function Work() {
       )}
 
       <div ref={setContentRef} className='w-full'>
-        <CircleSatellites
-          color={'#DE0A00'}
-          count={30}
-          positionY={500}
-          positionX={100}
-        />
-
         <FadeInParent stagger={0.08} delay={0.3}>
           <div
             className='relative z-10'
