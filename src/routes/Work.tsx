@@ -2,6 +2,7 @@ import { useState } from 'react';
 import React from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
+import CircleSatellites from '../components/Circle/CircleSatellites ';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 import { projects } from '../components/Projects/projects';
 import type { Project } from '../components/Projects/projects';
@@ -35,7 +36,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
       >
         <span
           style={{
-            fontFamily: 'Pencil-Regular, cursive',
+            fontFamily: 'Pencil-Regular, sans-serif',
             fontSize: 'clamp(0.6rem, 1vw, 0.75rem)',
             color: 'rgba(255,255,255,0.4)',
           }}
@@ -64,7 +65,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
       >
         <h3
           style={{
-            fontFamily: 'Pencil-Regular, cursive',
+            fontFamily: 'Pencil-Regular, sans-serif',
             fontSize: 'clamp(1.6rem, 3.5vw, 3.2rem)',
             fontWeight: 400,
             margin: 0,
@@ -106,6 +107,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
             <span
               key={s}
               style={{
+                fontFamily: 'Pencil-Regular, sans-serif',
                 fontSize: 'clamp(0.55rem, 0.8vw, 0.65rem)',
                 fontWeight: 700,
                 letterSpacing: '0.1em',
@@ -127,7 +129,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
             target='_blank'
             rel='noreferrer'
             style={{
-              fontFamily: 'Pencil-Regular, cursive',
+              fontFamily: 'Pencil-Regular, sans-serif',
               fontSize: 'clamp(0.65rem, 1vw, 0.8rem)',
               color: 'rgba(255,255,255,0.6)',
               textDecoration: 'none',
@@ -147,7 +149,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
                 'rgba(255,255,255,0.3)';
             }}
           >
-            MORE →
+            Ver proyecto →
           </a>
         )}
       </div>
@@ -196,12 +198,12 @@ function Work() {
   };
 
   return (
-    <div className='w-full flex flex-col items-center'>
+    <div className='w-full flex flex-col items-center overflow-hidden'>
       {circleState?.rect && (
         <div
           ref={setBgRef}
           style={{
-            position: 'fixed',
+            position: 'absolute',
             top: circleState.rect.top,
             left: circleState.rect.left,
             width: circleState.rect.width,
@@ -212,13 +214,20 @@ function Work() {
           }}
         >
           <CircleSVG
-            color='#DE0A00'
+            color={circleState.color}
             style={{ width: '100%', height: '100%' }}
           />
         </div>
       )}
 
       <div ref={setContentRef} className='w-full'>
+        <CircleSatellites
+          color={circleState?.color || '#fff'}
+          count={30}
+          positionY={500}
+          positionX={100}
+        />
+
         <FadeInParent stagger={0.08} delay={0.3}>
           <div
             className='relative z-10'
@@ -228,6 +237,19 @@ function Work() {
               padding: 'clamp(8vh, 15vh, 20vh) clamp(1.5rem, 4vw, 3rem) 10vh',
             }}
           >
+            <p
+              style={{
+                fontFamily: 'Pencil-Regular, sans-serif',
+                fontSize: 'clamp(0.65rem, 1vw, 0.8rem)',
+                letterSpacing: '0.25em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.4)',
+                marginBottom: 'clamp(2rem, 4vh, 4rem)',
+              }}
+            >
+              Selected Work
+            </p>
+
             <div>
               {projects.map((project, index) => (
                 <ProjectRow key={project.id} project={project} index={index} />
