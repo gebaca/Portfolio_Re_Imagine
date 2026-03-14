@@ -230,19 +230,6 @@ function Work() {
               padding: 'clamp(8vh, 15vh, 20vh) clamp(1.5rem, 4vw, 3rem) 10vh',
             }}
           >
-            <p
-              style={{
-                fontFamily: 'Pencil-Regular, sans-serif',
-                fontSize: 'clamp(0.65rem, 1vw, 0.8rem)',
-                letterSpacing: '0.25em',
-                textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.4)',
-                marginBottom: 'clamp(2rem, 4vh, 4rem)',
-              }}
-            >
-              Selected Work
-            </p>
-
             <div>
               {projects.map((project, index) => (
                 <ProjectRow key={project.id} project={project} index={index} />
