@@ -33,3 +33,22 @@ h3,
   font-family: 'Pencil-Regular', sans-serif;
   @apply tracking-wide;
 }
+
+/* Responsive nav */
+#desktop-nav {
+  display: none;
+}
+
+#mobile-tab-bar {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  #desktop-nav {
+    display: flex;
+  }
+
+  #mobile-tab-bar {
+    display: none !important;
+  }
+}

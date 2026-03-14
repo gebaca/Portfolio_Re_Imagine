@@ -88,7 +88,7 @@ function About() {
         <CircleSatellites
           color={'#FDDA0D'}
           count={40}
-          positionY={400}
+          positionY={390}
           positionX={100}
         />
 

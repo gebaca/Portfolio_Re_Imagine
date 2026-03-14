@@ -24,32 +24,30 @@ function App() {
 
         {!isHome && (
           <div
-            className='pointer-events-auto hidden md:flex gap-6 items-center'
+            className='pointer-events-auto gap-6 items-center'
+            id='desktop-nav'
             style={{ paddingTop: '6px' }}
           >
             {NAV_ROUTES.map(({ path, label, color }) => (
-              <NavLink
-                key={path}
-                to={path}
-                style={({ isActive }) => ({
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontFamily: 'Pencil-Regular, sans-serif',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: isActive ? '#111' : 'rgba(0,0,0,0.35)',
-                  textDecoration: 'none',
-                  transition: 'color 0.25s ease',
-                  borderBottom: isActive
-                    ? '1px solid #111'
-                    : '1px solid transparent',
-                  paddingBottom: '2px',
-                })}
-              >
+              <NavLink key={path} to={path} style={{ textDecoration: 'none' }}>
                 {({ isActive }) => (
-                  <>
+                  <span
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontFamily: 'Pencil-Regular, sans-serif',
+                      fontSize: '0.85rem',
+                      letterSpacing: '0.15em',
+                      textTransform: 'uppercase',
+                      color: isActive ? '#111' : 'rgba(0,0,0,0.35)',
+                      borderBottom: isActive
+                        ? '1px solid #111'
+                        : '1px solid transparent',
+                      paddingBottom: '2px',
+                      transition: 'color 0.25s ease',
+                    }}
+                  >
                     <span
                       style={{
                         width: 8,
@@ -64,7 +62,7 @@ function App() {
                       }}
                     />
                     {label}
-                  </>
+                  </span>
                 )}
               </NavLink>
             ))}
@@ -79,7 +77,8 @@ function App() {
       {/* ── Mobile floating tab bar ── */}
       {!isHome && (
         <nav
-          className='md:hidden fixed z-50'
+          className='fixed z-50'
+          id='mobile-tab-bar'
           style={{
             bottom: '1.5rem',
             left: '50%',
@@ -91,13 +90,12 @@ function App() {
             border: '1px solid rgba(0,0,0,0.08)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
             padding: '0.5rem 1.25rem',
-            display: 'flex',
             gap: '0.25rem',
             alignItems: 'center',
           }}
         >
           {NAV_ROUTES.map(({ path, label, color }) => (
-            <NavLink key={path} to={path}>
+            <NavLink key={path} to={path} style={{ textDecoration: 'none' }}>
               {({ isActive }) => (
                 <span
                   style={{
@@ -108,7 +106,6 @@ function App() {
                     fontSize: '0.75rem',
                     letterSpacing: '0.12em',
                     textTransform: 'uppercase',
-                    textDecoration: 'none',
                     padding: '0.5rem 0.9rem',
                     borderRadius: '999px',
                     color: isActive ? '#111' : 'rgba(0,0,0,0.4)',
