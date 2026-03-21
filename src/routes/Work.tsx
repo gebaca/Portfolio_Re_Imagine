@@ -2,7 +2,6 @@ import { useState } from 'react';
 import React from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
-import CircleSatellites from '../components/Circle/CircleSatellites ';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 import { projects } from '../components/Projects/projects';
 import type { Project } from '../components/Projects/projects';

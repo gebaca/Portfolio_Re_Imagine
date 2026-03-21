@@ -76,4 +76,18 @@ export const projects: Project[] = [
     extraCount: 3,
     stack: ['React', 'GSAP', 'TypeScript', 'Firebase', 'Tailwind CSS'],
   },
+  {
+    id: 5,
+    title: 'ING — Redesign',
+    description:
+      'An unsolicited redesign of ing.es — built to catch their attention. Scroll animations and a lion that draws itself as you scroll.',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    image: '/projects/ING.png',
+    url: 'https://ing-landing-gerard.vercel.app/',
+    extraCount: 0,
+    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS'],
+  },
 ];
