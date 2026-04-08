@@ -90,4 +90,17 @@ export const projects: Project[] = [
     extraCount: 0,
     stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS'],
   },
+  {
+    id: 6,
+    title: 'Wealth Watcher',
+    description: 'B2B dashboard',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    image: '/projects/WAVES.webp',
+    url: 'https://horizon-wealth-dashboard.vercel.app/',
+    extraCount: 0,
+    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS'],
+  },
 ];
