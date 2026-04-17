@@ -1,15 +1,22 @@
+// src/components/Circle/HomeCircle.tsx
 import CircleSVG from './circleSVG';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { useFrameLoop } from '../../hooks/useFrameLoop';
 import { useCircleTransition } from './CircleTransitionContext';
+import { tokens, routeCircleMap } from '../../tokens/theme';
 
-interface WiggleCircleProps {
-  color: string;
+type TulletColor =
+  | typeof tokens.colors.tulletYellow
+  | typeof tokens.colors.tulletRed
+  | typeof tokens.colors.tulletBlue;
+
+interface HomeCircleProps {
+  color: TulletColor;
   label: string;
-  route: string;
+  route: keyof typeof routeCircleMap;
   size?: number;
   fps?: number;
   rotRange?: number;
@@ -17,7 +24,7 @@ interface WiggleCircleProps {
   onActivate: (route: string) => void;
 }
 
-const WiggleCircle = ({
+const HomeCircle = ({
   color,
   label,
   route,
@@ -26,15 +33,13 @@ const WiggleCircle = ({
   rotRange = 1,
   activeRoute,
   onActivate,
-}: WiggleCircleProps) => {
-  const [finished, setFinished] = useState<null | boolean>(true);
+}: HomeCircleProps) => {
   const container = useRef<HTMLDivElement>(null);
   const circleWrapperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { setCircleState } = useCircleTransition();
+  const { expandCircle } = useCircleTransition();
 
   const { contextSafe } = useGSAP({ scope: container });
-
   const { startFrameLoop, stopFrameLoop } = useFrameLoop(circleWrapperRef, {
     fps,
     rotRange,
@@ -54,65 +59,31 @@ const WiggleCircle = ({
       stopFrameLoop();
       gsap.to(container.current, { opacity: 0, duration: 0.15, ease: 'none' });
     }
-  }, [activeRoute]);
+  }, [activeRoute, route, stopFrameLoop]);
 
   const handleClick = contextSafe(() => {
-    setFinished(false);
     onActivate(route);
     stopFrameLoop();
 
-    // Captura el rect ORIGINAL antes de animar
-    const originalRect = circleWrapperRef.current?.getBoundingClientRect();
+    const rect = circleWrapperRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-    gsap.delayedCall(0.15, () => {
-      gsap.to(circleWrapperRef.current, {
-        scale: 10,
-        duration: 2,
-        ease: 'power4.inOut',
-        onComplete: () => {
-          if (originalRect) {
-            const scale = 10;
-            const scaledWidth = originalRect.width * scale;
-            const scaledHeight = originalRect.height * scale;
-            // Centro del elemento original en el documento
-            const centerX =
-              originalRect.left + originalRect.width / 2 + window.scrollX;
-            const centerY =
-              originalRect.top + originalRect.height / 2 + window.scrollY;
-            // Esquina superior izquierda del elemento escalado
-            const top = centerY - scaledHeight / 2;
-            const left = centerX - scaledWidth / 2;
-
-            setCircleState({
-              color,
-              rect: {
-                ...originalRect,
-                top,
-                left,
-                width: scaledWidth,
-                height: scaledHeight,
-              } as DOMRect,
-            });
-          }
-          setFinished(true);
-          navigate(route);
-        },
-      });
-    });
-
-    const ctx = container.current;
-    if (ctx) {
-      gsap.to(ctx.querySelectorAll('.wiggle-char, h2'), {
+    // Desvanecer solo el texto, no el círculo SVG
+    if (container.current) {
+      gsap.to(container.current.querySelectorAll('.wiggle-char, h2'), {
         opacity: 0,
         duration: 0.2,
       });
     }
+    console.log('HomeCircle rect:', rect);
+    expandCircle(route, color, rect, navigate);
   });
 
   return (
     <div
       ref={container}
-      onClick={finished ? handleClick : undefined}
+      data-circle-color={color} // ← añade esto
+      onClick={handleClick}
       className='flex flex-col items-center gap-6 cursor-pointer select-none'
       style={{ transformOrigin: 'center center' }}
     >
@@ -132,4 +103,4 @@ const WiggleCircle = ({
   );
 };
 
-export default WiggleCircle;
+export default HomeCircle;

@@ -1,7 +1,9 @@
+// src/routes/Home.tsx
 import { useState, useRef } from 'react';
-import WiggleCircle from '../components/Circle/WiggleCircle';
+import HomeCircle from '../components/Circle/HomeCircle';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
+import { tokens } from '../tokens/theme';
 
 function Home() {
   const [activeRoute, setActiveRoute] = useState<string | null>(null);
@@ -17,25 +19,26 @@ function Home() {
   return (
     <div
       ref={containerRef}
-      className='flex flex-col md:flex-row gap-10 md:gap-16 items-center justify-center p-10 md:p-32 min-h-screen'
+      className='flex flex-col md:flex-row gap-10 md:gap-16 items-center justify-center p-10 md:p-32'
+      style={{ height: '100vh', overflow: 'hidden' }}
     >
-      <WiggleCircle
+      <HomeCircle
         route='/about'
-        color='#FDDA0D'
+        color={tokens.colors.tulletYellow}
         label='ABOUT'
         activeRoute={activeRoute}
         onActivate={setActiveRoute}
       />
-      <WiggleCircle
+      <HomeCircle
         route='/works'
-        color='#DE0A00'
+        color={tokens.colors.tulletRed}
         label='WORKS'
         activeRoute={activeRoute}
         onActivate={setActiveRoute}
       />
-      <WiggleCircle
+      <HomeCircle
         route='/contacts'
-        color='#00C4FF'
+        color={tokens.colors.tulletBlue}
         label='CONTACTS'
         activeRoute={activeRoute}
         onActivate={setActiveRoute}

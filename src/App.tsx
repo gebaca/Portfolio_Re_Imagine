@@ -1,10 +1,13 @@
+// src/App.tsx
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { Logo } from './components/Logo/Logo';
+import { routeCircleMap } from './tokens/theme';
+import { SharedCircle } from './components/Circle/SharedCircle';
 
 const NAV_ROUTES = [
-  { path: '/about', label: 'About', color: '#FDDA0D' },
-  { path: '/works', label: 'Works', color: '#DE0A00' },
-  { path: '/contacts', label: 'Contacts', color: '#00C4FF' },
+  { path: '/about', label: 'About', color: routeCircleMap['/about'] },
+  { path: '/works', label: 'Works', color: routeCircleMap['/works'] },
+  { path: '/contacts', label: 'Contacts', color: routeCircleMap['/contacts'] },
 ];
 
 function App() {
@@ -12,21 +15,17 @@ function App() {
   const isHome = location.pathname === '/';
 
   return (
-    <div
-      style={{ position: 'relative' }}
-      className='min-h-screen flex flex-col bg-white overflow-x-hidden'
-    >
-      {/* ── Desktop nav ── */}
+    <div className='min-h-screen flex flex-col bg-white'>
+      <SharedCircle />
+
       <nav className='pointer-events-none fixed top-0 left-0 z-50 w-full flex justify-between items-start pr-10 pt-10'>
         <div className='pointer-events-auto'>
           <Logo />
         </div>
-
         {!isHome && (
           <div
-            className='pointer-events-auto gap-6 items-center'
+            className='pointer-events-auto flex gap-6 items-center'
             id='desktop-nav'
-            style={{ paddingTop: '6px' }}
           >
             {NAV_ROUTES.map(({ path, label, color }) => (
               <NavLink key={path} to={path} style={{ textDecoration: 'none' }}>
@@ -70,11 +69,10 @@ function App() {
         )}
       </nav>
 
-      <main className='w-full flex-1 flex flex-col'>
+      <main className='w-full flex-1 flex flex-col overflow-x-hidden'>
         <Outlet />
       </main>
 
-      {/* ── Mobile floating tab bar ── */}
       {!isHome && (
         <nav
           className='fixed z-50'

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import React from 'react';
-import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 import { projects } from '../components/Projects/projects';
@@ -69,7 +68,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
             fontWeight: 400,
             margin: 0,
             lineHeight: 1.05,
-            color: '#ffffff',
+            color: '#000000',
             transition: 'opacity 0.3s ease',
             opacity: hovered ? 1 : 0.85,
           }}
@@ -185,11 +184,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
 }
 
 function Work() {
-  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
-
-  const setBgRef = (el: HTMLDivElement | null) => {
-    (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-  };
+  const { pageContentRef } = useCircleTransition();
 
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
@@ -198,27 +193,6 @@ function Work() {
 
   return (
     <div className='w-full flex flex-col items-center overflow-hidden'>
-      {circleState?.rect && (
-        <div
-          ref={setBgRef}
-          style={{
-            position: 'fixed',
-            top: circleState.rect.top,
-            left: circleState.rect.left,
-            width: circleState.rect.width,
-            height: circleState.rect.height,
-            pointerEvents: 'none',
-            transformOrigin: 'center center',
-            zIndex: 0,
-          }}
-        >
-          <CircleSVG
-            color={'#DE0A00'}
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
-      )}
-
       <div ref={setContentRef} className='w-full'>
         <FadeInParent stagger={0.08} delay={0.3}>
           <div

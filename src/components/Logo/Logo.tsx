@@ -4,16 +4,6 @@ import { useGSAP } from '@gsap/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCircleTransition } from '../Circle/CircleTransitionContext';
 
-/*
-  Logo — Gerard Bataller
-  ──────────────────────
-  Reposo:  G · B  (iniciales, discretas)
-  Hover:   Gerard Bataller  (expansión suave + wiggle letra a letra)
-
-  Font: DM Serif Display italic — añadir en index.html:
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-*/
-
 const FONT: React.CSSProperties = {
   fontFamily: 'Pencil-Regular',
   fontStyle: 'italic',
@@ -31,7 +21,7 @@ export const Logo = () => {
   const navigate = useNavigate();
   const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { circleState, reverseTransition } = useCircleTransition();
+  const { reverseTransition, phase } = useCircleTransition(); // ← solo reverseTransition y phase (opcional)
   const location = useLocation();
 
   const { contextSafe } = useGSAP({ scope: container });
@@ -89,11 +79,9 @@ export const Logo = () => {
 
   const handleClick = () => {
     if (location.pathname === '/') return;
-    if (circleState) {
-      reverseTransition(navigate);
-    } else {
-      navigate('/');
-    }
+    // Llamamos a reverseTransition sin condiciones adicionales
+    // El contexto internamente verificará si hay algo que revertir
+    reverseTransition(navigate);
   };
 
   const letters = (text: string) =>
@@ -113,7 +101,7 @@ export const Logo = () => {
       className='fixed top-7 left-7 z-50 cursor-pointer select-none flex items-baseline'
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      onClick={() => handleClick()}
+      onClick={handleClick}
       aria-label='Gerard Bataller — inicio'
     >
       {/* GERARD */}
@@ -145,8 +133,6 @@ export const Logo = () => {
         </span>
       </div>
 
-      {/* Punto separador (desaparece en hover) */}
-      {/* Espacio entre nombre y apellido */}
       <span
         style={{
           display: 'inline-block',

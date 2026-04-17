@@ -26,11 +26,8 @@ const contactLinks = [
 ];
 
 function Contacts() {
-  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
+  const { pageContentRef } = useCircleTransition();
 
-  const setBgRef = (el: HTMLDivElement | null) => {
-    (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-  };
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
       el;
@@ -38,27 +35,6 @@ function Contacts() {
 
   return (
     <div className='w-full h-screen flex flex-col items-center justify-center overflow-hidden relative'>
-      {circleState?.rect && (
-        <div
-          ref={setBgRef}
-          style={{
-            position: 'absolute',
-            top: circleState.rect.top,
-            left: circleState.rect.left,
-            width: circleState.rect.width,
-            height: circleState.rect.height,
-            pointerEvents: 'none',
-            transformOrigin: 'center center',
-            zIndex: 0,
-          }}
-        >
-          <CircleSVG
-            color='#00C4FF'
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
-      )}
-
       <div
         ref={setContentRef}
         className='w-full flex flex-col items-center z-10'
