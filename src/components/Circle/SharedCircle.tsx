@@ -22,13 +22,6 @@ export const SharedCircle = () => {
         const origin = originRectRef.current;
         if (!origin) return;
 
-        const viewportW = window.innerWidth;
-        const viewportH = window.innerHeight;
-        const scale = Math.max(
-          viewportW / origin.width,
-          viewportH / origin.height
-        );
-
         // Posicionar exactamente donde está el HomeCircle
         gsap.set(svg, {
           x: origin.left,
@@ -36,11 +29,14 @@ export const SharedCircle = () => {
           width: origin.width,
           height: origin.height,
           opacity: 1,
-          scale: 1,
         });
-        // Crecer desde su centro
+
+        // Animar a pantalla completa (usando width/height, no scale)
         gsap.to(svg, {
-          scale: scale,
+          x: 0,
+          y: 0,
+          width: '100vw',
+          height: '100vh',
           duration: motion.expandDuration,
           ease: 'power4.inOut',
         });
@@ -51,14 +47,16 @@ export const SharedCircle = () => {
         const target = targetRectRef.current;
         if (!target) {
           gsap.to(svg, {
-            scale: 0,
             opacity: 0,
             duration: motion.collapseDuration,
           });
           break;
         }
         gsap.to(svg, {
-          scale: 1,
+          x: target.left,
+          y: target.top,
+          width: target.width,
+          height: target.height,
           opacity: 0,
           duration: motion.collapseDuration,
           ease: 'power4.inOut',
@@ -71,7 +69,7 @@ export const SharedCircle = () => {
       }
 
       case 'idle':
-        gsap.set(svg, { opacity: 0, scale: 0 });
+        gsap.set(svg, { opacity: 0 });
         break;
 
       case 'expanded':
@@ -89,8 +87,8 @@ export const SharedCircle = () => {
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0, // ← en lugar de width/height
-        zIndex: 0,
+        bottom: 0,
+        zIndex: 0, // ← respetado
         pointerEvents: 'none',
         willChange: 'transform',
       }}

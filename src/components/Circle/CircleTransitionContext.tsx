@@ -60,7 +60,6 @@ export const CircleTransitionProvider = ({
     originRect: DOMRect,
     navigate: NavigateFunction
   ) => {
-    // Sobrescribe el rect anterior con el nuevo (no hay limpieza previa)
     originRectRef.current = originRect;
     targetRectRef.current = originRect;
 
@@ -72,14 +71,13 @@ export const CircleTransitionProvider = ({
     expandTimerRef.current = gsap.delayedCall(motion.expandDuration, () => {
       setPhase('expanded');
       navigate(route);
-      // ELIMINA CUALQUIER `originRectRef.current = null` DE AQUÍ
+      // NO limpiar originRectRef aquí
     });
   };
 
   const reverseTransition = (navigate: NavigateFunction) => {
     reverseTimerRef.current?.kill();
 
-    // Desvanecer el contenido actual (opcional)
     if (pageContentRef.current) {
       gsap.to(pageContentRef.current, {
         opacity: 0,
@@ -88,36 +86,20 @@ export const CircleTransitionProvider = ({
       });
     }
 
-    // Navegar inmediatamente a Home
-    navigate('/');
+    // 1. Iniciar colapso
+    setPhase('collapsing');
 
-    // Esperar a que React monte Home y luego obtener la posición del círculo activo
-    gsap.delayedCall(0.05, () => {
-      // Buscar el HomeCircle que tiene el color activo
-      const activeCircle = document.querySelector(
-        `[data-circle-color="${activeColor}"]`
-      );
-      if (activeCircle) {
-        const freshRect = activeCircle.getBoundingClientRect();
-        targetRectRef.current = freshRect; // actualizar con la posición real
-      } else {
-        console.warn('No se encontró el HomeCircle activo');
-      }
-
-      // Iniciar la animación de colapso
-      setPhase('collapsing');
-
-      reverseTimerRef.current = gsap.delayedCall(
-        motion.collapseDuration,
-        () => {
-          setPhase('idle');
-          setActiveColor(null);
-          if (pageContentRef.current) {
-            gsap.set(pageContentRef.current, { opacity: 1 });
-          }
-          targetRectRef.current = null; // limpiar después de usar
+    // 2. Después de la animación de colapso, navegar y resetear
+    reverseTimerRef.current = gsap.delayedCall(motion.collapseDuration, () => {
+      navigate('/');
+      gsap.delayedCall(0.05, () => {
+        setPhase('idle');
+        setActiveColor(null);
+        if (pageContentRef.current) {
+          gsap.set(pageContentRef.current, { opacity: 1 });
         }
-      );
+        targetRectRef.current = null;
+      });
     });
   };
 
