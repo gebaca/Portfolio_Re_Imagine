@@ -16,11 +16,13 @@ export interface Project {
   stack?: string[];
   image?: string;
   youtubeId?: string;
+  section?: 'feature' | 'project' | 'archive';
 }
 
 export const projects: Project[] = [
   {
     id: 1,
+    section: 'archive',
     title: 'NEVER LATE',
     description:
       'A serious game built with a team of 10. I programmed the character controller, implemented visual effects, and designed several minigames.',
@@ -36,6 +38,7 @@ export const projects: Project[] = [
   },
   {
     id: 2,
+    section: 'archive',
     title: 'AVENTURA POR VALENCIA',
     description:
       'An educational game built with two teammates. I handled the minigame programming and took full ownership of the UX and UI design.',
@@ -50,6 +53,7 @@ export const projects: Project[] = [
   },
   {
     id: 3,
+    section: 'project',
     title: 'Portfolio Personal 1.0',
     description:
       'My first web portfolio — built from scratch with React and TypeScript to showcase my early projects and establish my online presence.',
@@ -64,6 +68,7 @@ export const projects: Project[] = [
   },
   {
     id: 4,
+    section: 'project',
     title: 'Hyrulepedia',
     description:
       'An interactive digital card collector built by a team of four. I led the database integration, user profiles, visual effects, and contributed to the overall concept and design.',
@@ -78,6 +83,7 @@ export const projects: Project[] = [
   },
   {
     id: 5,
+    section: 'feature',
     title: 'ING — Redesign',
     description:
       'An unsolicited redesign of ing.es — built to catch their attention. Scroll animations and a lion that draws itself as you scroll.',
@@ -92,6 +98,7 @@ export const projects: Project[] = [
   },
   {
     id: 6,
+    section: 'feature',
     title: 'Wealth Watcher',
     description: 'B2B dashboard',
     color: '#ff6200',
