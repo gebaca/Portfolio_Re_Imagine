@@ -25,39 +25,44 @@ const contactLinks = [
   },
 ];
 
+// El círculo en Home escala hasta este valor antes de navegar.
+// Debe coincidir con el scale del gsap.to en WiggleCircle.
+
 function Contacts() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
 
   const setBgRef = (el: HTMLDivElement | null) => {
     (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
   };
+
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
       el;
   };
 
+  if (!circleState?.rect) return null;
+
   return (
     <div className='w-full h-screen flex flex-col items-center justify-center overflow-hidden relative'>
-      {circleState?.rect && (
-        <div
-          ref={setBgRef}
-          style={{
-            position: 'absolute',
-            top: circleState.rect.top,
-            left: circleState.rect.left,
-            width: circleState.rect.width,
-            height: circleState.rect.height,
-            pointerEvents: 'none',
-            transformOrigin: 'center center',
-            zIndex: 0,
-          }}
-        >
-          <CircleSVG
-            color='#00C4FF'
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
-      )}
+      {/* Círculo de fondo — aparece ya en scale(10), el mismo estado
+          en que terminó la animación de Home. Sin animación de entrada.
+          GSAP solo lo toca en reverseTransition (desde el contexto). */}
+      <div
+        ref={setBgRef}
+        style={{
+          position: 'fixed',
+          top: circleState.scaledRect?.top,
+          left: circleState.scaledRect?.left,
+          width: circleState.scaledRect?.width,
+          height: circleState.scaledRect?.height,
+          // Sin transform — el elemento ya tiene el tamaño final correcto
+          transformOrigin: 'center center',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      >
+        <CircleSVG color='#00C4FF' style={{ width: '100%', height: '100%' }} />
+      </div>
 
       <div
         ref={setContentRef}

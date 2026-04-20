@@ -68,12 +68,13 @@ function About() {
           ref={setBgRef}
           style={{
             position: 'absolute',
-            top: circleState.rect.top,
-            left: circleState.rect.left,
-            width: circleState.rect.width,
-            height: circleState.rect.height,
-            pointerEvents: 'none',
+            top: circleState.scaledRect?.top,
+            left: circleState.scaledRect?.left,
+            width: circleState.scaledRect?.width,
+            height: circleState.scaledRect?.height,
+            // Sin transform — el elemento ya tiene el tamaño final correcto
             transformOrigin: 'center center',
+            pointerEvents: 'none',
             zIndex: 0,
           }}
         >

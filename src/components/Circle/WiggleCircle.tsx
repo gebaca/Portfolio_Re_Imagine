@@ -57,12 +57,13 @@ const WiggleCircle = ({
   }, [activeRoute]);
 
   const handleClick = contextSafe(() => {
+    // Fix #1: captura ANTES de cualquier animación
+    const r = circleWrapperRef.current?.getBoundingClientRect();
+    if (!r) return;
+
     setFinished(false);
     onActivate(route);
     stopFrameLoop();
-
-    // Captura el rect ORIGINAL antes de animar
-    const originalRect = circleWrapperRef.current?.getBoundingClientRect();
 
     gsap.delayedCall(0.15, () => {
       gsap.to(circleWrapperRef.current, {
@@ -70,31 +71,32 @@ const WiggleCircle = ({
         duration: 2,
         ease: 'power4.inOut',
         onComplete: () => {
-          if (originalRect) {
-            const scale = 10;
-            const scaledWidth = originalRect.width * scale;
-            const scaledHeight = originalRect.height * scale;
-            // Centro del elemento original en el documento
-            const centerX =
-              originalRect.left + originalRect.width / 2 + window.scrollX;
-            const centerY =
-              originalRect.top + originalRect.height / 2 + window.scrollY;
-            // Esquina superior izquierda del elemento escalado
-            const top = centerY - scaledHeight / 2;
-            const left = centerX - scaledWidth / 2;
-
-            setCircleState({
-              color,
-              rect: {
-                ...originalRect,
-                top,
-                left,
-                width: scaledWidth,
-                height: scaledHeight,
-              } as DOMRect,
-            });
+          // Captura el rect del elemento YA escalado
+          const scaledRect = circleWrapperRef.current?.getBoundingClientRect();
+          if (!scaledRect) {
+            navigate(route);
+            return;
           }
-          setFinished(true);
+
+          setCircleState({
+            color,
+            rect: {
+              // Rect original (para el reverse)
+              top: r.top + window.scrollY,
+              left: r.left + window.scrollX,
+              width: r.width,
+              height: r.height,
+              centerX: r.left + r.width / 2 + window.scrollX,
+              centerY: r.top + r.height / 2 + window.scrollY,
+            },
+            // Rect escalado (para posicionar el bgCircle en Contacts)
+            scaledRect: {
+              top: scaledRect.top + window.scrollY,
+              left: scaledRect.left + window.scrollX,
+              width: scaledRect.width,
+              height: scaledRect.height,
+            },
+          });
           navigate(route);
         },
       });
