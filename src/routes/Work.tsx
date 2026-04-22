@@ -1,30 +1,45 @@
 // src/routes/Work.tsx
 import { useState, useEffect, useRef } from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
-import {
-  SketchRect,
-  CIRCLE_SIZE,
-  GAP,
-  PROJECTS_H,
-} from '../components/SketchRect';
+import { SketchRect, CIRCLE, GAP } from '../components/SketchRect';
+import { ProjectItem } from '../components/Projects/ProjectItem';
+import { projects } from '../components/Projects/projects'; // tu array de proyectos
 
+// Asignar proyectos a cada sección
 const SECTIONS = [
-  { id: 'design', title: 'Design', circleColor: '#FDDA0D' },
-  { id: 'engineering', title: 'Engineering', circleColor: '#E8432D' },
-  { id: 'hybrid', title: 'Hybrid', circleColor: '#2B5CE6' },
+  {
+    id: 'case-studies',
+    title: 'Case Studies',
+    circleColor: '#FDDA0D',
+    projects: projects.filter((p) => p.section === 'feature'),
+  },
+  {
+    id: 'projects',
+    title: 'Projects',
+    circleColor: '#E8432D',
+    projects: projects.filter((p) => p.section === 'project'),
+  },
+  {
+    id: 'experiments',
+    title: 'Experiments',
+    circleColor: '#2B5CE6',
+    projects: projects.filter((p) => p.section === 'archive'),
+  },
 ];
+
+const PAD_B = 24;
 
 function Work() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [clickedId, setClickedId] = useState<string | null>(null);
   const [widths, setWidths] = useState<Record<string, number>>({});
-  const titleRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  const [projHeights, setProjHeights] = useState<Record<string, number>>({});
+  const [projWidths, setProjWidths] = useState<Record<string, number>>({});
 
-  // Medir scrollWidth real de cada título.
-  // scrollWidth funciona aunque el elemento tenga opacity:0 o transform,
-  // siempre que NO tenga display:none ni width:0.
-  // Por eso el clip está en el contenedor (overflow:hidden + maxWidth),
-  // nunca en el span directamente.
+  const titleRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Medir ancho del texto
   useEffect(() => {
     const measure = () => {
       const w: Record<string, number> = {};
@@ -38,6 +53,32 @@ function Work() {
     return () => window.removeEventListener('resize', measure);
   }, []);
 
+  // Medir altura real del contenido de proyectos
+  // Se hace con height:auto temporalmente para que el DOM calcule el scrollHeight
+  useEffect(() => {
+    const h: Record<string, number> = {};
+    const w: Record<string, number> = {};
+
+    SECTIONS.forEach(({ id }) => {
+      const el = contentRefs.current[id];
+      if (!el) return;
+
+      // Para medir correctamente hay que dejar que el contenido
+      // fluya libremente — sin restricción de ancho
+      el.style.height = 'auto';
+      el.style.width = 'max-content'; // ← sin wrapping para medir ancho real
+
+      h[id] = el.scrollHeight;
+      w[id] = el.scrollWidth;
+
+      el.style.height = '0px';
+      el.style.width = ''; // restaurar
+    });
+
+    setProjHeights(h);
+    setProjWidths(w);
+  }, []);
+
   return (
     <div className='w-full min-h-screen bg-white pt-20 px-8'>
       <div className='flex flex-col items-start gap-20 max-w-2xl'>
@@ -45,6 +86,7 @@ function Work() {
           const isHovered = hoveredId === sec.id;
           const isClicked = clickedId === sec.id;
           const textW = widths[sec.id] ?? 0;
+          const projH = projHeights[sec.id] ?? 0;
 
           return (
             <div
@@ -60,51 +102,34 @@ function Work() {
                 setHoveredId(null);
               }}
             >
-              {/*
-                HEADER: círculo + texto
-                height fija = CIRCLE_SIZE para que CY coincida con el centro
-                z-index: 1 para que el texto quede ENCIMA del SVG
-              */}
+              {/* Header */}
               <div
-                className='relative flex items-center gap-5'
-                style={{ height: CIRCLE_SIZE, zIndex: 1 }}
+                className='relative flex items-center'
+                style={{ gap: GAP, height: CIRCLE, zIndex: 2 }}
               >
-                <div
-                  style={{
-                    width: CIRCLE_SIZE,
-                    height: CIRCLE_SIZE,
-                    flexShrink: 0,
-                  }}
-                >
+                <div style={{ width: CIRCLE, height: CIRCLE, flexShrink: 0 }}>
                   <CircleSVG
                     color={sec.circleColor}
                     style={{ width: '100%', height: '100%' }}
                   />
                 </div>
 
-                {/*
-                  Clip del título:
-                  - El SPAN siempre está en el DOM → scrollWidth siempre medible
-                  - El CONTENEDOR hace el clip con overflow:hidden + maxWidth animado
-                  - El SPAN desliza con translateX (texto y línea arrancan a la vez
-                    porque comparten el mismo duration y easing)
-                */}
                 <div
                   className='overflow-hidden'
                   style={{
                     maxWidth: isHovered || isClicked ? `${textW}px` : '0px',
-                    height: CIRCLE_SIZE,
+                    height: CIRCLE,
                     display: 'flex',
                     alignItems: 'center',
                     transition:
-                      'max-width 0.42s cubic-bezier(0.2, 0.9, 0.4, 1.05)',
+                      'max-width 0.38s cubic-bezier(0.2,0.9,0.4,1.05)',
                   }}
                 >
                   <span
                     ref={(el) => {
                       titleRefs.current[sec.id] = el;
                     }}
-                    className='text-2xl font-medium tracking-wide text-black whitespace-nowrap'
+                    className='text-3xl font-medium tracking-wide text-black whitespace-nowrap'
                     style={{
                       display: 'inline-block',
                       transform:
@@ -112,9 +137,8 @@ function Work() {
                           ? 'translateX(0)'
                           : 'translateX(-100%)',
                       opacity: isHovered || isClicked ? 1 : 0,
-                      // Mismo duration que el SVG para que arranquen a la vez
                       transition:
-                        'transform 0.42s cubic-bezier(0.2, 0.9, 0.4, 1.05), opacity 0.25s ease-out',
+                        'transform 0.38s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.22s ease-out',
                     }}
                   >
                     {sec.title}
@@ -122,39 +146,59 @@ function Work() {
                 </div>
               </div>
 
-              {/*
-                SVG: position absolute top:0 left:0
-                → (CX, CY) del path = (22, 22) = centro exacto del círculo
-                El SVG está detrás del header (zIndex por defecto = 0 < zIndex:1 del header)
-              */}
+              {/* SketchRect recibe la altura real medida */}
               <SketchRect
                 hovered={isHovered}
                 clicked={isClicked}
                 textWidth={textW}
+                projHeight={projH + PAD_B}
                 filterId={`f-${sec.id}`}
                 seed={i}
+                projWidth={3000}
               />
 
               {/*
-                Contenido de proyectos:
-                - margin-left = CIRCLE_SIZE + GAP → alineado con el texto
-                - Aparece con delay 0.4s para que el rect ya esté dibujado
+                El contenido se mide con contentRefs.
+                height animado entre 0 y projH real.
               */}
               <div
+                ref={(el) => {
+                  contentRefs.current[sec.id] = el;
+                }}
                 style={{
-                  marginLeft: CIRCLE_SIZE + GAP,
+                  marginLeft: CIRCLE + GAP,
                   overflow: 'hidden',
-                  height: isClicked ? `${PROJECTS_H}px` : '0px',
+                  height: isClicked ? `${projH}px` : '0px',
+                  // El ancho máximo es el del texto del título — el rect no puede
+                  // ser más estrecho que el label. Si el contenido necesita más, crece.
+                  width: Math.max(textW, projWidths[sec.id] ?? 0),
                   opacity: isClicked ? 1 : 0,
                   transition:
-                    'height 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.05), opacity 0.3s ease-out 0.4s',
+                    'height 0.45s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.3s ease-out 0.5s',
                 }}
               >
-                <div className='pt-4 pb-3 pr-3'>
-                  {/* Aquí van tus ProjectCards */}
-                  <p className='text-sm text-zinc-400'>
-                    Proyectos de {sec.title}…
-                  </p>
+                {/*
+                  Grid 2 columnas Swiss.
+                  Cada proyecto ocupa una celda.
+                  Si hay número impar, la última celda queda vacía.
+                */}
+                <div
+                  className='grid grid-cols-2 pt-4 pb-3'
+                  style={{ columnGap: 0 }}
+                >
+                  {sec.projects.map((project, idx) => (
+                    <ProjectItem
+                      key={project.id}
+                      index={idx + 1}
+                      title={project.title}
+                      year='2024'
+                      stack={project.stack ?? []}
+                      url={project.url ?? '#'}
+                      dotColor={sec.circleColor}
+                      // Borde derecho en columna izquierda, izquierdo en derecha
+                      isLeft={idx % 2 === 0}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
