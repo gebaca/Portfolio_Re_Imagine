@@ -28,7 +28,6 @@ export function ProjectItem({
       style={{
         paddingRight: isLeft ? '20px' : '0',
         paddingLeft: isLeft ? '0' : '20px',
-        borderRight: isLeft ? '1px solid #f0f0f0' : 'none',
       }}
     >
       {/* Punto Tullet + índice */}

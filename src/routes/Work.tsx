@@ -5,6 +5,7 @@ import { SketchRect, CIRCLE, GAP } from '../components/SketchRect';
 import { ProjectItem } from '../components/Projects/ProjectItem';
 import { projects } from '../components/Projects/projects'; // tu array de proyectos
 import { SketchDividers } from '../components/Projects/SketchDividers';
+import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 
 // Asignar proyectos a cada sección
 const SECTIONS = [
@@ -45,22 +46,37 @@ function Work() {
     Record<string, { w: number; h: number; rowH: number }>
   >({});
 
+  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
+
+  const setBgRef = (el: HTMLDivElement | null) => {
+    (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+  };
+
+  const setContentRef = (el: HTMLDivElement | null) => {
+    (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
+      el;
+  };
+
+  // En Work.tsx, en el useEffect que mide el grid:
   useEffect(() => {
     if (!clickedId) return;
     const el = gridRefs.current[clickedId];
     if (!el) return;
 
-    // Pequeño delay para que la animación de apertura termine
     const timer = setTimeout(() => {
-      const rows = Math.ceil(
-        (SECTIONS.find((s) => s.id === clickedId)?.projects.length ?? 0) / 2
-      );
+      const sec = SECTIONS.find((s) => s.id === clickedId);
+      const rows = Math.ceil((sec?.projects.length ?? 0) / 2);
+
+      // Medir la primera celda del grid para obtener rowHeight real
+      const firstCell = el.querySelector('a') as HTMLElement;
+      const rowHeight = firstCell?.offsetHeight ?? el.offsetHeight / rows;
+
       setGridSizes((prev) => ({
         ...prev,
         [clickedId]: {
           w: el.offsetWidth,
           h: el.offsetHeight,
-          rowH: el.offsetHeight / rows,
+          rowH: rowHeight, // ← altura real de una celda
         },
       }));
     }, 500);
@@ -111,152 +127,176 @@ function Work() {
   }, []);
 
   return (
-    <div className='w-full min-h-screen bg-white pt-20 px-8'>
-      <div className='flex flex-col items-start gap-20 max-w-2xl'>
-        {SECTIONS.map((sec, i) => {
-          const isHovered = hoveredId === sec.id;
-          const isClicked = clickedId === sec.id;
-          const textW = widths[sec.id] ?? 0;
-          const projH = projHeights[sec.id] ?? 0;
+    <div>
+      {circleState?.rect && (
+        <div
+          ref={setBgRef}
+          style={{
+            position: 'absolute',
+            top: circleState.scaledRect?.top,
+            left: circleState.scaledRect?.left,
+            width: circleState.scaledRect?.width,
+            height: circleState.scaledRect?.height,
+            transformOrigin: 'center center',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        >
+          <CircleSVG
+            color={'#E8432D'}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </div>
+      )}
+      <div ref={setContentRef}>
+        <div className='w-full min-h-screen bg-white pt-20 px-8'>
+          <div className='flex flex-col items-start gap-20 max-w-2xl'>
+            {SECTIONS.map((sec, i) => {
+              const isHovered = hoveredId === sec.id;
+              const isClicked = clickedId === sec.id;
+              const textW = widths[sec.id] ?? 0;
+              const projH = projHeights[sec.id] ?? 0;
 
-          return (
-            <div
-              key={sec.id}
-              className='relative w-full'
-              style={{ cursor: 'pointer' }}
-              onMouseEnter={() => {
-                if (!isClicked) setHoveredId(sec.id);
-              }}
-              onMouseLeave={() => setHoveredId(null)}
-              onClick={() => {
-                setClickedId((prev) => (prev === sec.id ? null : sec.id));
-                setHoveredId(null);
-              }}
-            >
-              {/* Header */}
-              <div
-                className='relative flex items-center'
-                style={{ gap: GAP, height: CIRCLE, zIndex: 2 }}
-              >
-                <div style={{ width: CIRCLE, height: CIRCLE, flexShrink: 0 }}>
-                  <CircleSVG
-                    color={sec.circleColor}
-                    style={{ width: '100%', height: '100%' }}
-                  />
-                </div>
-
+              return (
                 <div
-                  className='overflow-hidden'
-                  style={{
-                    maxWidth: isHovered || isClicked ? `${textW}px` : '0px',
-                    height: CIRCLE,
-                    display: 'flex',
-                    alignItems: 'center',
-                    transition:
-                      'max-width 0.38s cubic-bezier(0.2,0.9,0.4,1.05)',
+                  key={sec.id}
+                  className='relative w-full'
+                  style={{ cursor: 'pointer' }}
+                  onMouseEnter={() => {
+                    if (!isClicked) setHoveredId(sec.id);
+                  }}
+                  onMouseLeave={() => setHoveredId(null)}
+                  onClick={() => {
+                    setClickedId((prev) => (prev === sec.id ? null : sec.id));
+                    setHoveredId(null);
                   }}
                 >
-                  <span
-                    ref={(el) => {
-                      titleRefs.current[sec.id] = el;
-                    }}
-                    className='text-3xl font-medium tracking-wide text-black whitespace-nowrap'
-                    style={{
-                      display: 'inline-block',
-                      transform:
-                        isHovered || isClicked
-                          ? 'translateX(0)'
-                          : 'translateX(-100%)',
-                      opacity: isHovered || isClicked ? 1 : 0,
-                      transition:
-                        'transform 0.38s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.22s ease-out',
-                    }}
+                  {/* Header */}
+                  <div
+                    className='relative flex items-center'
+                    style={{ gap: GAP, height: CIRCLE, zIndex: 2 }}
                   >
-                    {sec.title}
-                  </span>
-                </div>
-              </div>
+                    <div
+                      style={{ width: CIRCLE, height: CIRCLE, flexShrink: 0 }}
+                    >
+                      <CircleSVG
+                        color={sec.circleColor}
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    </div>
 
-              {/* SketchRect recibe la altura real medida */}
-              <SketchRect
-                hovered={isHovered}
-                clicked={isClicked}
-                textWidth={textW}
-                projHeight={projH + PAD_B}
-                filterId={`f-${sec.id}`}
-                seed={i}
-                projWidth={projWidths[sec.id] ?? 0}
-              />
+                    <div
+                      className='overflow-hidden'
+                      style={{
+                        maxWidth: isHovered || isClicked ? `${textW}px` : '0px',
+                        height: CIRCLE,
+                        display: 'flex',
+                        alignItems: 'center',
+                        transition:
+                          'max-width 0.38s cubic-bezier(0.2,0.9,0.4,1.05)',
+                      }}
+                    >
+                      <span
+                        ref={(el) => {
+                          titleRefs.current[sec.id] = el;
+                        }}
+                        className='text-3xl font-medium tracking-wide text-black whitespace-nowrap'
+                        style={{
+                          display: 'inline-block',
+                          transform:
+                            isHovered || isClicked
+                              ? 'translateX(0)'
+                              : 'translateX(-100%)',
+                          opacity: isHovered || isClicked ? 1 : 0,
+                          transition:
+                            'transform 0.38s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.22s ease-out',
+                        }}
+                      >
+                        {sec.title}
+                      </span>
+                    </div>
+                  </div>
 
-              {/*
+                  {/* SketchRect recibe la altura real medida */}
+                  <SketchRect
+                    hovered={isHovered}
+                    clicked={isClicked}
+                    textWidth={textW}
+                    projHeight={projH + PAD_B}
+                    filterId={`f-${sec.id}`}
+                    seed={i}
+                    projWidth={projWidths[sec.id] ?? 0}
+                  />
+
+                  {/*
                 El contenido se mide con contentRefs.
                 height animado entre 0 y projH real.
               */}
-              <div
-                ref={(el) => {
-                  contentRefs.current[sec.id] = el;
-                }}
-                style={{
-                  marginLeft: CIRCLE + GAP,
-                  overflow: 'hidden',
-                  height: isClicked ? `${projH}px` : '0px',
-                  // maxWidth en vez de width — el contenido fluye dentro sin salirse
-                  maxWidth: Math.min(
-                    Math.max(textW, projWidths[sec.id] ?? 0),
-                    480
-                  ),
-                  width: '100%', // ← ocupa lo disponible hasta maxWidth
-                  opacity: isClicked ? 1 : 0,
-                  transition:
-                    'height 0.45s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.3s ease-out 0.5s',
-                }}
-              >
-                {/*
+                  <div
+                    ref={(el) => {
+                      contentRefs.current[sec.id] = el;
+                    }}
+                    style={{
+                      marginLeft: CIRCLE + GAP,
+                      overflow: 'hidden',
+                      height: isClicked ? `${projH}px` : '0px',
+                      // maxWidth en vez de width — el contenido fluye dentro sin salirse
+                      maxWidth: Math.min(
+                        Math.max(textW, projWidths[sec.id] ?? 0),
+                        480
+                      ),
+                      width: '100%', // ← ocupa lo disponible hasta maxWidth
+                      opacity: isClicked ? 1 : 0,
+                      transition:
+                        'height 0.45s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.3s ease-out 0.5s',
+                    }}
+                  >
+                    {/*
                   Grid 2 columnas Swiss.
                   Cada proyecto ocupa una celda.
                   Si hay número impar, la última celda queda vacía.
                 */}
-                <div
-                  className='grid grid-cols-2 pt-4 pb-3'
-                  ref={(el) => {
-                    gridRefs.current[sec.id] = el;
-                  }}
-                  style={{
-                    paddingRight: 20,
-                    columnGap: 0,
-                    position: 'relative',
-                    width: 'max-content',
-                    height: '100%',
-                    minWidth: 0, // ← evita que el grid se expanda más allá
-                  }}
-                >
-                  {/* Separadores sketch — solo visibles cuando está abierto */}
-                  {isClicked && gridSizes[sec.id] && (
-                    <SketchDividers
-                      width={gridSizes[sec.id].w}
-                      height={gridSizes[sec.id].h}
-                      // rows y rowHeight ya no existen
-                      seed={i}
-                    />
-                  )}
+                    <div
+                      className='grid grid-cols-2 pt-4 pb-3'
+                      ref={(el) => {
+                        gridRefs.current[sec.id] = el;
+                      }}
+                      style={{
+                        paddingRight: 20,
+                        columnGap: 0,
+                        position: 'relative',
+                        width: 'max-content',
+                        height: '100%',
+                        minWidth: 0, // ← evita que el grid se expanda más allá
+                      }}
+                    >
+                      {/* Separadores sketch — solo visibles cuando está abierto */}
+                      {isClicked && gridSizes[sec.id] && (
+                        <SketchDividers
+                          height={gridSizes[sec.id].h + 3}
+                          seed={i}
+                        />
+                      )}
 
-                  {sec.projects.map((project, idx) => (
-                    <ProjectItem
-                      key={project.id}
-                      index={idx + 1}
-                      title={project.title}
-                      year='2024'
-                      stack={project.stack ?? []}
-                      url={project.url ?? '#'}
-                      dotColor={sec.circleColor}
-                      isLeft={idx % 2 === 0}
-                    />
-                  ))}
+                      {sec.projects.map((project, idx) => (
+                        <ProjectItem
+                          key={project.id}
+                          index={idx + 1}
+                          title={project.title}
+                          year='2024'
+                          stack={project.stack ?? []}
+                          url={project.url ?? '#'}
+                          dotColor={sec.circleColor}
+                          isLeft={idx % 2 === 0}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
