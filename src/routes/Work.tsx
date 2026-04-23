@@ -4,6 +4,7 @@ import CircleSVG from '../components/Circle/circleSVG';
 import { SketchRect, CIRCLE, GAP } from '../components/SketchRect';
 import { ProjectItem } from '../components/Projects/ProjectItem';
 import { projects } from '../components/Projects/projects'; // tu array de proyectos
+import { SketchDividers } from '../components/Projects/SketchDividers';
 
 // Asignar proyectos a cada sección
 const SECTIONS = [
@@ -39,6 +40,34 @@ function Work() {
   const titleRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  const gridRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [gridSizes, setGridSizes] = useState<
+    Record<string, { w: number; h: number; rowH: number }>
+  >({});
+
+  useEffect(() => {
+    if (!clickedId) return;
+    const el = gridRefs.current[clickedId];
+    if (!el) return;
+
+    // Pequeño delay para que la animación de apertura termine
+    const timer = setTimeout(() => {
+      const rows = Math.ceil(
+        (SECTIONS.find((s) => s.id === clickedId)?.projects.length ?? 0) / 2
+      );
+      setGridSizes((prev) => ({
+        ...prev,
+        [clickedId]: {
+          w: el.offsetWidth,
+          h: el.offsetHeight,
+          rowH: el.offsetHeight / rows,
+        },
+      }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [clickedId]);
+
   // Medir ancho del texto
   useEffect(() => {
     const measure = () => {
@@ -63,16 +92,18 @@ function Work() {
       const el = contentRefs.current[id];
       if (!el) return;
 
-      // Para medir correctamente hay que dejar que el contenido
-      // fluya libremente — sin restricción de ancho
+      // Liberar restricciones para medir el tamaño natural
       el.style.height = 'auto';
-      el.style.width = 'max-content'; // ← sin wrapping para medir ancho real
+      el.style.width = 'max-content';
+      el.style.overflow = 'visible';
 
       h[id] = el.scrollHeight;
       w[id] = el.scrollWidth;
 
+      // Restaurar
       el.style.height = '0px';
-      el.style.width = ''; // restaurar
+      el.style.width = '';
+      el.style.overflow = 'hidden';
     });
 
     setProjHeights(h);
@@ -154,7 +185,7 @@ function Work() {
                 projHeight={projH + PAD_B}
                 filterId={`f-${sec.id}`}
                 seed={i}
-                projWidth={3000}
+                projWidth={projWidths[sec.id] ?? 0}
               />
 
               {/*
@@ -169,9 +200,12 @@ function Work() {
                   marginLeft: CIRCLE + GAP,
                   overflow: 'hidden',
                   height: isClicked ? `${projH}px` : '0px',
-                  // El ancho máximo es el del texto del título — el rect no puede
-                  // ser más estrecho que el label. Si el contenido necesita más, crece.
-                  width: Math.max(textW, projWidths[sec.id] ?? 0),
+                  // maxWidth en vez de width — el contenido fluye dentro sin salirse
+                  maxWidth: Math.min(
+                    Math.max(textW, projWidths[sec.id] ?? 0),
+                    480
+                  ),
+                  width: '100%', // ← ocupa lo disponible hasta maxWidth
                   opacity: isClicked ? 1 : 0,
                   transition:
                     'height 0.45s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.3s ease-out 0.5s',
@@ -184,8 +218,28 @@ function Work() {
                 */}
                 <div
                   className='grid grid-cols-2 pt-4 pb-3'
-                  style={{ columnGap: 0 }}
+                  ref={(el) => {
+                    gridRefs.current[sec.id] = el;
+                  }}
+                  style={{
+                    paddingRight: 20,
+                    columnGap: 0,
+                    position: 'relative',
+                    width: 'max-content',
+                    height: '100%',
+                    minWidth: 0, // ← evita que el grid se expanda más allá
+                  }}
                 >
+                  {/* Separadores sketch — solo visibles cuando está abierto */}
+                  {isClicked && gridSizes[sec.id] && (
+                    <SketchDividers
+                      width={gridSizes[sec.id].w}
+                      height={gridSizes[sec.id].h}
+                      // rows y rowHeight ya no existen
+                      seed={i}
+                    />
+                  )}
+
                   {sec.projects.map((project, idx) => (
                     <ProjectItem
                       key={project.id}
@@ -195,7 +249,6 @@ function Work() {
                       stack={project.stack ?? []}
                       url={project.url ?? '#'}
                       dotColor={sec.circleColor}
-                      // Borde derecho en columna izquierda, izquierdo en derecha
                       isLeft={idx % 2 === 0}
                     />
                   ))}

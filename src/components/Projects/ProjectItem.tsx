@@ -43,7 +43,11 @@ export function ProjectItem({
       </div>
 
       {/* Título */}
-      <div className='text-[13px] font-semibold uppercase tracking-wider text-zinc-900 group-hover:opacity-50 transition-opacity leading-tight'>
+      <div
+        className='text-[13px] font-semibold uppercase tracking-wider text-zinc-900 
+                group-hover:opacity-50 transition-opacity leading-tight
+                overflow-hidden text-ellipsis whitespace-nowrap'
+      >
         {title}
       </div>
 
@@ -51,7 +55,10 @@ export function ProjectItem({
       <div className='text-[11px] text-zinc-400 tabular-nums'>{year}</div>
 
       {/* Stack — debajo, en dos líneas si hace falta */}
-      <div className='text-[10px] text-zinc-400 tracking-wide leading-relaxed'>
+      <div
+        className='text-[10px] text-zinc-400 tracking-wide leading-relaxed
+                overflow-hidden'
+      >
         {stack.join(' · ')}
       </div>
 
