@@ -1,30 +1,44 @@
 // src/routes/Work.tsx
 import { useState, useEffect, useRef } from 'react';
+import React from 'react';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
 import CircleSVG from '../components/Circle/circleSVG';
+import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { SketchRect, CIRCLE, GAP } from '../components/SketchRect';
 import { ProjectItem } from '../components/Projects/ProjectItem';
-import { projects } from '../components/Projects/projects'; // tu array de proyectos
+import { projects } from '../components/Projects/projects';
 import { SketchDividers } from '../components/Projects/SketchDividers';
-import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
+import { WorkConstellation } from '../components/Projects/WorkConstellation';
+import { CONSTELLATIONS } from '../components/Projects/constellations';
+import { useIsMobile } from '../hooks/useIsMobile';
 
-// Asignar proyectos a cada sección
+const CIRCLE_OFFSETS = [
+  { x: 0, y: 0 },
+  { x: 9, y: 8 },
+  { x: -3, y: 16 },
+];
+
 const SECTIONS = [
   {
     id: 'case-studies',
     title: 'Case Studies',
-    circleColor: '#FDDA0D',
+    circleColor: '#111111',
+    accentColor: '#E8432D',
     projects: projects.filter((p) => p.section === 'feature'),
   },
   {
     id: 'projects',
     title: 'Projects',
-    circleColor: '#E8432D',
+    circleColor: '#111111',
+    accentColor: '#E8432D',
     projects: projects.filter((p) => p.section === 'project'),
   },
   {
     id: 'experiments',
     title: 'Experiments',
-    circleColor: '#2B5CE6',
+    circleColor: '#111111',
+    accentColor: '#E8432D',
     projects: projects.filter((p) => p.section === 'archive'),
   },
 ];
@@ -32,24 +46,27 @@ const SECTIONS = [
 const PAD_B = 24;
 
 function Work() {
+  const isMobile = useIsMobile();
+  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
+  const bgCircleDivRef = useRef<HTMLDivElement>(null);
+
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [clickedId, setClickedId] = useState<string | null>(null);
   const [widths, setWidths] = useState<Record<string, number>>({});
   const [projHeights, setProjHeights] = useState<Record<string, number>>({});
   const [projWidths, setProjWidths] = useState<Record<string, number>>({});
-
-  const titleRefs = useRef<Record<string, HTMLSpanElement | null>>({});
-  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  const gridRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [gridSizes, setGridSizes] = useState<
     Record<string, { w: number; h: number; rowH: number }>
   >({});
+  const titleRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  const contentRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const gridRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
-
+  // ── Refs del contexto ──────────────────────────────────────────────────────
   const setBgRef = (el: HTMLDivElement | null) => {
     (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+    (bgCircleDivRef as React.MutableRefObject<HTMLDivElement | null>).current =
+      el;
   };
 
   const setContentRef = (el: HTMLDivElement | null) => {
@@ -57,34 +74,66 @@ function Work() {
       el;
   };
 
-  // En Work.tsx, en el useEffect que mide el grid:
+  // ── Animación círculo de entrada ───────────────────────────────────────────
+  useGSAP(
+    () => {
+      const el = bgCircleDivRef.current;
+      if (!el || !circleState?.scaledRect) return;
+
+      const finalSize = isMobile ? 200 : 320;
+      const winW = window.innerWidth;
+      const finalLeft = winW - finalSize * 0.65;
+      const finalTop = -finalSize * 0.4;
+
+      gsap.fromTo(
+        el,
+        {
+          width: circleState.scaledRect.width,
+          height: circleState.scaledRect.height,
+          top: circleState.scaledRect.top,
+          left: circleState.scaledRect.left,
+          opacity: 1,
+        },
+        {
+          width: finalSize,
+          height: finalSize,
+          top: finalTop,
+          left: finalLeft,
+          opacity: isMobile ? 0.08 : 0.12,
+          duration: isMobile ? 0.8 : 1.1,
+          ease: 'power3.inOut',
+          delay: 0.1,
+        }
+      );
+    },
+    { dependencies: [circleState, isMobile], scope: bgCircleDivRef }
+  );
+
+  // ── Medición del grid ──────────────────────────────────────────────────────
   useEffect(() => {
     if (!clickedId) return;
     const el = gridRefs.current[clickedId];
     if (!el) return;
-
     const timer = setTimeout(() => {
       const sec = SECTIONS.find((s) => s.id === clickedId);
       const rows = Math.ceil((sec?.projects.length ?? 0) / 2);
-
-      // Medir la primera celda del grid para obtener rowHeight real
       const firstCell = el.querySelector('a') as HTMLElement;
       const rowHeight = firstCell?.offsetHeight ?? el.offsetHeight / rows;
-
-      setGridSizes((prev) => ({
-        ...prev,
-        [clickedId]: {
-          w: el.offsetWidth,
-          h: el.offsetHeight,
-          rowH: rowHeight, // ← altura real de una celda
-        },
-      }));
+      setGridSizes(
+        (prev: Record<string, { w: number; h: number; rowH: number }>) => ({
+          ...prev,
+          [clickedId]: {
+            w: el.offsetWidth,
+            h: el.offsetHeight,
+            rowH: rowHeight,
+          },
+        })
+      );
     }, 500);
-
     return () => clearTimeout(timer);
   }, [clickedId]);
 
-  // Medir ancho del texto
+  // ── Medición títulos ───────────────────────────────────────────────────────
   useEffect(() => {
     const measure = () => {
       const w: Record<string, number> = {};
@@ -98,41 +147,41 @@ function Work() {
     return () => window.removeEventListener('resize', measure);
   }, []);
 
-  // Medir altura real del contenido de proyectos
-  // Se hace con height:auto temporalmente para que el DOM calcule el scrollHeight
+  // ── Medición contenido ─────────────────────────────────────────────────────
   useEffect(() => {
     const h: Record<string, number> = {};
     const w: Record<string, number> = {};
-
     SECTIONS.forEach(({ id }) => {
       const el = contentRefs.current[id];
       if (!el) return;
-
-      // Liberar restricciones para medir el tamaño natural
       el.style.height = 'auto';
       el.style.width = 'max-content';
       el.style.overflow = 'visible';
-
       h[id] = el.scrollHeight;
       w[id] = el.scrollWidth;
-
-      // Restaurar
       el.style.height = '0px';
       el.style.width = '';
       el.style.overflow = 'hidden';
     });
-
     setProjHeights(h);
     setProjWidths(w);
   }, []);
 
+  const handleSectionClick = (id: string) => {
+    setClickedId((prev) => (prev === id ? null : id));
+    setHoveredId(null);
+  };
+
   return (
-    <div>
+    <div
+      style={{ position: 'relative', minHeight: '100vh', background: '#fff' }}
+    >
+      {/* ── Círculo de fondo ── */}
       {circleState?.rect && (
         <div
           ref={setBgRef}
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: circleState.scaledRect?.top,
             left: circleState.scaledRect?.left,
             width: circleState.scaledRect?.width,
@@ -143,121 +192,181 @@ function Work() {
           }}
         >
           <CircleSVG
-            color={'#E8432D'}
+            color='#DE0A00'
             style={{ width: '100%', height: '100%' }}
           />
         </div>
       )}
-      <div ref={setContentRef}>
-        <div className='w-full min-h-screen bg-white pt-20 px-8'>
-          <div className='flex flex-col items-start gap-20 max-w-2xl'>
+
+      {/* ── Contenido ── */}
+      <div ref={setContentRef} style={{ position: 'relative', zIndex: 1 }}>
+        <div
+          className={`w-full min-h-screen pt-20 ${isMobile ? 'px-6' : 'px-16'}`}
+        >
+          <div className='flex flex-col items-start gap-20 mx-auto mt-3'>
             {SECTIONS.map((sec, i) => {
               const isHovered = hoveredId === sec.id;
               const isClicked = clickedId === sec.id;
               const textW = widths[sec.id] ?? 0;
               const projH = projHeights[sec.id] ?? 0;
+              const gridCols = isMobile ? 'grid-cols-1' : 'grid-cols-2';
 
               return (
                 <div
                   key={sec.id}
                   className='relative w-full'
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={() => {
-                    if (!isClicked) setHoveredId(sec.id);
-                  }}
-                  onMouseLeave={() => setHoveredId(null)}
-                  onClick={() => {
-                    setClickedId((prev) => (prev === sec.id ? null : sec.id));
-                    setHoveredId(null);
+                  style={{
+                    // Offsets Tullet solo en desktop
+                    transform: isMobile
+                      ? 'none'
+                      : `translate(${CIRCLE_OFFSETS[i].x}px, ${CIRCLE_OFFSETS[i].y}px)`,
+                    transition: 'transform 0.3s ease',
                   }}
                 >
-                  {/* Header */}
+                  {/* ── Header — solo el área círculo+título es clicable ── */}
                   <div
                     className='relative flex items-center'
-                    style={{ gap: GAP, height: CIRCLE, zIndex: 2 }}
+                    style={{
+                      gap: GAP,
+                      height: CIRCLE,
+                      zIndex: 2,
+                      width: 'fit-content',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={() => {
+                      if (!isMobile && !isClicked) setHoveredId(sec.id);
+                    }}
+                    onMouseLeave={() => {
+                      if (!isMobile) setHoveredId(null);
+                    }}
+                    onClick={() => handleSectionClick(sec.id)}
                   >
+                    {/* Círculo — negro → rojo en hover/click */}
                     <div
                       style={{ width: CIRCLE, height: CIRCLE, flexShrink: 0 }}
                     >
                       <CircleSVG
-                        color={sec.circleColor}
-                        style={{ width: '100%', height: '100%' }}
+                        color={isHovered || isClicked ? '#DE0A00' : '#111'}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          transition: 'color 0.3s',
+                        }}
                       />
                     </div>
 
-                    <div
-                      className='overflow-hidden'
-                      style={{
-                        maxWidth: isHovered || isClicked ? `${textW}px` : '0px',
-                        height: CIRCLE,
-                        display: 'flex',
-                        alignItems: 'center',
-                        transition:
-                          'max-width 0.38s cubic-bezier(0.2,0.9,0.4,1.05)',
-                      }}
-                    >
+                    {/* Título — siempre visible en móvil, animado en desktop */}
+                    {isMobile ? (
                       <span
                         ref={(el) => {
                           titleRefs.current[sec.id] = el;
                         }}
-                        className='text-3xl font-medium tracking-wide text-black whitespace-nowrap'
-                        style={{
-                          display: 'inline-block',
-                          transform:
-                            isHovered || isClicked
-                              ? 'translateX(0)'
-                              : 'translateX(-100%)',
-                          opacity: isHovered || isClicked ? 1 : 0,
-                          transition:
-                            'transform 0.38s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.22s ease-out',
-                        }}
+                        className='text-2xl font-medium tracking-wide text-black whitespace-nowrap'
                       >
                         {sec.title}
                       </span>
-                    </div>
+                    ) : (
+                      <div
+                        className='overflow-hidden'
+                        style={{
+                          maxWidth:
+                            isHovered || isClicked ? `${textW}px` : '0px',
+                          height: CIRCLE,
+                          display: 'flex',
+                          alignItems: 'center',
+                          transition:
+                            'max-width 0.38s cubic-bezier(0.2,0.9,0.4,1.05)',
+                        }}
+                      >
+                        <span
+                          ref={(el) => {
+                            titleRefs.current[sec.id] = el;
+                          }}
+                          className='text-3xl font-medium tracking-wide text-black whitespace-nowrap'
+                          style={{
+                            display: 'inline-block',
+                            transform:
+                              isHovered || isClicked
+                                ? 'translateX(0)'
+                                : 'translateX(-100%)',
+                            opacity: isHovered || isClicked ? 1 : 0,
+                            transition:
+                              'transform 0.38s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.22s ease-out',
+                          }}
+                        >
+                          {sec.title}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Flecha indicadora — solo móvil */}
+                    {isMobile && (
+                      <span
+                        style={{
+                          marginLeft: 8,
+                          fontSize: '14px',
+                          transform: isClicked
+                            ? 'rotate(90deg)'
+                            : 'rotate(0deg)',
+                          transition: 'transform 0.3s ease, color 0.3s',
+                          color: isClicked ? '#DE0A00' : '#bbb',
+                        }}
+                      >
+                        →
+                      </span>
+                    )}
                   </div>
 
-                  {/* SketchRect recibe la altura real medida */}
-                  <SketchRect
-                    hovered={isHovered}
-                    clicked={isClicked}
-                    textWidth={textW}
-                    projHeight={projH + PAD_B}
-                    filterId={`f-${sec.id}`}
-                    seed={i}
-                    projWidth={projWidths[sec.id] ?? 0}
-                  />
+                  {/* Separador móvil */}
+                  {isMobile && (
+                    <div
+                      style={{
+                        height: 1,
+                        background: isClicked ? '#111' : '#f0f0f0',
+                        marginLeft: CIRCLE + GAP,
+                        marginTop: 8,
+                        transition: 'background 0.3s ease',
+                      }}
+                    />
+                  )}
 
-                  {/*
-                El contenido se mide con contentRefs.
-                height animado entre 0 y projH real.
-              */}
+                  {/* SketchRect — solo desktop */}
+                  {!isMobile && (
+                    <SketchRect
+                      hovered={isHovered}
+                      clicked={isClicked}
+                      textWidth={textW}
+                      projHeight={projH + PAD_B}
+                      filterId={`f-${sec.id}`}
+                      seed={i}
+                      projWidth={projWidths[sec.id] ?? 0}
+                    />
+                  )}
+
+                  {/* ── Contenido desplegable ── */}
                   <div
                     ref={(el) => {
                       contentRefs.current[sec.id] = el;
                     }}
                     style={{
-                      marginLeft: CIRCLE + GAP,
+                      marginLeft: isMobile ? 0 : CIRCLE + GAP,
+                      paddingLeft: isMobile ? CIRCLE + GAP : 0,
                       overflow: 'hidden',
                       height: isClicked ? `${projH}px` : '0px',
-                      // maxWidth en vez de width — el contenido fluye dentro sin salirse
-                      maxWidth: Math.min(
-                        Math.max(textW, projWidths[sec.id] ?? 0),
-                        480
-                      ),
-                      width: '100%', // ← ocupa lo disponible hasta maxWidth
+                      maxWidth: isMobile
+                        ? '100%'
+                        : Math.min(
+                            Math.max(textW, projWidths[sec.id] ?? 0),
+                            480
+                          ),
+                      width: '100%',
                       opacity: isClicked ? 1 : 0,
                       transition:
                         'height 0.45s cubic-bezier(0.2,0.9,0.4,1.05), opacity 0.3s ease-out 0.5s',
                     }}
                   >
-                    {/*
-                  Grid 2 columnas Swiss.
-                  Cada proyecto ocupa una celda.
-                  Si hay número impar, la última celda queda vacía.
-                */}
                     <div
-                      className='grid grid-cols-2 pt-4 pb-3'
+                      className={`grid ${gridCols} pt-4 pb-3`}
                       ref={(el) => {
                         gridRefs.current[sec.id] = el;
                       }}
@@ -265,13 +374,12 @@ function Work() {
                         paddingRight: 20,
                         columnGap: 0,
                         position: 'relative',
-                        width: 'max-content',
+                        width: isMobile ? '100%' : 'max-content',
                         height: '100%',
-                        minWidth: 0, // ← evita que el grid se expanda más allá
                       }}
                     >
-                      {/* Separadores sketch — solo visibles cuando está abierto */}
-                      {isClicked && gridSizes[sec.id] && (
+                      {/* SketchDividers solo desktop con 2 columnas */}
+                      {!isMobile && isClicked && gridSizes[sec.id] && (
                         <SketchDividers
                           height={gridSizes[sec.id].h + 3}
                           seed={i}
@@ -286,8 +394,8 @@ function Work() {
                           year='2024'
                           stack={project.stack ?? []}
                           url={project.url ?? '#'}
-                          dotColor={sec.circleColor}
-                          isLeft={idx % 2 === 0}
+                          dotColor={sec.accentColor}
+                          isLeft={isMobile ? false : idx % 2 === 0}
                         />
                       ))}
                     </div>
@@ -298,6 +406,15 @@ function Work() {
           </div>
         </div>
       </div>
+
+      {/* Constelación — solo desktop */}
+      {!isMobile && (
+        <WorkConstellation
+          elements={CONSTELLATIONS[clickedId ?? ''] ?? []}
+          visible={clickedId !== null}
+          accentColor='#DE0A00'
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-// src/components/Projects/ProjectItem.tsx
 interface Props {
   index: number;
   title: string;
