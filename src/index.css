@@ -34,6 +34,11 @@ h3,
   @apply tracking-wide;
 }
 
+.sketch-node-wrapper svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* Responsive nav */
 #desktop-nav {
   display: none;
