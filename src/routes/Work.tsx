@@ -1,104 +1,44 @@
 // ============================================================================
-// WORK.tsx
-// ============================================================================
-// Secciones:
-// 1. Imports y configuración de paleta (todos los textos en blanco)
-// 2. Línea separadora simple (blanca)
-// 3. Sistema de disciplina (tags siempre claros)
-// 4. Separador de sección (con línea blanca)
-// 5. Fila A: Case Study (texto blanco, tags claros)
-// 6. Fila B: Project (texto blanco, tags claros)
-// 7. Fila C: Archive (texto blanco, tags claros, enlace en toda la fila)
-// 8. Work page (estructura principal)
+// WORK.tsx — Animación de entrada y salida simétricas
 // ============================================================================
 
-import { useState } from 'react';
-import React from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { gsap } from 'gsap';
+import { Link } from 'react-router-dom';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
-import { FadeInParent } from '../components/Effects/FadeInParent';
 import { projects } from '../components/Projects/projects';
 import type { Project } from '../components/Projects/projects';
 
-// ----------------------------------------------------------------------------
-// 1. PALETA – todos los textos en blanco, fondo negro para contraste
-// ----------------------------------------------------------------------------
-const RED = '#DE0A00'; // solo para el círculo de transición
-const BG_DARK = '#ffffff'; // fondo negro para que el texto blanco se vea
-const TEXT_WHITE = '#ffffff'; // todos los textos serán blancos
-const TAG_BG_LIGHT = '#f0f0f0'; // fondo claro para tags
-const TAG_TEXT_DARK = '#111111'; // texto oscuro en tags
+// Paleta
+const RED = '#DE0A00';
+const BLACK = '#111111';
+const WHITE = '#FAFAF8';
+const GRAY = '#6B6B6B';
 
-// ----------------------------------------------------------------------------
-// 2. LÍNEA SEPARADORA SIMPLE (blanca, sin SVG)
-// ----------------------------------------------------------------------------
-function SimpleLine({ width = '80%', opacity = 1 }) {
-  return (
-    <div
-      style={{
-        width,
-        height: 1,
-        backgroundColor: TEXT_WHITE,
-        opacity,
-        margin: '0 auto',
-      }}
-    />
-  );
-}
+const SWISS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+const MONO = "'IBM Plex Mono', 'Courier New', monospace";
+const PENCIL = 'Pencil-Regular, sans-serif';
 
-// ----------------------------------------------------------------------------
-// 3. SISTEMA DE DISCIPLINA (TAGS SIEMPRE CLAROS)
-// ----------------------------------------------------------------------------
-type Discipline = 'design' | 'engineering' | 'hybrid';
+const CONTENT_START = 1.75;
+const STEP = 0.1;
 
-const DISCIPLINE_MAP: Record<string, Discipline> = {
-  Figma: 'design',
-  GSAP: 'design',
-  '3D MAX': 'design',
-  Motion: 'design',
-  'After Effects': 'design',
-  React: 'engineering',
-  TypeScript: 'engineering',
-  Firebase: 'engineering',
-  Unity: 'engineering',
-  'C#': 'engineering',
-  Node: 'engineering',
-  'Tailwind CSS': 'hybrid',
-  JavaScript: 'hybrid',
-};
-
-// Estilo claro para los tags (siempre igual, sin importar el fondo)
-const TAG_STYLES: Record<Discipline, React.CSSProperties> = {
-  design: {
-    background: TAG_BG_LIGHT,
-    color: TAG_TEXT_DARK,
-    border: '1px solid rgba(0,0,0,0.1)',
-  },
-  engineering: {
-    background: TAG_BG_LIGHT,
-    color: TAG_TEXT_DARK,
-    border: '1px solid rgba(0,0,0,0.1)',
-  },
-  hybrid: {
-    background: TAG_BG_LIGHT,
-    color: TAG_TEXT_DARK,
-    border: '1px dashed rgba(0,0,0,0.3)',
-  },
-};
-
+// ============================================================================
+// StackTag
+// ============================================================================
 function StackTag({ label }: { label: string }) {
-  const discipline = DISCIPLINE_MAP[label] ?? 'engineering';
   return (
     <span
       style={{
-        fontFamily: 'Pencil-Regular, sans-serif',
-        fontSize: 8,
-        letterSpacing: '0.1em',
+        fontFamily: MONO,
+        fontSize: 11,
+        letterSpacing: '0.08em',
         textTransform: 'uppercase',
         padding: '3px 8px',
-        borderRadius: 2,
+        background: 'rgba(17,17,17,0.05)',
+        color: GRAY,
+        border: '0.5px solid rgba(17,17,17,0.12)',
         whiteSpace: 'nowrap',
-        ...TAG_STYLES[discipline],
       }}
     >
       {label}
@@ -106,91 +46,91 @@ function StackTag({ label }: { label: string }) {
   );
 }
 
-// ----------------------------------------------------------------------------
-// 4. SEPARADOR DE SECCIÓN (con línea blanca)
-// ----------------------------------------------------------------------------
-type SectionWeight = 'primary' | 'secondary' | 'tertiary';
-
+// ============================================================================
+// SectionDivider
+// ============================================================================
 function SectionDivider({
+  letter,
   label,
   count,
-  weight,
+  bold = false,
+  delay,
 }: {
+  letter: string;
   label: string;
-  count: string;
-  weight: SectionWeight;
+  count: number;
+  bold?: boolean;
+  delay: number;
 }) {
-  // Todos los textos en blanco
-  const textColor = TEXT_WHITE;
-  const mutedColor = 'rgba(255,255,255,0.5)';
-  const lineOpacity =
-    weight === 'primary' ? 1 : weight === 'secondary' ? 0.35 : 0.15;
-
   return (
-    <div style={{ margin: '2.5rem 0 0' }}>
+    <div
+      style={{ opacity: 0, animation: `wkUp 0.40s ease forwards ${delay}s` }}
+    >
       <div
         style={{
-          display: 'flex',
+          display: 'grid',
+          gridTemplateColumns: '52px 1fr auto',
           alignItems: 'center',
-          gap: 12,
-          marginBottom: 8,
+          gap: 20,
+          paddingTop: 54,
+          paddingBottom: 13,
         }}
       >
-        {/* Círculo decorativo según peso */}
-        <CircleSVG
-          color={weight === 'primary' ? TEXT_WHITE : mutedColor}
-          style={{
-            width: weight === 'primary' ? 10 : weight === 'secondary' ? 7 : 5,
-            height: weight === 'primary' ? 10 : weight === 'secondary' ? 7 : 5,
-            flexShrink: 0,
-          }}
-        />
         <span
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 9,
-            letterSpacing: '0.18em',
-            color: weight === 'primary' ? textColor : mutedColor,
+            fontFamily: MONO,
+            fontSize: 13,
+            color: RED,
+            letterSpacing: '0.16em',
+            fontWeight: 500,
+          }}
+        >
+          {letter}
+        </span>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: 13,
+            letterSpacing: '0.22em',
             textTransform: 'uppercase',
-            fontWeight: weight === 'primary' ? '700' : '400',
-            whiteSpace: 'nowrap',
+            color: GRAY,
           }}
         >
           {label}
         </span>
         <span
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 9,
-            letterSpacing: '0.1em',
-            color: mutedColor,
-            textTransform: 'uppercase',
+            fontFamily: MONO,
+            fontSize: 13,
+            color: 'rgba(17,17,17,0.30)',
           }}
         >
-          {count}
+          {String(count).padStart(2, '0')}
         </span>
       </div>
-      <SimpleLine width='80%' opacity={lineOpacity} />
+      <div
+        style={{
+          height: 1,
+          background: bold ? 'rgba(17,17,17,0.28)' : 'rgba(17,17,17,0.11)',
+        }}
+      />
     </div>
   );
 }
 
-// ----------------------------------------------------------------------------
-// 5. FILA A: CASE STUDY (texto blanco, tags claros)
-// ----------------------------------------------------------------------------
+// ============================================================================
+// ProjectRowFeature
+// ============================================================================
 function ProjectRowFeature({
   project,
   index,
+  delay,
 }: {
   project: Project;
   index: number;
+  delay: number;
 }) {
   const [hovered, setHovered] = useState(false);
-  const titleColor = hovered ? '#ffcccc' : TEXT_WHITE;
-  const descColor = 'rgba(255,255,255,0.75)';
-  const borderColor = hovered ? TEXT_WHITE : 'rgba(255,255,255,0.3)';
-  const numColor = hovered ? '#ffcccc' : 'rgba(255,255,255,0.5)';
-  const bulletColor = hovered ? '#ffcccc' : TEXT_WHITE;
 
   return (
     <div
@@ -198,98 +138,84 @@ function ProjectRowFeature({
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '44px 1fr clamp(130px, 16vw, 220px)',
-        gap: 'clamp(1rem, 2.5vw, 2rem)',
-        padding: 'clamp(1.5rem, 3vh, 2.5rem) 0.5rem',
-        borderBottom: `2px solid ${borderColor}`,
+        gridTemplateColumns: '52px 1fr clamp(140px,18vw,200px)',
+        gap: 'clamp(1rem,2.5vw,1.5rem)',
+        padding: 'clamp(1.4rem,3vh,2.2rem) 0',
+        borderBottom: '1px solid rgba(17,17,17,0.07)',
         alignItems: 'start',
         cursor: 'default',
-        background: hovered ? 'rgba(255,255,255,0.05)' : 'transparent',
+        background: hovered ? 'rgba(222,10,0,0.025)' : 'transparent',
         transition: 'background 0.2s ease',
+        opacity: 0,
+        animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
-      {/* Columna izquierda: círculo + número */}
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          gap: 10,
-          paddingTop: '0.5rem',
+          alignItems: 'flex-start',
+          gap: 11,
+          paddingTop: 4,
         }}
       >
-        <CircleSVG
-          color={bulletColor}
-          style={{
-            width: hovered ? 20 : 14,
-            height: hovered ? 20 : 14,
-            transition: 'width 0.25s ease, height 0.25s ease',
-            flexShrink: 0,
-          }}
-        />
         <span
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 9,
-            letterSpacing: '0.1em',
-            color: numColor,
+            fontFamily: MONO,
+            fontSize: 42,
+            fontWeight: 400,
+            color: hovered ? RED : 'rgba(17,17,17,0.12)',
+            lineHeight: 1,
+            letterSpacing: '-0.045em',
             transition: 'color 0.25s ease',
           }}
         >
           {String(index + 1).padStart(2, '0')}
         </span>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: 9,
+            letterSpacing: '0.20em',
+            textTransform: 'uppercase',
+            color: RED,
+            border: `0.5px solid ${RED}`,
+            padding: '2px 5px',
+            display: 'inline-block',
+          }}
+        >
+          Case Study
+        </span>
       </div>
 
-      {/* Columna central: contenido */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <CircleSVG
-            color={hovered ? '#ffcccc' : TEXT_WHITE}
-            style={{ width: 5, height: 5, flexShrink: 0 }}
-          />
-          <span
-            style={{
-              fontFamily: 'Pencil-Regular, sans-serif',
-              fontSize: 8,
-              letterSpacing: '0.16em',
-              color: hovered ? '#ffcccc' : TEXT_WHITE,
-              textTransform: 'uppercase',
-              fontWeight: 700,
-            }}
-          >
-            Case study
-          </span>
-        </div>
-
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
         <h3
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-            fontWeight: 900,
+            fontFamily: SWISS,
+            fontSize: 'clamp(38px,6vw,60px)',
+            fontWeight: 700,
             margin: 0,
-            lineHeight: 0.92,
+            lineHeight: 0.93,
             letterSpacing: '-0.03em',
             textTransform: 'uppercase',
-            color: titleColor,
-            transition: 'color 0.25s ease',
+            color: BLACK,
           }}
         >
           {project.title}
         </h3>
-
         <p
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 'clamp(0.75rem, 1.1vw, 0.9rem)',
-            lineHeight: 1.65,
-            color: descColor,
+            fontFamily: PENCIL,
+            fontSize: 'clamp(1rem, 1.4vw, 1.2rem)',
+            lineHeight: 1.75,
+            color: GRAY,
             margin: 0,
-            maxWidth: '44ch',
+            maxWidth: '40ch',
+            fontWeight: 300,
           }}
         >
           {project.description}
         </p>
-
         <div
           style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 2 }}
         >
@@ -297,50 +223,49 @@ function ProjectRowFeature({
             <StackTag key={s} label={s} />
           ))}
         </div>
-
         {project.url && (
           <a
             href={project.url}
             target='_blank'
             rel='noreferrer'
             style={{
-              fontFamily: 'Pencil-Regular, sans-serif',
-              fontSize: 9,
-              letterSpacing: '0.1em',
-              color: 'rgba(255,255,255,0.5)',
-              textDecoration: 'none',
+              fontFamily: MONO,
+              fontSize: 11,
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              borderBottom: `1px solid rgba(255,255,255,0.2)`,
+              color: 'rgba(17,17,17,0.40)',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              marginTop: 2,
+              transition: 'color 0.2s',
               width: 'fit-content',
-              paddingBottom: 2,
-              transition: 'color 0.25s ease, border-color 0.25s ease',
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = TEXT_WHITE;
-              e.currentTarget.style.borderBottomColor = TEXT_WHITE;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
-              e.currentTarget.style.borderBottomColor = 'rgba(255,255,255,0.2)';
-            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = RED)}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.color = 'rgba(17,17,17,0.40)')
+            }
           >
-            Ver proyecto
+            Ver proyecto →
           </a>
         )}
       </div>
 
-      {/* Columna derecha: media */}
       <div
         style={{
           width: '100%',
-          aspectRatio: '16/10',
-          borderRadius: 3,
+          aspectRatio: '4/3',
+          border: `0.5px solid ${
+            hovered ? 'rgba(222,10,0,0.40)' : 'rgba(17,17,17,0.10)'
+          }`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           overflow: 'hidden',
-          border: `1px solid rgba(255,255,255,0.2)`,
-          opacity: hovered ? 1 : 0.4,
-          transform: hovered ? 'scale(1.02)' : 'scale(1)',
-          transition: 'opacity 0.35s ease, transform 0.35s ease',
           alignSelf: 'center',
+          background: WHITE,
+          transition: 'border-color 0.25s',
         }}
       >
         {project.youtubeId ? (
@@ -355,63 +280,89 @@ function ProjectRowFeature({
             alt={project.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-        ) : null}
+        ) : (
+          <div
+            style={{
+              opacity: hovered ? 0.55 : 0.18,
+              transition: 'opacity 0.25s',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <CircleSVG color={RED} style={{ width: 50, height: 50 }} />
+            <span
+              style={{
+                fontFamily: MONO,
+                fontSize: 8,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: BLACK,
+              }}
+            >
+              {project.title}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// ----------------------------------------------------------------------------
-// 6. FILA B: PROJECT (texto blanco, tags claros)
-// ----------------------------------------------------------------------------
+// ============================================================================
+// ProjectRowCompact
+// ============================================================================
 function ProjectRowCompact({
   project,
   index,
+  delay,
 }: {
   project: Project;
   index: number;
+  delay: number;
 }) {
   const [hovered, setHovered] = useState(false);
-  const titleColor = hovered ? '#ffcccc' : TEXT_WHITE;
-  const bulletColor = hovered ? '#ffcccc' : TEXT_WHITE;
-
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '44px 1fr auto',
-        gap: 'clamp(1rem, 2.5vw, 2rem)',
-        padding: 'clamp(1rem, 2vh, 1.5rem) 0',
-        borderBottom: `1px solid rgba(255,255,255,0.15)`,
+        gridTemplateColumns: '52px 1fr auto',
+        gap: 24,
+        padding: '17px 0',
+        borderBottom: '0.5px solid rgba(17,17,17,0.06)',
         alignItems: 'center',
         cursor: 'default',
+        background: hovered ? 'rgba(222,10,0,0.02)' : 'transparent',
+        transition: 'background 0.15s',
+        opacity: 0,
+        animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <CircleSVG
-          color={bulletColor}
-          style={{
-            width: hovered ? 13 : 9,
-            height: hovered ? 13 : 9,
-            transition: 'width 0.2s ease, height 0.2s ease',
-            flexShrink: 0,
-          }}
-        />
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <span
+        style={{
+          fontFamily: MONO,
+          fontSize: 22,
+          color: hovered ? RED : 'rgba(17,17,17,0.15)',
+          letterSpacing: '-0.02em',
+          transition: 'color 0.2s',
+        }}
+      >
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <h3
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 'clamp(1.1rem, 2vw, 1.6rem)',
-            fontWeight: 900,
+            fontFamily: SWISS,
+            fontSize: 'clamp(22px,2.8vw,30px)',
+            fontWeight: 700,
             margin: 0,
             letterSpacing: '-0.02em',
             textTransform: 'uppercase',
-            color: titleColor,
-            transition: 'color 0.2s ease',
+            color: hovered ? BLACK : 'rgba(17,17,17,0.70)',
+            transition: 'color 0.2s',
           }}
         >
           {project.title}
@@ -422,283 +373,547 @@ function ProjectRowCompact({
           ))}
         </div>
       </div>
-
       {project.url && (
         <a
           href={project.url}
           target='_blank'
           rel='noreferrer'
           style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 9,
-            color: 'rgba(255,255,255,0.4)',
-            letterSpacing: '0.1em',
+            fontFamily: MONO,
+            fontSize: 11,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
+            color: 'rgba(17,17,17,0.35)',
             textDecoration: 'none',
             whiteSpace: 'nowrap',
-            transition: 'color 0.2s ease',
+            transition: 'color 0.2s',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = TEXT_WHITE;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
-          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = RED)}
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.color = 'rgba(17,17,17,0.35)')
+          }
         >
-          Ver
+          Ver →
         </a>
       )}
     </div>
   );
 }
 
-// ----------------------------------------------------------------------------
-// 7. FILA C: ARCHIVE (texto blanco, tags claros, enlace en toda la fila)
-// ----------------------------------------------------------------------------
-function ProjectRowArchive({ project }: { project: Project }) {
+// ============================================================================
+// ProjectRowExperiment
+// ============================================================================
+function ProjectRowExperiment({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
-
-  const handleClick = () => {
-    if (project.url) {
-      window.open(project.url, '_blank');
-    }
-  };
-
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={handleClick}
+      onClick={() => project.url && window.open(project.url, '_blank')}
       style={{
         display: 'grid',
-        gridTemplateColumns: '44px 1fr auto',
-        gap: 'clamp(1rem, 2.5vw, 2rem)',
-        padding: '0.75rem 0',
-        borderBottom: `1px solid rgba(255,255,255,0.08)`,
+        gridTemplateColumns: '52px 1fr auto',
+        gap: 24,
+        padding: '9px 0',
+        borderBottom: '0.5px solid rgba(17,17,17,0.05)',
         alignItems: 'center',
         cursor: project.url ? 'pointer' : 'default',
-        opacity: hovered ? 0.55 : 0.3,
-        transition: 'opacity 0.2s ease',
+        opacity: hovered ? 0.7 : 0.4,
+        transition: 'opacity 0.2s',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <CircleSVG
-          color={TEXT_WHITE}
-          style={{ width: 6, height: 6, opacity: 0.4, flexShrink: 0 }}
-        />
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <h3
-          style={{
-            fontFamily: 'Pencil-Regular, sans-serif',
-            fontSize: 'clamp(0.75rem, 1.2vw, 1rem)',
-            fontWeight: 700,
-            margin: 0,
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase',
-            color: TEXT_WHITE,
-          }}
-        >
-          {project.title}
-        </h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {project.stack?.map((s) => (
-            <StackTag key={s} label={s} />
-          ))}
-        </div>
-      </div>
-
+      <span style={{ fontFamily: MONO, fontSize: 14, color: GRAY }}>—</span>
       <span
         style={{
-          fontFamily: 'Pencil-Regular, sans-serif',
-          fontSize: 8,
-          color: 'rgba(255,255,255,0.3)',
-          letterSpacing: '0.1em',
+          fontSize: 15,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          color: BLACK,
+        }}
+      >
+        {project.title}
+      </span>
+      <span
+        style={{
+          fontFamily: MONO,
+          fontSize: 11,
+          color: GRAY,
+          letterSpacing: '0.10em',
           textTransform: 'uppercase',
         }}
       >
-        Archive
+        Exp
       </span>
     </div>
   );
 }
 
-// ----------------------------------------------------------------------------
-// 8. WORK PAGE (estructura principal, fondo negro)
-// ----------------------------------------------------------------------------
+function ProjectRowExperimentAnimated({
+  project,
+  delay,
+}: {
+  project: Project;
+  delay: number;
+}) {
+  return (
+    <div
+      style={{ opacity: 0, animation: `wkFade 0.40s ease forwards ${delay}s` }}
+    >
+      <ProjectRowExperiment project={project} />
+    </div>
+  );
+}
+
+// ============================================================================
+// Satellites
+// ============================================================================
+function Satellites() {
+  const items = useMemo(
+    () =>
+      Array.from({ length: 70 }, (_, i) => ({
+        id: i,
+        size: Math.random() * 160 + 14,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        opacity: Math.random() * 0.05 + 0.015,
+        delay: (i / 70) * 2500,
+      })),
+    []
+  );
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        overflow: 'hidden',
+      }}
+    >
+      {items.map((sat) => (
+        <div
+          key={sat.id}
+          style={{
+            position: 'absolute',
+            left: `${sat.x}vw`,
+            top: `${sat.y}vh`,
+            width: sat.size,
+            height: sat.size,
+            transform: 'translate(-50%,-50%)',
+            opacity: 0,
+            animation: `wkSat 700ms ease-out ${sat.delay}ms forwards`,
+            ['--sat-op' as string]: sat.opacity,
+          }}
+        >
+          <CircleSVG color={RED} style={{ width: '100%', height: '100%' }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// Work – componente principal
+// ============================================================================
 function Work() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
+  const [titleReady, setTitleReady] = useState(false);
+  const oSlotRef = useRef<HTMLSpanElement>(null);
 
-  const setBgRef = (el: HTMLDivElement | null) => {
-    (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-  };
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
       el;
   };
 
+  // Animación de entrada: mover el círculo grande (si existe) hacia la O
+  useEffect(() => {
+    // Si no hay circleState, no hacemos nada (el círculo no existe)
+    if (!circleState?.scaledRect) return;
+
+    const slot = oSlotRef.current;
+    if (!slot) return;
+
+    const bg = bgCircleRef.current;
+    if (!bg) return;
+
+    const slotRect = slot.getBoundingClientRect();
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        // Una vez terminada, actualizamos las propiedades del círculo
+        // para que coincida exactamente con la O y sea el que se animará después.
+        gsap.set(bg, {
+          top: slotRect.top + window.scrollY,
+          left: slotRect.left + window.scrollX,
+          width: slotRect.width,
+          height: slotRect.height,
+          clearProps: 'transform', // elimina cualquier scale/translate residual
+        });
+        // Marcamos que la animación de título puede comenzar
+        setTitleReady(true);
+      },
+    });
+
+    tl.to(bg, {
+      top: slotRect.top + window.scrollY,
+      left: slotRect.left + window.scrollX,
+      width: slotRect.width,
+      height: slotRect.height,
+      duration: 0.9,
+      ease: 'power4.inOut',
+      delay: 0.2,
+    });
+  }, [circleState, bgCircleRef]);
+
+  // Para entrada directa (sin circleState), no hay círculo que animar,
+  // pero igualmente mostramos el título.
+  useEffect(() => {
+    if (!circleState?.scaledRect) {
+      // No hay círculo, simplemente mostramos el título
+      const timer = setTimeout(() => setTitleReady(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [circleState]);
+
   const caseStudies = projects.filter((p) => p.section === 'feature');
   const projectList = projects.filter((p) => p.section === 'project');
-  const archive = projects.filter((p) => p.section === 'archive');
+  const experiments = projects.filter((p) => p.section === 'experiment');
 
-  let globalIndex = 0;
+  let d = CONTENT_START;
+  const nextDelay = () => {
+    const v = d;
+    d += STEP;
+    return v;
+  };
 
   return (
-    <div
-      className='w-full flex flex-col items-center overflow-hidden'
-      style={{ background: BG_DARK }} // fondo negro para texto blanco
-    >
-      {/* Círculo de transición (rojo) – no se modifica */}
-      {circleState?.rect && (
-        <div
-          ref={setBgRef}
-          style={{
-            position: 'fixed',
-            top: circleState.scaledRect?.top,
-            left: circleState.scaledRect?.left,
-            width: circleState.scaledRect?.width,
-            height: circleState.scaledRect?.height,
-            // Sin transform — el elemento ya tiene el tamaño final correcto
-            transformOrigin: 'center center',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        >
-          <CircleSVG color={RED} style={{ width: '100%', height: '100%' }} />
-        </div>
-      )}
+    <>
+      <style>{`
+        @keyframes wkUp {
+          from { opacity:0; transform:translateY(10px); }
+          to   { opacity:1; transform:translateY(0);    }
+        }
+        @keyframes wkFade {
+          from { opacity:0; }
+          to   { opacity:1; }
+        }
+        @keyframes wkSat {
+          from { opacity:0; }
+          to   { opacity:var(--sat-op); }
+        }
+        @keyframes wkSlideL {
+          from { opacity:0; transform:translateX(-10px); }
+          to   { opacity:1; transform:translateX(0);      }
+        }
+        @keyframes wkSlideR {
+          from { opacity:0; transform:translateX(10px); }
+          to   { opacity:1; transform:translateX(0);     }
+        }
+      `}</style>
 
-      <div ref={setContentRef} className='w-full'>
-        <FadeInParent stagger={0.08} delay={0.3}>
+      <div
+        className='w-full flex flex-col items-center overflow-hidden'
+        style={{
+          background: WHITE,
+          color: BLACK,
+          position: 'relative',
+          minHeight: '100vh',
+        }}
+      >
+        <Satellites />
+
+        {/* Círculo de fondo (viene de Home). Este elemento se animará y quedará en la O */}
+        {circleState?.scaledRect && (
           <div
-            className='relative z-10'
+            ref={(el) => {
+              (
+                bgCircleRef as React.MutableRefObject<HTMLDivElement | null>
+              ).current = el;
+            }}
             style={{
-              maxWidth: 1100,
-              margin: '0 auto',
-              padding: 'clamp(8vh, 15vh, 20vh) clamp(1.5rem, 4vw, 3rem) 10vh',
+              position: 'absolute',
+              top: circleState.scaledRect.top,
+              left: circleState.scaledRect.left,
+              width: circleState.scaledRect.width,
+              height: circleState.scaledRect.height,
+              pointerEvents: 'none',
+              zIndex: 10,
             }}
           >
-            {/* Hero – texto blanco sobre fondo negro (el círculo rojo puede estar detrás) */}
-            <div style={{ marginBottom: 'clamp(2.5rem, 6vh, 4rem)' }}>
+            <CircleSVG color={RED} style={{ width: '100%', height: '100%' }} />
+          </div>
+        )}
+
+        {/* En caso de entrada directa (sin circleState), creamos un círculo directamente en la O.
+            Debe estar en fixed para que reverseTransition pueda animarlo después. */}
+        {!circleState?.scaledRect && (
+          <div
+            ref={(el) => {
+              (
+                bgCircleRef as React.MutableRefObject<HTMLDivElement | null>
+              ).current = el;
+            }}
+            style={{
+              position: 'fixed',
+              // Inicialmente lo ponemos donde estará la O, pero aún no la conocemos.
+              // Lo actualizaremos en un efecto después de que el DOM esté listo.
+              top: 0,
+              left: 0,
+              width: 0,
+              height: 0,
+              pointerEvents: 'none',
+              zIndex: 10,
+              opacity: 0,
+            }}
+          >
+            <CircleSVG color={RED} style={{ width: '100%', height: '100%' }} />
+          </div>
+        )}
+
+        {/* Contenido principal */}
+        <div
+          ref={setContentRef}
+          className='w-full'
+          style={{ position: 'relative', zIndex: 1 }}
+        >
+          <div
+            style={{
+              maxWidth: 960,
+              margin: '0 auto',
+              padding: 'clamp(3.5rem,7vh,5.5rem) clamp(1.5rem,4vw,3rem) 6rem',
+            }}
+          >
+            <div
+              style={{
+                paddingBottom: 48,
+                borderBottom: '1px solid rgba(17,17,17,0.09)',
+              }}
+            >
               <div
                 style={{
                   display: 'flex',
-                  gap: 10,
-                  alignItems: 'center',
-                  marginBottom: 24,
+                  alignItems: 'baseline',
+                  fontFamily: SWISS,
+                  fontSize: 'clamp(85px,14vw,140px)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.045em',
+                  textTransform: 'uppercase',
+                  lineHeight: 1,
+                  color: BLACK,
+                  marginBottom: 22,
                 }}
               >
-                <CircleSVG
-                  color={TEXT_WHITE}
-                  style={{ width: 22, height: 22 }}
+                <span
+                  style={{
+                    display: 'inline-block',
+                    opacity: 0,
+                    animation: titleReady
+                      ? 'wkSlideL 0.42s ease forwards'
+                      : 'none',
+                  }}
+                >
+                  W
+                </span>
+
+                {/* Este span es la posición de destino de la O */}
+                <span
+                  ref={oSlotRef}
+                  style={{
+                    display: 'inline-block',
+                    width: '0.72em',
+                    height: '1em',
+                    position: 'relative',
+                    verticalAlign: 'baseline',
+                  }}
                 />
-                <CircleSVG
-                  color={TEXT_WHITE}
-                  style={{ width: 14, height: 14, opacity: 0.6 }}
-                />
-                <CircleSVG
-                  color={TEXT_WHITE}
-                  style={{ width: 8, height: 8, opacity: 0.3 }}
-                />
+
+                <span
+                  style={{
+                    display: 'inline-block',
+                    opacity: 0,
+                    animation: titleReady
+                      ? 'wkSlideR 0.42s ease 0.13s forwards'
+                      : 'none',
+                  }}
+                >
+                  RKS
+                </span>
               </div>
 
-              <h1
+              <div
                 style={{
-                  fontFamily: 'Pencil-Regular, sans-serif',
-                  fontSize: 'clamp(3.5rem, 9vw, 7rem)',
-                  fontWeight: 900,
-                  color: TEXT_WHITE,
-                  lineHeight: 0.9,
-                  letterSpacing: '-0.04em',
-                  textTransform: 'uppercase',
-                  margin: 0,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-end',
+                  opacity: 0,
+                  animation: `wkUp 0.55s ease forwards ${CONTENT_START + 0.45}s`,
                 }}
               >
-                MY
-                <br />
-                WORKS
-              </h1>
-
-              <p
-                style={{
-                  fontFamily: 'Pencil-Regular, sans-serif',
-                  fontSize: 10,
-                  letterSpacing: '0.14em',
-                  color: 'rgba(255,255,255,0.5)',
-                  textTransform: 'uppercase',
-                  marginTop: 16,
-                }}
-              >
-                Design · Engineering · 2022–2025
-              </p>
+                <p
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: 13,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: GRAY,
+                    margin: 0,
+                  }}
+                >
+                  Design · Engineering · Experiments
+                </p>
+                <div
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: 13,
+                    color: GRAY,
+                    letterSpacing: '0.10em',
+                    lineHeight: 2.3,
+                    textAlign: 'right',
+                  }}
+                >
+                  <strong style={{ color: BLACK, fontWeight: 500 }}>
+                    {String(caseStudies.length).padStart(2, '0')}
+                  </strong>{' '}
+                  Case Studies
+                  <br />
+                  <strong style={{ color: BLACK, fontWeight: 500 }}>
+                    {String(projectList.length).padStart(2, '0')}
+                  </strong>{' '}
+                  Projects
+                  <br />
+                  <strong style={{ color: BLACK, fontWeight: 500 }}>
+                    {String(experiments.length).padStart(2, '0')}
+                  </strong>{' '}
+                  Experiments
+                </div>
+              </div>
             </div>
 
-            {/* Sección Case Studies */}
             <SectionDivider
-              label='Case studies'
-              count={`0${caseStudies.length}`}
-              weight='primary'
+              letter='A.'
+              label='Case Studies'
+              count={caseStudies.length}
+              bold
+              delay={nextDelay()}
             />
-            <div
-              style={{
-                borderTop: `2px solid rgba(255,255,255,0.4)`,
-                marginTop: 16,
-              }}
-            >
-              {caseStudies.map((project) => {
-                const el = (
-                  <ProjectRowFeature
-                    key={project.id}
-                    project={project}
-                    index={globalIndex}
-                  />
-                );
-                globalIndex++;
-                return el;
-              })}
-            </div>
+            {caseStudies.map((p, i) => (
+              <ProjectRowFeature
+                key={p.id}
+                project={p}
+                index={i}
+                delay={nextDelay()}
+              />
+            ))}
 
-            {/* Sección Projects */}
             <SectionDivider
+              letter='B.'
               label='Projects'
-              count={`0${projectList.length}`}
-              weight='secondary'
+              count={projectList.length}
+              delay={nextDelay()}
             />
-            <div style={{ marginTop: 8 }}>
-              {projectList.map((project) => {
-                const el = (
-                  <ProjectRowCompact
-                    key={project.id}
-                    project={project}
-                    index={globalIndex}
-                  />
-                );
-                globalIndex++;
-                return el;
-              })}
-            </div>
+            {projectList.map((p, i) => (
+              <ProjectRowCompact
+                key={p.id}
+                project={p}
+                index={caseStudies.length + i}
+                delay={nextDelay()}
+              />
+            ))}
 
-            {/* Sección Archive */}
             <SectionDivider
-              label='Archive'
-              count={`0${archive.length}`}
-              weight='tertiary'
+              letter='C.'
+              label='Experiments'
+              count={experiments.length}
+              delay={nextDelay()}
             />
-            <div style={{ marginTop: 8 }}>
-              {archive.map((project) => {
-                const el = (
-                  <ProjectRowArchive key={project.id} project={project} />
-                );
-                globalIndex++;
-                return el;
-              })}
+            {experiments.length === 0 ? (
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '2rem 0',
+                  fontFamily: MONO,
+                  fontSize: 13,
+                  color: GRAY,
+                  letterSpacing: '0.1em',
+                  opacity: 0,
+                  animation: `wkFade 0.4s ease forwards ${nextDelay()}s`,
+                }}
+              >
+                ✦ Próximamente: experiments diarios ✦
+              </div>
+            ) : (
+              experiments.map((p) => (
+                <ProjectRowExperimentAnimated
+                  key={p.id}
+                  project={p}
+                  delay={nextDelay()}
+                />
+              ))
+            )}
+
+            <div style={{ marginTop: 60, textAlign: 'center' }}>
+              <Link
+                to='/'
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 12,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: GRAY,
+                  textDecoration: 'none',
+                  borderBottom: '1px solid rgba(17,17,17,0.2)',
+                  paddingBottom: 4,
+                  transition: 'color 0.2s, border-color 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = RED;
+                  e.currentTarget.style.borderBottomColor = RED;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = GRAY;
+                  e.currentTarget.style.borderBottomColor =
+                    'rgba(17,17,17,0.2)';
+                }}
+              >
+                ← Home
+              </Link>
             </div>
           </div>
-        </FadeInParent>
+        </div>
       </div>
-    </div>
+
+      {/* Efecto para posicionar el círculo en entrada directa */}
+      {!circleState?.scaledRect && (
+        <PositionDirectCircle oSlotRef={oSlotRef} bgCircleRef={bgCircleRef} />
+      )}
+    </>
   );
+}
+
+// Componente auxiliar para posicionar el círculo en caso de entrada directa
+function PositionDirectCircle({
+  oSlotRef,
+  bgCircleRef,
+}: {
+  oSlotRef: React.RefObject<HTMLSpanElement>;
+  bgCircleRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  useEffect(() => {
+    const slot = oSlotRef.current;
+    const bg = bgCircleRef.current;
+    if (!slot || !bg) return;
+
+    const slotRect = slot.getBoundingClientRect();
+    // Posicionamos el círculo exactamente donde está la O
+    bg.style.top = `${slotRect.top + window.scrollY}px`;
+    bg.style.left = `${slotRect.left + window.scrollX}px`;
+    bg.style.width = `${slotRect.width}px`;
+    bg.style.height = `${slotRect.height}px`;
+    bg.style.opacity = '1';
+  }, [oSlotRef, bgCircleRef]);
+
+  return null;
 }
 
 export default Work;

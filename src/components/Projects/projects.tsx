@@ -16,13 +16,13 @@ export interface Project {
   stack?: string[];
   image?: string;
   youtubeId?: string;
-  section?: 'feature' | 'project' | 'archive';
+  section?: 'feature' | 'project' | 'experiment';
 }
 
 export const projects: Project[] = [
   {
     id: 1,
-    section: 'archive',
+    section: 'experiment',
     title: 'NEVER LATE',
     description:
       'A serious game built with a team of 10. I programmed the character controller, implemented visual effects, and designed several minigames.',
@@ -38,7 +38,7 @@ export const projects: Project[] = [
   },
   {
     id: 2,
-    section: 'archive',
+    section: 'experiment',
     title: 'AVENTURA POR VALENCIA',
     description:
       'An educational game built with two teammates. I handled the minigame programming and took full ownership of the UX and UI design.',

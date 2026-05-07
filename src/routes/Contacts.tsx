@@ -25,9 +25,6 @@ const contactLinks = [
   },
 ];
 
-// El círculo en Home escala hasta este valor antes de navegar.
-// Debe coincidir con el scale del gsap.to en WiggleCircle.
-
 function Contacts() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
 
@@ -40,29 +37,27 @@ function Contacts() {
       el;
   };
 
-  if (!circleState?.rect) return null;
-
   return (
     <div className='w-full h-screen flex flex-col items-center justify-center overflow-hidden relative'>
-      {/* Círculo de fondo — aparece ya en scale(10), el mismo estado
-          en que terminó la animación de Home. Sin animación de entrada.
-          GSAP solo lo toca en reverseTransition (desde el contexto). */}
-      <div
-        ref={setBgRef}
-        style={{
-          position: 'fixed',
-          top: circleState.scaledRect?.top,
-          left: circleState.scaledRect?.left,
-          width: circleState.scaledRect?.width,
-          height: circleState.scaledRect?.height,
-          // Sin transform — el elemento ya tiene el tamaño final correcto
-          transformOrigin: 'center center',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      >
-        <CircleSVG color='#00C4FF' style={{ width: '100%', height: '100%' }} />
-      </div>
+      {circleState?.scaledRect && (
+        <div
+          ref={setBgRef}
+          style={{
+            position: 'fixed',
+            top: circleState.scaledRect.top,
+            left: circleState.scaledRect.left,
+            width: circleState.scaledRect.width,
+            height: circleState.scaledRect.height,
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        >
+          <CircleSVG
+            color='#00C4FF'
+            style={{ width: '100%', height: '100%' }}
+          />
+        </div>
+      )}
 
       <div
         ref={setContentRef}
@@ -75,7 +70,7 @@ function Contacts() {
           positionX={100}
         />
 
-        <FadeInParent stagger={1} delay={2}>
+        <FadeInParent stagger={0.15} delay={0.3}>
           <div className='relative flex flex-col items-center w-full max-w-2xl px-6'>
             <header className='text-center mb-16'>
               <h1 className='text-5xl text-zinc-900 italic tracking-tighter'>
