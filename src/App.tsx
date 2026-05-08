@@ -1,5 +1,6 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Logo } from './components/Logo/Logo';
+import { usePageTransition } from './hooks/Usepagetransition';
 
 const NAV_ROUTES = [
   { path: '/about', label: 'About', color: '#FDDA0D' },
@@ -10,6 +11,9 @@ const NAV_ROUTES = [
 function App() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const { navigateTo } = usePageTransition();
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div
@@ -26,45 +30,53 @@ function App() {
           <div
             className='pointer-events-auto gap-6 items-center'
             id='desktop-nav'
-            style={{ paddingTop: '6px' }}
+            style={{ display: 'flex', paddingTop: '6px' }}
           >
             {NAV_ROUTES.map(({ path, label, color }) => (
-              <NavLink key={path} to={path} style={{ textDecoration: 'none' }}>
-                {({ isActive }) => (
+              <button
+                key={path}
+                onClick={() => !isActive(path) && navigateTo(path)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: isActive(path) ? 'default' : 'pointer',
+                  padding: 0,
+                  textDecoration: 'none',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontFamily: 'Pencil-Regular, sans-serif',
+                    fontSize: '0.85rem',
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: isActive(path) ? '#111' : 'rgba(0,0,0,0.35)',
+                    borderBottom: isActive(path)
+                      ? '1px solid #111'
+                      : '1px solid transparent',
+                    paddingBottom: '2px',
+                    transition: 'color 0.25s ease',
+                  }}
+                >
                   <span
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      fontFamily: 'Pencil-Regular, sans-serif',
-                      fontSize: '0.85rem',
-                      letterSpacing: '0.15em',
-                      textTransform: 'uppercase',
-                      color: isActive ? '#111' : 'rgba(0,0,0,0.35)',
-                      borderBottom: isActive
-                        ? '1px solid #111'
-                        : '1px solid transparent',
-                      paddingBottom: '2px',
-                      transition: 'color 0.25s ease',
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      background: color,
+                      flexShrink: 0,
+                      opacity: isActive(path) ? 1 : 0.5,
+                      transition: 'opacity 0.25s ease, transform 0.25s ease',
+                      transform: isActive(path) ? 'scale(1.2)' : 'scale(1)',
+                      display: 'inline-block',
                     }}
-                  >
-                    <span
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        background: color,
-                        flexShrink: 0,
-                        opacity: isActive ? 1 : 0.5,
-                        transition: 'opacity 0.25s ease, transform 0.25s ease',
-                        transform: isActive ? 'scale(1.2)' : 'scale(1)',
-                        display: 'inline-block',
-                      }}
-                    />
-                    {label}
-                  </span>
-                )}
-              </NavLink>
+                  />
+                  {label}
+                </span>
+              </button>
             ))}
           </div>
         )}
@@ -90,45 +102,55 @@ function App() {
             border: '1px solid rgba(0,0,0,0.08)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
             padding: '0.5rem 1.25rem',
+            display: 'flex',
             gap: '0.25rem',
             alignItems: 'center',
           }}
         >
           {NAV_ROUTES.map(({ path, label, color }) => (
-            <NavLink key={path} to={path} style={{ textDecoration: 'none' }}>
-              {({ isActive }) => (
+            <button
+              key={path}
+              onClick={() => !isActive(path) && navigateTo(path)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: isActive(path) ? 'default' : 'pointer',
+                padding: 0,
+              }}
+            >
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontFamily: 'Pencil-Regular, sans-serif',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  padding: '0.5rem 0.9rem',
+                  borderRadius: '999px',
+                  color: isActive(path) ? '#111' : 'rgba(0,0,0,0.4)',
+                  background: isActive(path)
+                    ? 'rgba(0,0,0,0.06)'
+                    : 'transparent',
+                  transition: 'color 0.25s ease, background 0.25s ease',
+                }}
+              >
                 <span
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontFamily: 'Pencil-Regular, sans-serif',
-                    fontSize: '0.75rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    padding: '0.5rem 0.9rem',
-                    borderRadius: '999px',
-                    color: isActive ? '#111' : 'rgba(0,0,0,0.4)',
-                    background: isActive ? 'rgba(0,0,0,0.06)' : 'transparent',
-                    transition: 'color 0.25s ease, background 0.25s ease',
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    background: color,
+                    flexShrink: 0,
+                    opacity: isActive(path) ? 1 : 0.4,
+                    transition: 'opacity 0.25s ease',
+                    display: 'inline-block',
                   }}
-                >
-                  <span
-                    style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: '50%',
-                      background: color,
-                      flexShrink: 0,
-                      opacity: isActive ? 1 : 0.4,
-                      transition: 'opacity 0.25s ease',
-                      display: 'inline-block',
-                    }}
-                  />
-                  {label}
-                </span>
-              )}
-            </NavLink>
+                />
+                {label}
+              </span>
+            </button>
           ))}
         </nav>
       )}
