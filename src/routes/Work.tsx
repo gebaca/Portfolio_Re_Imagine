@@ -1,44 +1,86 @@
 // ============================================================================
-// WORK.tsx — Animación de entrada y salida simétricas
+// WORK.tsx — Tullet × Swiss · consistente con About.tsx
 // ============================================================================
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { gsap } from 'gsap';
-import { Link } from 'react-router-dom';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { projects } from '../components/Projects/projects';
 import type { Project } from '../components/Projects/projects';
 
-// Paleta
+// ─── Paleta ──────────────────────────────────────────────────────────────────
 const RED = '#DE0A00';
-const BLACK = '#111111';
 const WHITE = '#FAFAF8';
-const GRAY = '#6B6B6B';
 
-const SWISS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+// ─── Stack colors — mismo sistema que badges de tecnología ───────────────────
+const STACK_COLORS: Record<string, { bg: string; text: string }> = {
+  // JS ecosystem
+  JavaScript: { bg: '#FEF08A', text: '#713F12' },
+  TypeScript: { bg: '#DBEAFE', text: '#1E40AF' },
+  React: { bg: '#BAE6FD', text: '#0C4A6E' },
+  'Next.js': { bg: '#E4E4E7', text: '#18181B' },
+  Node: { bg: '#BBF7D0', text: '#14532D' },
+  'Tailwind CSS': { bg: '#CFFAFE', text: '#164E63' },
+  GSAP: { bg: '#D1FAE5', text: '#064E3B' },
+  // Design
+  Figma: { bg: '#FDE68A', text: '#92400E' },
+  '3D MAX': { bg: '#E9D5FF', text: '#4C1D95' },
+  'Blender 3D': { bg: '#FED7AA', text: '#7C2D12' },
+  'After Effects': { bg: '#EDE9FE', text: '#4C1D95' },
+  Motion: { bg: '#FCE7F3', text: '#831843' },
+  // Tools
+  Firebase: { bg: '#FEF3C7', text: '#78350F' },
+  Unity: { bg: '#E4E4E7', text: '#18181B' },
+  'C#': { bg: '#F3E8FF', text: '#581C87' },
+  Python: { bg: '#DBEAFE', text: '#1E3A8A' },
+  Git: { bg: '#FFE4E6', text: '#9F1239' },
+  // CAD / Industrial
+  OnShape: { bg: '#E0F2FE', text: '#0C4A6E' },
+  Sketchbook: { bg: '#FEE2E2', text: '#7F1D1D' },
+  Affinity: { bg: '#EDE9FE', text: '#4C1D95' },
+  Gres: { bg: '#FEF9C3', text: '#713F12' },
+  Placa: { bg: '#F0FDF4', text: '#14532D' },
+  Casting: { bg: '#F9FAFB', text: '#374151' },
+  'Plata 925': { bg: '#F1F5F9', text: '#334155' },
+  Aluminio: { bg: '#E2E8F0', text: '#1E293B' },
+  Artesanal: { bg: '#FDF2F8', text: '#701A75' },
+  // Fallback generado por hash si no está en la lista
+};
+
+function getStackColor(label: string) {
+  if (STACK_COLORS[label]) return STACK_COLORS[label];
+  // Hash simple para generar un color consistente para tags desconocidos
+  let h = 0;
+  for (let i = 0; i < label.length; i++)
+    h = (h * 31 + label.charCodeAt(i)) & 0xffff;
+  const hue = h % 360;
+  return { bg: `hsl(${hue},60%,90%)`, text: `hsl(${hue},60%,25%)` };
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 const MONO = "'IBM Plex Mono', 'Courier New', monospace";
-const PENCIL = 'Pencil-Regular, sans-serif';
 
-const CONTENT_START = 1.75;
+const CONTENT_START = 1.75; // segundos — la cascada empieza aquí
 const STEP = 0.1;
 
 // ============================================================================
-// StackTag
+// StackTag — con color por tecnología
 // ============================================================================
 function StackTag({ label }: { label: string }) {
+  const { bg, text } = getStackColor(label);
   return (
     <span
       style={{
-        fontFamily: MONO,
         fontSize: 11,
-        letterSpacing: '0.08em',
+        letterSpacing: '0.06em',
         textTransform: 'uppercase',
         padding: '3px 8px',
-        background: 'rgba(17,17,17,0.05)',
-        color: GRAY,
-        border: '0.5px solid rgba(17,17,17,0.12)',
+        background: bg,
+        color: text,
+        borderRadius: 2,
         whiteSpace: 'nowrap',
+        fontWeight: 500,
       }}
     >
       {label}
@@ -78,7 +120,6 @@ function SectionDivider({
       >
         <span
           style={{
-            fontFamily: MONO,
             fontSize: 13,
             color: RED,
             letterSpacing: '0.16em',
@@ -88,20 +129,14 @@ function SectionDivider({
           {letter}
         </span>
         <span
-          style={{
-            fontFamily: MONO,
-            fontSize: 13,
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: GRAY,
-          }}
+          className='text-zinc-400 tracking-widest uppercase'
+          style={{ fontSize: 12 }}
         >
           {label}
         </span>
         <span
           style={{
-            fontFamily: MONO,
-            fontSize: 13,
+            fontSize: 12,
             color: 'rgba(17,17,17,0.30)',
           }}
         >
@@ -119,7 +154,7 @@ function SectionDivider({
 }
 
 // ============================================================================
-// ProjectRowFeature
+// ProjectRowFeature — Case Study
 // ============================================================================
 function ProjectRowFeature({
   project,
@@ -150,6 +185,7 @@ function ProjectRowFeature({
         animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
+      {/* Número + badge */}
       <div
         style={{
           display: 'flex',
@@ -161,7 +197,6 @@ function ProjectRowFeature({
       >
         <span
           style={{
-            fontFamily: MONO,
             fontSize: 42,
             fontWeight: 400,
             color: hovered ? RED : 'rgba(17,17,17,0.12)',
@@ -174,7 +209,6 @@ function ProjectRowFeature({
         </span>
         <span
           style={{
-            fontFamily: MONO,
             fontSize: 9,
             letterSpacing: '0.20em',
             textTransform: 'uppercase',
@@ -188,30 +222,30 @@ function ProjectRowFeature({
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+      {/* Contenido — tipografía consistente con About */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <h3
+          className='text-zinc-900 tracking-tighter'
           style={{
-            fontFamily: SWISS,
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 'clamp(38px,6vw,60px)',
             fontWeight: 700,
             margin: 0,
             lineHeight: 0.93,
-            letterSpacing: '-0.03em',
             textTransform: 'uppercase',
-            color: BLACK,
           }}
         >
           {project.title}
         </h3>
         <p
+          className='text-zinc-600'
           style={{
-            fontFamily: PENCIL,
-            fontSize: 'clamp(1rem, 1.4vw, 1.2rem)',
-            lineHeight: 1.75,
-            color: GRAY,
+            fontFamily: 'Pencil-Regular, sans-serif',
+            fontSize: 'clamp(1rem,1.4vw,1.1rem)',
+            lineHeight: 1.8,
             margin: 0,
             maxWidth: '40ch',
-            fontWeight: 300,
+            fontWeight: 400,
           }}
         >
           {project.description}
@@ -228,12 +262,11 @@ function ProjectRowFeature({
             href={project.url}
             target='_blank'
             rel='noreferrer'
+            className='text-zinc-400 hover:text-zinc-900'
             style={{
-              fontFamily: MONO,
               fontSize: 11,
-              letterSpacing: '0.12em',
+              letterSpacing: '0.10em',
               textTransform: 'uppercase',
-              color: 'rgba(17,17,17,0.40)',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
@@ -242,23 +275,18 @@ function ProjectRowFeature({
               transition: 'color 0.2s',
               width: 'fit-content',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = RED)}
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.color = 'rgba(17,17,17,0.40)')
-            }
           >
-            Ver proyecto →
+            Ver proyecto
           </a>
         )}
       </div>
 
+      {/* Thumbnail */}
       <div
         style={{
           width: '100%',
           aspectRatio: '4/3',
-          border: `0.5px solid ${
-            hovered ? 'rgba(222,10,0,0.40)' : 'rgba(17,17,17,0.10)'
-          }`,
+          border: `0.5px solid ${hovered ? 'rgba(222,10,0,0.40)' : 'rgba(17,17,17,0.10)'}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -294,11 +322,10 @@ function ProjectRowFeature({
             <CircleSVG color={RED} style={{ width: 50, height: 50 }} />
             <span
               style={{
-                fontFamily: MONO,
                 fontSize: 8,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: BLACK,
+                color: '#111',
               }}
             >
               {project.title}
@@ -311,7 +338,7 @@ function ProjectRowFeature({
 }
 
 // ============================================================================
-// ProjectRowCompact
+// ProjectRowCompact — Project
 // ============================================================================
 function ProjectRowCompact({
   project,
@@ -331,7 +358,7 @@ function ProjectRowCompact({
         display: 'grid',
         gridTemplateColumns: '52px 1fr auto',
         gap: 24,
-        padding: '17px 0',
+        padding: '20px 0',
         borderBottom: '0.5px solid rgba(17,17,17,0.06)',
         alignItems: 'center',
         cursor: 'default',
@@ -343,7 +370,6 @@ function ProjectRowCompact({
     >
       <span
         style={{
-          fontFamily: MONO,
           fontSize: 22,
           color: hovered ? RED : 'rgba(17,17,17,0.15)',
           letterSpacing: '-0.02em',
@@ -352,16 +378,16 @@ function ProjectRowCompact({
       >
         {String(index + 1).padStart(2, '0')}
       </span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
         <h3
+          className='tracking-tighter'
           style={{
-            fontFamily: SWISS,
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 'clamp(22px,2.8vw,30px)',
             fontWeight: 700,
             margin: 0,
-            letterSpacing: '-0.02em',
             textTransform: 'uppercase',
-            color: hovered ? BLACK : 'rgba(17,17,17,0.70)',
+            color: hovered ? '#111' : 'rgba(17,17,17,0.70)',
             transition: 'color 0.2s',
           }}
         >
@@ -378,22 +404,17 @@ function ProjectRowCompact({
           href={project.url}
           target='_blank'
           rel='noreferrer'
+          className='text-zinc-400 hover:text-zinc-900'
           style={{
-            fontFamily: MONO,
             fontSize: 11,
-            letterSpacing: '0.12em',
+            letterSpacing: '0.10em',
             textTransform: 'uppercase',
-            color: 'rgba(17,17,17,0.35)',
             textDecoration: 'none',
             whiteSpace: 'nowrap',
             transition: 'color 0.2s',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = RED)}
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = 'rgba(17,17,17,0.35)')
-          }
         >
-          Ver →
+          Ver
         </a>
       )}
     </div>
@@ -401,7 +422,7 @@ function ProjectRowCompact({
 }
 
 // ============================================================================
-// ProjectRowExperiment
+// ProjectRowExperiment — Experiments
 // ============================================================================
 function ProjectRowExperiment({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
@@ -414,7 +435,7 @@ function ProjectRowExperiment({ project }: { project: Project }) {
         display: 'grid',
         gridTemplateColumns: '52px 1fr auto',
         gap: 24,
-        padding: '9px 0',
+        padding: '10px 0',
         borderBottom: '0.5px solid rgba(17,17,17,0.05)',
         alignItems: 'center',
         cursor: project.url ? 'pointer' : 'default',
@@ -422,22 +443,23 @@ function ProjectRowExperiment({ project }: { project: Project }) {
         transition: 'opacity 0.2s',
       }}
     >
-      <span style={{ fontFamily: MONO, fontSize: 14, color: GRAY }}>—</span>
+      <span className='text-zinc-400' style={{ fontSize: 14 }}>
+        —
+      </span>
       <span
+        className='text-zinc-800'
         style={{
           fontSize: 15,
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
-          color: BLACK,
         }}
       >
         {project.title}
       </span>
       <span
+        className='text-zinc-400'
         style={{
-          fontFamily: MONO,
           fontSize: 11,
-          color: GRAY,
           letterSpacing: '0.10em',
           textTransform: 'uppercase',
         }}
@@ -465,7 +487,7 @@ function ProjectRowExperimentAnimated({
 }
 
 // ============================================================================
-// Satellites
+// Satellites — CircleSVG a baja opacidad, textura Tullet
 // ============================================================================
 function Satellites() {
   const items = useMemo(
@@ -514,7 +536,31 @@ function Satellites() {
 }
 
 // ============================================================================
-// Work – componente principal
+// PositionDirectCircle — en entrada directa coloca el bgCircle en la O
+// ============================================================================
+function PositionDirectCircle({
+  oSlotRef,
+  bgCircleRef,
+}: {
+  oSlotRef: React.RefObject<HTMLSpanElement | null>;
+  bgCircleRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  useEffect(() => {
+    const slot = oSlotRef.current;
+    const bg = bgCircleRef.current;
+    if (!slot || !bg) return;
+    const r = slot.getBoundingClientRect();
+    bg.style.top = `${r.top + window.scrollY}px`;
+    bg.style.left = `${r.left + window.scrollX}px`;
+    bg.style.width = `${r.width}px`;
+    bg.style.height = `${r.height}px`;
+    bg.style.opacity = '1';
+  }, [oSlotRef, bgCircleRef]);
+  return null;
+}
+
+// ============================================================================
+// Work — componente principal
 // ============================================================================
 function Work() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
@@ -526,31 +572,43 @@ function Work() {
       el;
   };
 
-  // Animación de entrada: mover el círculo grande (si existe) hacia la O
+  // ── Bloquear scroll durante la animación de entrada ──────────────────────
   useEffect(() => {
-    // Si no hay circleState, no hacemos nada (el círculo no existe)
+    // Bloqueamos scroll hasta que el título esté listo (círculo contraído)
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  useEffect(() => {
+    if (titleReady) {
+      // Pequeño delay para que W y RKS terminen de entrar antes de liberar
+      const t = setTimeout(() => {
+        document.body.style.overflow = '';
+      }, 600);
+      return () => clearTimeout(t);
+    }
+  }, [titleReady]);
+
+  // ── Animación de entrada: círculo grande → O ─────────────────────────────
+  useEffect(() => {
     if (!circleState?.scaledRect) return;
-
     const slot = oSlotRef.current;
-    if (!slot) return;
-
     const bg = bgCircleRef.current;
-    if (!bg) return;
+    if (!slot || !bg) return;
 
     const slotRect = slot.getBoundingClientRect();
 
     const tl = gsap.timeline({
       onComplete: () => {
-        // Una vez terminada, actualizamos las propiedades del círculo
-        // para que coincida exactamente con la O y sea el que se animará después.
         gsap.set(bg, {
           top: slotRect.top + window.scrollY,
           left: slotRect.left + window.scrollX,
           width: slotRect.width,
           height: slotRect.height,
-          clearProps: 'transform', // elimina cualquier scale/translate residual
+          clearProps: 'transform',
         });
-        // Marcamos que la animación de título puede comenzar
         setTitleReady(true);
       },
     });
@@ -564,16 +622,17 @@ function Work() {
       ease: 'power4.inOut',
       delay: 0.2,
     });
+
+    return () => {
+      tl.kill();
+    };
   }, [circleState, bgCircleRef]);
 
-  // Para entrada directa (sin circleState), no hay círculo que animar,
-  // pero igualmente mostramos el título.
+  // ── Entrada directa sin circleState ──────────────────────────────────────
   useEffect(() => {
-    if (!circleState?.scaledRect) {
-      // No hay círculo, simplemente mostramos el título
-      const timer = setTimeout(() => setTitleReady(true), 300);
-      return () => clearTimeout(timer);
-    }
+    if (circleState?.scaledRect) return;
+    const t = setTimeout(() => setTitleReady(true), 300);
+    return () => clearTimeout(t);
   }, [circleState]);
 
   const caseStudies = projects.filter((p) => p.section === 'feature');
@@ -581,7 +640,7 @@ function Work() {
   const experiments = projects.filter((p) => p.section === 'experiment');
 
   let d = CONTENT_START;
-  const nextDelay = () => {
+  const nd = () => {
     const v = d;
     d += STEP;
     return v;
@@ -592,7 +651,7 @@ function Work() {
       <style>{`
         @keyframes wkUp {
           from { opacity:0; transform:translateY(10px); }
-          to   { opacity:1; transform:translateY(0);    }
+          to   { opacity:1; transform:translateY(0); }
         }
         @keyframes wkFade {
           from { opacity:0; }
@@ -604,11 +663,11 @@ function Work() {
         }
         @keyframes wkSlideL {
           from { opacity:0; transform:translateX(-10px); }
-          to   { opacity:1; transform:translateX(0);      }
+          to   { opacity:1; transform:translateX(0); }
         }
         @keyframes wkSlideR {
           from { opacity:0; transform:translateX(10px); }
-          to   { opacity:1; transform:translateX(0);     }
+          to   { opacity:1; transform:translateX(0); }
         }
       `}</style>
 
@@ -616,14 +675,14 @@ function Work() {
         className='w-full flex flex-col items-center overflow-hidden'
         style={{
           background: WHITE,
-          color: BLACK,
+          color: '#111',
           position: 'relative',
           minHeight: '100vh',
         }}
       >
         <Satellites />
 
-        {/* Círculo de fondo (viene de Home). Este elemento se animará y quedará en la O */}
+        {/* Círculo de transición desde Home */}
         {circleState?.scaledRect && (
           <div
             ref={(el) => {
@@ -645,8 +704,7 @@ function Work() {
           </div>
         )}
 
-        {/* En caso de entrada directa (sin circleState), creamos un círculo directamente en la O.
-            Debe estar en fixed para que reverseTransition pueda animarlo después. */}
+        {/* Círculo en la O para entrada directa (sin circleState) */}
         {!circleState?.scaledRect && (
           <div
             ref={(el) => {
@@ -656,8 +714,6 @@ function Work() {
             }}
             style={{
               position: 'fixed',
-              // Inicialmente lo ponemos donde estará la O, pero aún no la conocemos.
-              // Lo actualizaremos en un efecto después de que el DOM esté listo.
               top: 0,
               left: 0,
               width: 0,
@@ -684,23 +740,25 @@ function Work() {
               padding: 'clamp(3.5rem,7vh,5.5rem) clamp(1.5rem,4vw,3rem) 6rem',
             }}
           >
+            {/* ── HERO ── */}
             <div
               style={{
                 paddingBottom: 48,
                 borderBottom: '1px solid rgba(17,17,17,0.09)',
               }}
             >
+              {/* Título: W + O(slot) + RKS */}
               <div
+                className='tracking-tighter'
                 style={{
                   display: 'flex',
                   alignItems: 'baseline',
-                  fontFamily: SWISS,
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                   fontSize: 'clamp(85px,14vw,140px)',
                   fontWeight: 700,
-                  letterSpacing: '-0.045em',
                   textTransform: 'uppercase',
                   lineHeight: 1,
-                  color: BLACK,
+                  color: '#111',
                   marginBottom: 22,
                 }}
               >
@@ -716,7 +774,7 @@ function Work() {
                   W
                 </span>
 
-                {/* Este span es la posición de destino de la O */}
+                {/* Slot de la O — el círculo de transición aterriza aquí */}
                 <span
                   ref={oSlotRef}
                   style={{
@@ -741,6 +799,7 @@ function Work() {
                 </span>
               </div>
 
+              {/* Tagline + contadores */}
               <div
                 style={{
                   display: 'flex',
@@ -751,38 +810,31 @@ function Work() {
                 }}
               >
                 <p
-                  style={{
-                    fontFamily: MONO,
-                    fontSize: 13,
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: GRAY,
-                    margin: 0,
-                  }}
+                  className='text-zinc-400 tracking-widest uppercase'
+                  style={{ fontSize: 12, margin: 0 }}
                 >
                   Design · Engineering · Experiments
                 </p>
                 <div
+                  className='text-zinc-400'
                   style={{
-                    fontFamily: MONO,
-                    fontSize: 13,
-                    color: GRAY,
+                    fontSize: 12,
                     letterSpacing: '0.10em',
                     lineHeight: 2.3,
                     textAlign: 'right',
                   }}
                 >
-                  <strong style={{ color: BLACK, fontWeight: 500 }}>
+                  <strong className='text-zinc-900' style={{ fontWeight: 600 }}>
                     {String(caseStudies.length).padStart(2, '0')}
                   </strong>{' '}
                   Case Studies
                   <br />
-                  <strong style={{ color: BLACK, fontWeight: 500 }}>
+                  <strong className='text-zinc-900' style={{ fontWeight: 600 }}>
                     {String(projectList.length).padStart(2, '0')}
                   </strong>{' '}
                   Projects
                   <br />
-                  <strong style={{ color: BLACK, fontWeight: 500 }}>
+                  <strong className='text-zinc-900' style={{ fontWeight: 600 }}>
                     {String(experiments.length).padStart(2, '0')}
                   </strong>{' '}
                   Experiments
@@ -790,130 +842,79 @@ function Work() {
               </div>
             </div>
 
+            {/* ── A: CASE STUDIES ── */}
             <SectionDivider
               letter='A.'
               label='Case Studies'
               count={caseStudies.length}
               bold
-              delay={nextDelay()}
+              delay={nd()}
             />
             {caseStudies.map((p, i) => (
               <ProjectRowFeature
                 key={p.id}
                 project={p}
                 index={i}
-                delay={nextDelay()}
+                delay={nd()}
               />
             ))}
 
+            {/* ── B: PROJECTS ── */}
             <SectionDivider
               letter='B.'
               label='Projects'
               count={projectList.length}
-              delay={nextDelay()}
+              delay={nd()}
             />
             {projectList.map((p, i) => (
               <ProjectRowCompact
                 key={p.id}
                 project={p}
                 index={caseStudies.length + i}
-                delay={nextDelay()}
+                delay={nd()}
               />
             ))}
 
+            {/* ── C: EXPERIMENTS ── */}
             <SectionDivider
               letter='C.'
               label='Experiments'
               count={experiments.length}
-              delay={nextDelay()}
+              delay={nd()}
             />
             {experiments.length === 0 ? (
               <div
+                className='text-zinc-400 text-center'
                 style={{
-                  textAlign: 'center',
                   padding: '2rem 0',
-                  fontFamily: MONO,
+
                   fontSize: 13,
-                  color: GRAY,
                   letterSpacing: '0.1em',
                   opacity: 0,
-                  animation: `wkFade 0.4s ease forwards ${nextDelay()}s`,
+                  animation: `wkFade 0.4s ease forwards ${nd()}s`,
                 }}
               >
-                ✦ Próximamente: experiments diarios ✦
+                coming soon
               </div>
             ) : (
               experiments.map((p) => (
                 <ProjectRowExperimentAnimated
                   key={p.id}
                   project={p}
-                  delay={nextDelay()}
+                  delay={nd()}
                 />
               ))
             )}
-
-            <div style={{ marginTop: 60, textAlign: 'center' }}>
-              <Link
-                to='/'
-                style={{
-                  fontFamily: MONO,
-                  fontSize: 12,
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  color: GRAY,
-                  textDecoration: 'none',
-                  borderBottom: '1px solid rgba(17,17,17,0.2)',
-                  paddingBottom: 4,
-                  transition: 'color 0.2s, border-color 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = RED;
-                  e.currentTarget.style.borderBottomColor = RED;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = GRAY;
-                  e.currentTarget.style.borderBottomColor =
-                    'rgba(17,17,17,0.2)';
-                }}
-              >
-                ← Home
-              </Link>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Efecto para posicionar el círculo en entrada directa */}
+      {/* Posiciona el círculo en la O para entrada directa */}
       {!circleState?.scaledRect && (
         <PositionDirectCircle oSlotRef={oSlotRef} bgCircleRef={bgCircleRef} />
       )}
     </>
   );
-}
-
-// Componente auxiliar para posicionar el círculo en caso de entrada directa
-function PositionDirectCircle({
-  oSlotRef,
-  bgCircleRef,
-}: {
-  oSlotRef: React.RefObject<HTMLSpanElement>;
-  bgCircleRef: React.RefObject<HTMLDivElement | null>;
-}) {
-  useEffect(() => {
-    const slot = oSlotRef.current;
-    const bg = bgCircleRef.current;
-    if (!slot || !bg) return;
-
-    const slotRect = slot.getBoundingClientRect();
-    // Posicionamos el círculo exactamente donde está la O
-    bg.style.top = `${slotRect.top + window.scrollY}px`;
-    bg.style.left = `${slotRect.left + window.scrollX}px`;
-    bg.style.width = `${slotRect.width}px`;
-    bg.style.height = `${slotRect.height}px`;
-    bg.style.opacity = '1';
-  }, [oSlotRef, bgCircleRef]);
-
-  return null;
 }
 
 export default Work;
