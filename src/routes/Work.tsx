@@ -59,8 +59,6 @@ function getStackColor(label: string) {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const MONO = "'IBM Plex Mono', 'Courier New', monospace";
-
 const CONTENT_START = 1.75; // segundos — la cascada empieza aquí
 const STEP = 0.1;
 

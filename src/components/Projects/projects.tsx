@@ -22,7 +22,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: 1,
-    section: 'experiment',
+    section: 'project',
     title: 'NEVER LATE',
     description:
       'A serious game built with a team of 10. I programmed the character controller, implemented visual effects, and designed several minigames.',
@@ -38,7 +38,7 @@ export const projects: Project[] = [
   },
   {
     id: 2,
-    section: 'experiment',
+    section: 'project',
     title: 'AVENTURA POR VALENCIA',
     description:
       'An educational game built with two teammates. I handled the minigame programming and took full ownership of the UX and UI design.',
@@ -109,5 +109,19 @@ export const projects: Project[] = [
     url: 'https://horizon-wealth-dashboard.vercel.app/',
     extraCount: 0,
     stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS'],
+  },
+  {
+    id: 7,
+    section: 'experiment',
+    title: 'Ray Marching Videogame',
+    description: 'An experimental voxel-based rendering project',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    image: '/projects/WAVES.webp',
+    url: 'https://gebaca.itch.io/ciclico',
+    extraCount: 0,
+    stack: ['Unity', 'TypeScript', 'GSAP', 'Tailwind CSS'],
   },
 ];
