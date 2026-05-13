@@ -124,4 +124,16 @@ export const projects: Project[] = [
     extraCount: 0,
     stack: ['Unity', 'TypeScript', 'GSAP', 'Tailwind CSS'],
   },
+  {
+    id: 8,
+    section: 'experiment',
+    title: 'SVG Morphing con GSAP',
+    description: 'Experimento de morphing entre formas SVG usando GSAP.',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    url: 'https://experiments-tan.vercel.app/experiment/01-gsap-morphing',
+    stack: ['React', 'GSAP', 'TypeScript'],
+  },
 ];
