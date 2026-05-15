@@ -127,13 +127,13 @@ export const projects: Project[] = [
   {
     id: 8,
     section: 'experiment',
-    title: 'SVG Morphing con GSAP',
-    description: 'Experimento de morphing entre formas SVG usando GSAP.',
+    title: 'Parallax depth effect',
+    description: 'experimenting with parallax depth effects',
     color: '#ff6200',
     size: 210,
     expandScale: 1.7,
     offsetX: 350,
-    url: 'https://experiments-tan.vercel.app/experiment/01-gsap-morphing',
+    url: 'https://experiments-tan.vercel.app/experiment/01-depth-color',
     stack: ['React', 'GSAP', 'TypeScript'],
   },
 ];
