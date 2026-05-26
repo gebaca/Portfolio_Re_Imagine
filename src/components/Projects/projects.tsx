@@ -151,7 +151,7 @@ export const projects: Project[] = [
   {
     id: 10,
     section: 'experiment',
-    title: 'panel',
+    title: 'Draw SVG',
     description: 'experimenting with svg',
     color: '#ff6200',
     size: 210,
