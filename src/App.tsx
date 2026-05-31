@@ -20,17 +20,18 @@ function App() {
       style={{ position: 'relative' }}
       className='min-h-screen flex flex-col bg-white overflow-x-hidden'
     >
-      {/* ── Desktop nav ── */}
+      {/* ── Desktop nav (El contenedor padre mantiene el logo siempre visible) ── */}
       <nav className='pointer-events-none fixed top-0 left-0 z-50 w-full flex justify-between items-start pr-10 pt-10'>
         <div className='pointer-events-auto'>
           <Logo />
         </div>
 
         {!isHome && (
+          /* Cambiado: Usamos 'hidden md:flex' de Tailwind en lugar de style={{ display: 'flex' }} */
           <div
-            className='pointer-events-auto gap-6 items-center'
+            className='pointer-events-auto gap-6 items-center hidden md:flex'
             id='desktop-nav'
-            style={{ display: 'flex', paddingTop: '6px' }}
+            style={{ paddingTop: '6px' }}
           >
             {NAV_ROUTES.map(({ path, label, color }) => (
               <button
@@ -88,8 +89,9 @@ function App() {
 
       {/* ── Mobile floating tab bar ── */}
       {!isHome && (
+        /* Cambiado: Agregado 'flex md:hidden' a las clases y eliminado 'display: flex' del style */
         <nav
-          className='fixed z-50'
+          className='fixed z-50 flex md:hidden'
           id='mobile-tab-bar'
           style={{
             bottom: '1.5rem',
@@ -102,7 +104,6 @@ function App() {
             border: '1px solid rgba(0,0,0,0.08)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
             padding: '0.5rem 1.25rem',
-            display: 'flex',
             gap: '0.25rem',
             alignItems: 'center',
           }}
