@@ -196,4 +196,16 @@ export const projects: Project[] = [
     url: 'https://experiments-tan.vercel.app/experiment/06-timing-panel',
     stack: ['React', 'GSAP', 'TypeScript'],
   },
+  {
+    id: 14,
+    section: 'experiment',
+    title: 'double stroke',
+    description: 'experimenting with card',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    url: 'https://experiments-tan.vercel.app/experiment/07-double-stroke',
+    stack: ['React', 'GSAP', 'TypeScript'],
+  },
 ];
