@@ -15,7 +15,6 @@ const WHITE = '#FAFAF8';
 
 // ─── Stack colors — mismo sistema que badges de tecnología ───────────────────
 const STACK_COLORS: Record<string, { bg: string; text: string }> = {
-  // JS ecosystem
   JavaScript: { bg: '#FEF08A', text: '#713F12' },
   TypeScript: { bg: '#DBEAFE', text: '#1E40AF' },
   React: { bg: '#BAE6FD', text: '#0C4A6E' },
@@ -23,19 +22,16 @@ const STACK_COLORS: Record<string, { bg: string; text: string }> = {
   Node: { bg: '#BBF7D0', text: '#14532D' },
   'Tailwind CSS': { bg: '#CFFAFE', text: '#164E63' },
   GSAP: { bg: '#D1FAE5', text: '#064E3B' },
-  // Design
   Figma: { bg: '#FDE68A', text: '#92400E' },
   '3D MAX': { bg: '#E9D5FF', text: '#4C1D95' },
   'Blender 3D': { bg: '#FED7AA', text: '#7C2D12' },
   'After Effects': { bg: '#EDE9FE', text: '#4C1D95' },
   Motion: { bg: '#FCE7F3', text: '#831843' },
-  // Tools
   Firebase: { bg: '#FEF3C7', text: '#78350F' },
   Unity: { bg: '#E4E4E7', text: '#18181B' },
   'C#': { bg: '#F3E8FF', text: '#581C87' },
   Python: { bg: '#DBEAFE', text: '#1E3A8A' },
   Git: { bg: '#FFE4E6', text: '#9F1239' },
-  // CAD / Industrial
   OnShape: { bg: '#E0F2FE', text: '#0C4A6E' },
   Sketchbook: { bg: '#FEE2E2', text: '#7F1D1D' },
   Affinity: { bg: '#EDE9FE', text: '#4C1D95' },
@@ -45,12 +41,10 @@ const STACK_COLORS: Record<string, { bg: string; text: string }> = {
   'Plata 925': { bg: '#F1F5F9', text: '#334155' },
   Aluminio: { bg: '#E2E8F0', text: '#1E293B' },
   Artesanal: { bg: '#FDF2F8', text: '#701A75' },
-  // Fallback generado por hash si no está en la lista
 };
 
 function getStackColor(label: string) {
   if (STACK_COLORS[label]) return STACK_COLORS[label];
-  // Hash simple para generar un color consistente para tags desconocidos
   let h = 0;
   for (let i = 0; i < label.length; i++)
     h = (h * 31 + label.charCodeAt(i)) & 0xffff;
@@ -58,13 +52,9 @@ function getStackColor(label: string) {
   return { bg: `hsl(${hue},60%,90%)`, text: `hsl(${hue},60%,25%)` };
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-const CONTENT_START = 1.75; // segundos — la cascada empieza aquí
+const CONTENT_START = 1.75;
 const STEP = 0.1;
 
-// ============================================================================
-// StackTag — con color por tecnología
-// ============================================================================
 function StackTag({ label }: { label: string }) {
   const { bg, text } = getStackColor(label);
   return (
@@ -86,9 +76,6 @@ function StackTag({ label }: { label: string }) {
   );
 }
 
-// ============================================================================
-// SectionDivider
-// ============================================================================
 function SectionDivider({
   letter,
   label,
@@ -132,12 +119,7 @@ function SectionDivider({
         >
           {label}
         </span>
-        <span
-          style={{
-            fontSize: 12,
-            color: 'rgba(17,17,17,0.30)',
-          }}
-        >
+        <span style={{ fontSize: 12, color: 'rgba(17,17,17,0.30)' }}>
           {String(count).padStart(2, '0')}
         </span>
       </div>
@@ -151,9 +133,6 @@ function SectionDivider({
   );
 }
 
-// ============================================================================
-// ProjectRowFeature — Case Study
-// ============================================================================
 function ProjectRowFeature({
   project,
   index,
@@ -164,7 +143,6 @@ function ProjectRowFeature({
   delay: number;
 }) {
   const [hovered, setHovered] = useState(false);
-
   return (
     <div
       onMouseEnter={() => setHovered(true)}
@@ -183,7 +161,6 @@ function ProjectRowFeature({
         animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
-      {/* Número + badge */}
       <div
         style={{
           display: 'flex',
@@ -220,7 +197,6 @@ function ProjectRowFeature({
         </span>
       </div>
 
-      {/* Contenido — tipografía consistente con About */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <h3
           className='text-zinc-900 tracking-tighter'
@@ -279,7 +255,6 @@ function ProjectRowFeature({
         )}
       </div>
 
-      {/* Thumbnail */}
       <div
         style={{
           width: '100%',
@@ -335,9 +310,6 @@ function ProjectRowFeature({
   );
 }
 
-// ============================================================================
-// ProjectRowCompact — Project
-// ============================================================================
 function ProjectRowCompact({
   project,
   index,
@@ -419,9 +391,6 @@ function ProjectRowCompact({
   );
 }
 
-// ============================================================================
-// ProjectRowExperiment — Experiments
-// ============================================================================
 function ProjectRowExperiment({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -484,9 +453,6 @@ function ProjectRowExperimentAnimated({
   );
 }
 
-// ============================================================================
-// Satellites — CircleSVG a baja opacidad, textura Tullet
-// ============================================================================
 function Satellites() {
   const items = useMemo(
     () =>
@@ -533,9 +499,7 @@ function Satellites() {
   );
 }
 
-// ============================================================================
-// PositionDirectCircle — en entrada directa coloca el bgCircle en la O
-// ============================================================================
+// ─── CORREGIDO: Ajuste fino para móviles y cambio de timing ─────────────────
 function PositionDirectCircle({
   oSlotRef,
   bgCircleRef,
@@ -544,22 +508,31 @@ function PositionDirectCircle({
   bgCircleRef: React.RefObject<HTMLDivElement | null>;
 }) {
   useEffect(() => {
-    const slot = oSlotRef.current;
-    const bg = bgCircleRef.current;
-    if (!slot || !bg) return;
-    const r = slot.getBoundingClientRect();
-    bg.style.top = `${r.top + window.scrollY}px`;
-    bg.style.left = `${r.left + window.scrollX}px`;
-    bg.style.width = `${r.width}px`;
-    bg.style.height = `${r.height}px`;
-    bg.style.opacity = '1';
+    const handlePosition = () => {
+      const slot = oSlotRef.current;
+      const bg = bgCircleRef.current;
+      if (!slot || !bg) return;
+
+      const r = slot.getBoundingClientRect();
+      bg.style.top = `${r.top + window.scrollY}px`;
+      bg.style.left = `${r.left + window.scrollX}px`;
+      bg.style.width = `${r.width}px`;
+      bg.style.height = `${r.height}px`;
+      bg.style.opacity = '1';
+    };
+
+    // Delay mínimo para esperar que fuentes y layout se estabilicen en móviles
+    const t = setTimeout(handlePosition, 50);
+    window.addEventListener('resize', handlePosition);
+
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', handlePosition);
+    };
   }, [oSlotRef, bgCircleRef]);
   return null;
 }
 
-// ============================================================================
-// Work — componente principal
-// ============================================================================
 function Work() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
   const [titleReady, setTitleReady] = useState(false);
@@ -570,9 +543,7 @@ function Work() {
       el;
   };
 
-  // ── Bloquear scroll durante la animación de entrada ──────────────────────
   useEffect(() => {
-    // Bloqueamos scroll hasta que el título esté listo (círculo contraído)
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
@@ -581,7 +552,6 @@ function Work() {
 
   useEffect(() => {
     if (titleReady) {
-      // Pequeño delay para que W y RKS terminen de entrar antes de liberar
       const t = setTimeout(() => {
         document.body.style.overflow = '';
       }, 600);
@@ -589,7 +559,6 @@ function Work() {
     }
   }, [titleReady]);
 
-  // ── Animación de entrada: círculo grande → O ─────────────────────────────
   useEffect(() => {
     if (!circleState?.scaledRect) return;
     const slot = oSlotRef.current;
@@ -626,7 +595,6 @@ function Work() {
     };
   }, [circleState, bgCircleRef]);
 
-  // ── Entrada directa sin circleState ──────────────────────────────────────
   useEffect(() => {
     if (circleState?.scaledRect) return;
     const t = setTimeout(() => setTitleReady(true), 300);
@@ -680,7 +648,6 @@ function Work() {
       >
         <Satellites />
 
-        {/* Círculo de transición desde Home */}
         {circleState?.scaledRect && (
           <div
             ref={(el) => {
@@ -702,7 +669,7 @@ function Work() {
           </div>
         )}
 
-        {/* Círculo en la O para entrada directa (sin circleState) */}
+        {/* ── CORREGIDO: 'fixed' cambiado por 'absolute' para evitar fijarse en viewport móvil ── */}
         {!circleState?.scaledRect && (
           <div
             ref={(el) => {
@@ -711,7 +678,7 @@ function Work() {
               ).current = el;
             }}
             style={{
-              position: 'fixed',
+              position: 'absolute',
               top: 0,
               left: 0,
               width: 0,
@@ -725,7 +692,6 @@ function Work() {
           </div>
         )}
 
-        {/* Contenido principal */}
         <div
           ref={setContentRef}
           className='w-full'
@@ -738,14 +704,13 @@ function Work() {
               padding: 'clamp(3.5rem,7vh,5.5rem) clamp(1.5rem,4vw,3rem) 6rem',
             }}
           >
-            {/* ── HERO ── */}
+            {/* HERO */}
             <div
               style={{
                 paddingBottom: 48,
                 borderBottom: '1px solid rgba(17,17,17,0.09)',
               }}
             >
-              {/* Título: W + O(slot) + RKS */}
               <div
                 className='tracking-tighter'
                 style={{
@@ -772,7 +737,6 @@ function Work() {
                   W
                 </span>
 
-                {/* Slot de la O — el círculo de transición aterriza aquí */}
                 <span
                   ref={oSlotRef}
                   style={{
@@ -797,7 +761,6 @@ function Work() {
                 </span>
               </div>
 
-              {/* Tagline + contadores */}
               <div
                 style={{
                   display: 'flex',
@@ -840,7 +803,7 @@ function Work() {
               </div>
             </div>
 
-            {/* ── A: CASE STUDIES ── */}
+            {/* SECCIONES */}
             <SectionDivider
               letter='A.'
               label='Case Studies'
@@ -857,7 +820,6 @@ function Work() {
               />
             ))}
 
-            {/* ── B: PROJECTS ── */}
             <SectionDivider
               letter='B.'
               label='Projects'
@@ -873,7 +835,6 @@ function Work() {
               />
             ))}
 
-            {/* ── C: EXPERIMENTS ── */}
             <SectionDivider
               letter='C.'
               label='Experiments'
@@ -885,7 +846,6 @@ function Work() {
                 className='text-zinc-400 text-center'
                 style={{
                   padding: '2rem 0',
-
                   fontSize: 13,
                   letterSpacing: '0.1em',
                   opacity: 0,
@@ -907,7 +867,6 @@ function Work() {
         </div>
       </div>
 
-      {/* Posiciona el círculo en la O para entrada directa */}
       {!circleState?.scaledRect && (
         <PositionDirectCircle oSlotRef={oSlotRef} bgCircleRef={bgCircleRef} />
       )}
