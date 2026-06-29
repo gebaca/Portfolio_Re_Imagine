@@ -220,4 +220,16 @@ export const projects: Project[] = [
     url: 'https://experiments-tan.vercel.app/experiment/08-scroll-parallax',
     stack: ['React', 'GSAP', 'TypeScript'],
   },
+  {
+    id: 16,
+    section: 'experiment',
+    title: 'expressive flag',
+    description: 'experimenting with expressive table',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    url: 'https://experiments-tan.vercel.app/experiment/10-expressive-table',
+    stack: ['React', 'GSAP', 'TypeScript'],
+  },
 ];
