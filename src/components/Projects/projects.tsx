@@ -232,4 +232,18 @@ export const projects: Project[] = [
     url: 'https://experiments-tan.vercel.app/experiment/10-expressive-table',
     stack: ['React', 'GSAP', 'TypeScript'],
   },
+  {
+    id: 7,
+    section: 'feature',
+    title: 'Animation as Functional Substitute for Text',
+    description: 'Study about change blindness',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    image: '/projects/anim.png',
+    url: 'https://animation-as-comunication.vercel.app/',
+    extraCount: 0,
+    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Figma'],
+  },
 ];
