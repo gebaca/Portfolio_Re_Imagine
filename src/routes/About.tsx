@@ -104,7 +104,7 @@ function About() {
                 />
               </div>
               <img
-                src='/ger.png'
+                src='/ger.webp'
                 alt='Profile'
                 className='relative z-10 w-4/4 h-4/4 object-cover drop-shadow-2xl'
                 style={{ borderRadius: '40%', objectPosition: 'center top' }}
@@ -113,7 +113,7 @@ function About() {
 
             {/* BIO */}
             <div className='max-w-2xl flex flex-col items-center mb-40'>
-              <h2 className='text-zinc-900 text-3xl md:text-4xl tracking-tighter text-center mb-8'>
+              <h2 className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-normal text-zinc-900 text-3xl md:text-4xl tracking-tight text-center mb-8">
                 Frontend Developer bridging the gap between
                 <span className='text-zinc-500'> interactive design</span> and
                 clean code.
@@ -132,7 +132,7 @@ function About() {
             </div>
 
             {/* TOOLS */}
-            <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-12 mt-32'>
+            <h2 className='text-zinc-900 text-4xl md:text-5xl tracking-wide text-center mb-12 mt-32'>
               TOOLS
             </h2>
 
@@ -148,10 +148,7 @@ function About() {
                     </div>
 
                     {/* Mobile label */}
-                    <p
-                      className='md:hidden text-l font-bold tracking-widest uppercase text-black'
-                      style={{ fontFamily: 'Pencil-Regular' }}
-                    >
+                    <p className='md:hidden font-pencil text-2xl tracking-widest uppercase text-black'>
                       {label}
                     </p>
 
@@ -190,7 +187,7 @@ function About() {
 
             {/* EXPERIENCE */}
             <div className='w-full flex flex-col items-center mt-24 md:mt-60 mb-40'>
-              <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-16 mt-32'>
+              <h2 className='text-zinc-900 text-4xl md:text-5xl tracking-wide text-center mb-16 mt-32'>
                 EXPERIENCE
               </h2>
 
@@ -233,7 +230,7 @@ function About() {
 
               {/* EDUCATION */}
               <div className='w-full flex flex-col items-center mt-24 md:mt-60 mb-20 md:mb-40'>
-                <h2 className='text-zinc-900 text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8 mt-32'>
+                <h2 className='text-zinc-900 text-4xl md:text-5xl tracking-wide text-center mb-8 mt-32'>
                   EDUCATION
                 </h2>
                 <p className='text-zinc-950 text-base md:text-lg font-medium mt-2 text-center px-4'>

@@ -127,7 +127,7 @@ const WiggleCircle = ({
           style={{ width: '100%', height: '100%', opacity: 1 }}
         />
       </div>
-      <h2 className='wiggle-char text-black text-xl font-bold tracking-wide'>
+      <h2 className='wiggle-char text-black text-2xl tracking-wide font-bold'>
         {label}
       </h2>
     </div>

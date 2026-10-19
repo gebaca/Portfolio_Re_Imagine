@@ -1,11 +1,11 @@
-/* Google Fonts — debe ir ANTES de las directivas de Tailwind */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Google Fonts: debe ir ANTES de las directivas de Tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Reenie+Beanie&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Fuente local */
+/* Fuente local (se mantiene como reserva) */
 @font-face {
   font-family: 'Pencil-Regular';
   src: url('/fonts/Pencil-Regular.ttf') format('truetype');
@@ -16,6 +16,9 @@
 
 :root {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Fuente manuscrita: se cambia aquí y se actualiza en toda la app */
+  --font-hand: 'Reenie Beanie', 'Pencil-Regular', cursive;
 }
 
 body {
@@ -30,7 +33,7 @@ h1,
 h2,
 h3,
 .font-pencil {
-  font-family: 'Pencil-Regular', sans-serif;
+  font-family: var(--font-hand);
   @apply tracking-wide;
 }
 
