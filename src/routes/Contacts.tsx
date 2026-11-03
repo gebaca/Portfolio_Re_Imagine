@@ -4,6 +4,7 @@ import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 import { Tooltip } from '../components/Tooltip/Tooltip';
+import { useGiantCircle } from '../hooks/useGiantCircle';
 
 const contactLinks = [
   {
@@ -26,11 +27,8 @@ const contactLinks = [
 ];
 
 function Contacts() {
-  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
-
-  const setBgRef = (el: HTMLDivElement | null) => {
-    (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-  };
+  const { pageContentRef } = useCircleTransition();
+  const { setBgRef, style: bgStyle } = useGiantCircle('/contacts', 'fixed');
 
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
@@ -39,25 +37,9 @@ function Contacts() {
 
   return (
     <div className='w-full h-screen flex flex-col items-center justify-center overflow-hidden relative'>
-      {circleState?.scaledRect && (
-        <div
-          ref={setBgRef}
-          style={{
-            position: 'fixed',
-            top: circleState.scaledRect.top,
-            left: circleState.scaledRect.left,
-            width: circleState.scaledRect.width,
-            height: circleState.scaledRect.height,
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        >
-          <CircleSVG
-            color='#00C4FF'
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
-      )}
+      <div ref={setBgRef} style={bgStyle}>
+        <CircleSVG color='#00C4FF' style={{ width: '100%', height: '100%' }} />
+      </div>
 
       <div
         ref={setContentRef}

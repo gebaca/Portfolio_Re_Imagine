@@ -1,9 +1,14 @@
-import { createContext, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import { gsap } from 'gsap';
 import type { NavigateFunction } from 'react-router-dom';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
-// Fix #2: objeto plano en lugar de DOMRect — JSON.stringify/parse lo maneja bien
 export interface CircleRect {
   top: number;
   left: number;
@@ -23,17 +28,20 @@ export interface ScaledRect {
 interface CircleState {
   color: string;
   rect: CircleRect | null;
-  scaledRect: ScaledRect | null; // ← añade esto
+  scaledRect: ScaledRect | null;
 }
 
 interface CircleTransitionContextType {
   circleState: CircleState | null;
   setCircleState: (s: CircleState) => void;
   clearCircleState: () => void;
+  registerRect: (route: string, rect: CircleRect) => void;
+  getRect: (route: string) => CircleRect | null;
+  getGiantRect: (route: string) => ScaledRect;
   bgCircleRef: React.RefObject<HTMLDivElement | null>;
   pageContentRef: React.RefObject<HTMLDivElement | null>;
   isReversingRef: React.RefObject<boolean>;
-  reverseTransition: (navigate: NavigateFunction) => void;
+  reverseTransition: (navigate: NavigateFunction, pathname: string) => void;
 }
 
 // ─── Contexto ─────────────────────────────────────────────────────────────────
@@ -41,6 +49,9 @@ const CircleTransitionContext = createContext<CircleTransitionContextType>({
   circleState: null,
   setCircleState: () => {},
   clearCircleState: () => {},
+  registerRect: () => {},
+  getRect: () => null,
+  getGiantRect: () => ({ top: 0, left: 0, width: 0, height: 0 }),
   bgCircleRef: { current: null },
   pageContentRef: { current: null },
   isReversingRef: { current: false },
@@ -56,7 +67,6 @@ export const CircleTransitionProvider = ({
   const [circleState, setCircleStateRaw] = useState<CircleState | null>(() => {
     try {
       const saved = sessionStorage.getItem('circleState');
-      // Fix #2: el objeto guardado ya es plano, parse funciona correctamente
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -67,12 +77,37 @@ export const CircleTransitionProvider = ({
   const pageContentRef = useRef<HTMLDivElement | null>(null);
   const isReversingRef = useRef(false);
 
+  // Rect original de cada círculo de Home, indexado por ruta ('/about', '/works'...)
+  const rectsRef = useRef<Record<string, CircleRect>>({});
+
+  const registerRect = useCallback((route: string, rect: CircleRect) => {
+    rectsRef.current[route] = rect;
+  }, []);
+
+  const getRect = useCallback(
+    (route: string) => rectsRef.current[route] ?? null,
+    []
+  );
+
+  // Círculo "grande" de cada ruta: mismo centro que en Home, escala x10
+  const getGiantRect = useCallback((route: string): ScaledRect => {
+    const r = rectsRef.current[route];
+    const size = r ? r.width * 10 : 1800;
+    const cx = r ? r.centerX : window.innerWidth / 2;
+    const cy = r ? r.centerY : window.innerHeight / 2;
+    return {
+      top: cy - size / 2,
+      left: cx - size / 2,
+      width: size,
+      height: size,
+    };
+  }, []);
+
   const setCircleState = (s: CircleState) => {
     try {
-      // Fix #2: guardamos CircleRect (objeto plano), no DOMRect
       sessionStorage.setItem('circleState', JSON.stringify(s));
     } catch {
-      // sessionStorage puede fallar en modo privado — continuamos sin persistencia
+      // sessionStorage puede fallar en modo privado: seguimos sin persistencia
     }
     setCircleStateRaw(s);
   };
@@ -84,35 +119,37 @@ export const CircleTransitionProvider = ({
     setCircleStateRaw(null);
   };
 
-  const reverseTransition = (navigate: NavigateFunction) => {
+  const reverseTransition = (navigate: NavigateFunction, pathname: string) => {
     isReversingRef.current = true;
     const el = bgCircleRef.current;
+    const target = rectsRef.current[pathname];
 
-    if (!el || !circleState?.rect) {
+    // Sin rect para esta ruta (p. ej. recarga directa): volvemos sin animar
+    if (!el || !target) {
       clearCircleState();
       isReversingRef.current = false;
       navigate('/');
       return;
     }
 
-    // Fade out del contenido de la página
     const content = pageContentRef.current;
     if (content) {
       gsap.to(content, { opacity: 0, duration: 0.35, ease: 'power2.in' });
     }
 
-    // Fix #4: calculamos el scale exacto para que el círculo
-    // vuelva al tamaño visual del círculo original en Home,
-    // en lugar de usar un scale(0.1) arbitrario.
     const currentRect = el.getBoundingClientRect();
-    const targetScale = circleState.rect.width / currentRect.width;
+    const targetScale = target.width / currentRect.width;
 
-    // Fix #4: también reposicionamos hacia el centro original
-    // usando x/y en lugar de top/left para que GSAP lo interpole bien
+    // target está en coordenadas de documento, currentRect en viewport:
+    // restamos el scroll para comparar en el mismo sistema
     const targetX =
-      circleState.rect.centerX - (currentRect.left + currentRect.width / 2);
+      target.centerX -
+      window.scrollX -
+      (currentRect.left + currentRect.width / 2);
     const targetY =
-      circleState.rect.centerY - (currentRect.top + currentRect.height / 2);
+      target.centerY -
+      window.scrollY -
+      (currentRect.top + currentRect.height / 2);
 
     gsap.to(el, {
       scale: targetScale,
@@ -122,7 +159,6 @@ export const CircleTransitionProvider = ({
       ease: 'power4.inOut',
       onComplete: () => {
         navigate('/');
-
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             clearCircleState();
@@ -139,6 +175,9 @@ export const CircleTransitionProvider = ({
         circleState,
         setCircleState,
         clearCircleState,
+        registerRect,
+        getRect,
+        getGiantRect,
         bgCircleRef,
         pageContentRef,
         isReversingRef,

@@ -36,6 +36,7 @@ export const Logo = () => {
   const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const location = useLocation();
   const { circleState, reverseTransition } = useCircleTransition();
 
@@ -128,7 +129,7 @@ export const Logo = () => {
   const handleClick = () => {
     if (location.pathname === '/') return;
     if (circleState) {
-      reverseTransition(navigate);
+      reverseTransition(navigate, pathname);
     } else {
       navigate('/');
     }

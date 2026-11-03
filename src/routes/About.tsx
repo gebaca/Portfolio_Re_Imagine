@@ -4,6 +4,7 @@ import { useCircleTransition } from '../components/Circle/CircleTransitionContex
 import CircleSatellites from '../components/Circle/CircleSatellites ';
 import { FadeInParent } from '../components/Effects/FadeInParent';
 import { ICONS } from '../components/Icons/Icons';
+import { useGiantCircle } from '../hooks/useGiantCircle';
 
 const artTools = [
   { name: 'Autodesk', icon: ICONS.autodesk },
@@ -50,11 +51,8 @@ const experiences = [
 ];
 
 function About() {
-  const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
-
-  const setBgRef = (el: HTMLDivElement | null) => {
-    (bgCircleRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-  };
+  const { pageContentRef } = useCircleTransition();
+  const { setBgRef, style: bgStyle } = useGiantCircle('/about', 'absolute');
 
   const setContentRef = (el: HTMLDivElement | null) => {
     (pageContentRef as React.MutableRefObject<HTMLDivElement | null>).current =
@@ -63,27 +61,12 @@ function About() {
 
   return (
     <div>
-      {circleState?.rect && (
-        <div
-          ref={setBgRef}
-          style={{
-            position: 'absolute',
-            top: circleState.scaledRect?.top,
-            left: circleState.scaledRect?.left,
-            width: circleState.scaledRect?.width,
-            height: circleState.scaledRect?.height,
-            // Sin transform — el elemento ya tiene el tamaño final correcto
-            transformOrigin: 'center center',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        >
-          <CircleSVG
-            color={'#FDDA0D'}
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
-      )}
+      <div ref={setBgRef} style={bgStyle}>
+        <CircleSVG
+          color={'#FDDA0D'}
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
 
       <div ref={setContentRef} className='w-full flex flex-col items-center'>
         <CircleSatellites

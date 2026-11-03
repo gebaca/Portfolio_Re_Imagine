@@ -30,8 +30,9 @@ const WiggleCircle = ({
   const [finished, setFinished] = useState<null | boolean>(true);
   const container = useRef<HTMLDivElement>(null);
   const circleWrapperRef = useRef<HTMLDivElement>(null);
+  const clickedRef = useRef(false);
   const navigate = useNavigate();
-  const { setCircleState } = useCircleTransition();
+  const { setCircleState, registerRect } = useCircleTransition();
 
   const { contextSafe } = useGSAP({ scope: container });
 
@@ -48,6 +49,35 @@ const WiggleCircle = ({
     { scope: container }
   );
 
+  // Registro del rect original de este círculo, indexado por ruta.
+  // Se mide al montar, tras cargar fuentes y en resize. Tras el clic ya no,
+  // para no guardar el rect escalado.
+  useEffect(() => {
+    let cancelled = false;
+
+    const measure = () => {
+      const el = circleWrapperRef.current;
+      if (!el || cancelled || clickedRef.current) return;
+      const r = el.getBoundingClientRect();
+      registerRect(route, {
+        top: r.top + window.scrollY,
+        left: r.left + window.scrollX,
+        width: r.width,
+        height: r.height,
+        centerX: r.left + r.width / 2 + window.scrollX,
+        centerY: r.top + r.height / 2 + window.scrollY,
+      });
+    };
+
+    document.fonts.ready.then(measure);
+    window.addEventListener('resize', measure);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('resize', measure);
+    };
+  }, [route, registerRect]);
+
   useEffect(() => {
     if (activeRoute === null) return;
     if (activeRoute !== route) {
@@ -57,10 +87,11 @@ const WiggleCircle = ({
   }, [activeRoute]);
 
   const handleClick = contextSafe(() => {
-    // Fix #1: captura ANTES de cualquier animación
+    // Captura ANTES de cualquier animación
     const r = circleWrapperRef.current?.getBoundingClientRect();
     if (!r) return;
 
+    clickedRef.current = true;
     setFinished(false);
     onActivate(route);
     stopFrameLoop();
@@ -71,7 +102,7 @@ const WiggleCircle = ({
         duration: 2,
         ease: 'power4.inOut',
         onComplete: () => {
-          // Captura el rect del elemento YA escalado
+          // Rect del elemento YA escalado
           const scaledRect = circleWrapperRef.current?.getBoundingClientRect();
           if (!scaledRect) {
             navigate(route);
@@ -81,7 +112,6 @@ const WiggleCircle = ({
           setCircleState({
             color,
             rect: {
-              // Rect original (para el reverse)
               top: r.top + window.scrollY,
               left: r.left + window.scrollX,
               width: r.width,
@@ -89,7 +119,6 @@ const WiggleCircle = ({
               centerX: r.left + r.width / 2 + window.scrollX,
               centerY: r.top + r.height / 2 + window.scrollY,
             },
-            // Rect escalado (para posicionar el bgCircle en Contacts)
             scaledRect: {
               top: scaledRect.top + window.scrollY,
               left: scaledRect.left + window.scrollX,
