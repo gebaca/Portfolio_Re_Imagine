@@ -516,7 +516,18 @@ function Satellites() {
   );
 }
 
-// ─── CORREGIDO: Ajuste fino para móviles y cambio de timing ─────────────────
+function getSlotBox(slot: HTMLElement, bg: HTMLElement) {
+  const parent = (bg.offsetParent as HTMLElement) ?? document.body;
+  const p = parent.getBoundingClientRect();
+  const r = slot.getBoundingClientRect();
+  return {
+    top: r.top - p.top,
+    left: r.left - p.left,
+    width: r.width,
+    height: r.height,
+  };
+}
+
 function PositionDirectCircle({
   oSlotRef,
   bgCircleRef,
@@ -525,31 +536,32 @@ function PositionDirectCircle({
   bgCircleRef: React.RefObject<HTMLDivElement | null>;
 }) {
   useEffect(() => {
-    const handlePosition = () => {
+    let cancelled = false;
+
+    const place = () => {
       const slot = oSlotRef.current;
       const bg = bgCircleRef.current;
       if (!slot || !bg) return;
-
-      const r = slot.getBoundingClientRect();
-      bg.style.top = `${r.top + window.scrollY}px`;
-      bg.style.left = `${r.left + window.scrollX}px`;
-      bg.style.width = `${r.width}px`;
-      bg.style.height = `${r.height}px`;
+      const b = getSlotBox(slot, bg);
+      bg.style.top = `${b.top}px`;
+      bg.style.left = `${b.left}px`;
+      bg.style.width = `${b.width}px`;
+      bg.style.height = `${b.height}px`;
       bg.style.opacity = '1';
     };
 
-    // Delay mínimo para esperar que fuentes y layout se estabilicen en móviles
-    const t = setTimeout(handlePosition, 50);
-    window.addEventListener('resize', handlePosition);
+    document.fonts.ready.then(() => {
+      if (!cancelled) place();
+    });
+    window.addEventListener('resize', place);
 
     return () => {
-      clearTimeout(t);
-      window.removeEventListener('resize', handlePosition);
+      cancelled = true;
+      window.removeEventListener('resize', place);
     };
   }, [oSlotRef, bgCircleRef]);
   return null;
 }
-
 function Work() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
   const [titleReady, setTitleReady] = useState(false);
@@ -568,47 +580,57 @@ function Work() {
   }, []);
 
   useEffect(() => {
-    if (titleReady) {
-      const t = setTimeout(() => {
-        document.body.style.overflow = '';
-      }, 600);
-      return () => clearTimeout(t);
-    }
-  }, [titleReady]);
+    if (!titleReady) return;
+
+    const place = () => {
+      const slot = oSlotRef.current;
+      const bg = bgCircleRef.current;
+      if (!slot || !bg) return;
+      const b = getSlotBox(slot, bg);
+      bg.style.top = `${b.top}px`;
+      bg.style.left = `${b.left}px`;
+      bg.style.width = `${b.width}px`;
+      bg.style.height = `${b.height}px`;
+    };
+
+    // Al soltar el overflow aparece la scrollbar y el slot se mueve: recolocamos
+    const t = setTimeout(() => {
+      document.body.style.overflow = '';
+      requestAnimationFrame(place);
+    }, 600);
+
+    window.addEventListener('resize', place);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', place);
+    };
+  }, [titleReady, bgCircleRef]);
 
   useEffect(() => {
     if (!circleState?.scaledRect) return;
-    const slot = oSlotRef.current;
-    const bg = bgCircleRef.current;
-    if (!slot || !bg) return;
+    let cancelled = false;
+    let tl: gsap.core.Timeline | undefined;
 
-    const slotRect = slot.getBoundingClientRect();
+    document.fonts.ready.then(() => {
+      if (cancelled) return;
+      const slot = oSlotRef.current;
+      const bg = bgCircleRef.current;
+      if (!slot || !bg) return;
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        gsap.set(bg, {
-          top: slotRect.top + window.scrollY,
-          left: slotRect.left + window.scrollX,
-          width: slotRect.width,
-          height: slotRect.height,
-          clearProps: 'transform',
-        });
-        setTitleReady(true);
-      },
-    });
+      const box = getSlotBox(slot, bg);
 
-    tl.to(bg, {
-      top: slotRect.top + window.scrollY,
-      left: slotRect.left + window.scrollX,
-      width: slotRect.width,
-      height: slotRect.height,
-      duration: 0.9,
-      ease: 'power4.inOut',
-      delay: 0.2,
+      tl = gsap.timeline({
+        onComplete: () => {
+          gsap.set(bg, { ...box, clearProps: 'transform' });
+          setTitleReady(true);
+        },
+      });
+      tl.to(bg, { ...box, duration: 0.9, ease: 'power4.inOut', delay: 0.2 });
     });
 
     return () => {
-      tl.kill();
+      cancelled = true;
+      tl?.kill();
     };
   }, [circleState, bgCircleRef]);
 
@@ -757,8 +779,8 @@ function Work() {
                   ref={oSlotRef}
                   style={{
                     display: 'inline-block',
-                    width: '0.72em',
-                    height: '1em',
+                    width: '0.78em',
+                    height: '0.72em',
                     position: 'relative',
                     verticalAlign: 'baseline',
                   }}

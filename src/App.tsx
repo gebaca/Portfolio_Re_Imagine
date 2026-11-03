@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { Logo } from './components/Logo/Logo';
 import { usePageTransition } from './hooks/Usepagetransition';
 
@@ -85,6 +85,7 @@ function App() {
 
       <main className='w-full flex-1 flex flex-col'>
         <Outlet />
+        <ScrollRestoration />
       </main>
 
       {/* ── Mobile floating tab bar ── */}

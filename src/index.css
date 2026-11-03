@@ -5,6 +5,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Fuente local (se mantiene como reserva) */
 @font-face {
   font-family: 'Pencil-Regular';
