@@ -250,7 +250,7 @@ function ProjectRowFeature({
               width: 'fit-content',
             }}
           >
-            Ver proyecto
+            Go to project
           </a>
         )}
       </div>
