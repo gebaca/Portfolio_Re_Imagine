@@ -106,7 +106,7 @@ function About() {
               <img
                 src='/ger.webp'
                 alt='Profile'
-                className='relative z-10 w-4/4 h-4/4 object-cover drop-shadow-2xl'
+                className='relative z-10 w-4/4 h-4/4 object-cover'
                 style={{ borderRadius: '40%', objectPosition: 'center top' }}
               />
             </div>

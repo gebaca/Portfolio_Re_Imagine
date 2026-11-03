@@ -21,6 +21,20 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: 5,
+    section: 'feature',
+    title: 'Animation as Functional Substitute for Text',
+    description: 'Study about change blindness',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    image: '/projects/anim.png',
+    url: 'https://animation-as-comunication.vercel.app/',
+    extraCount: 0,
+    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Figma'],
+  },
+  {
     id: 1,
     section: 'project',
     title: 'NEVER LATE',
@@ -82,8 +96,8 @@ export const projects: Project[] = [
     stack: ['React', 'GSAP', 'TypeScript', 'Firebase', 'Tailwind CSS'],
   },
   {
-    id: 5,
-    section: 'feature',
+    id: 7,
+    section: 'project',
     title: 'ING — Redesign',
     description:
       'An unsolicited redesign of ing.es — built to catch their attention. Scroll animations and a lion that draws itself as you scroll.',
@@ -231,19 +245,5 @@ export const projects: Project[] = [
     offsetX: 350,
     url: 'https://experiments-tan.vercel.app/experiment/10-expressive-table',
     stack: ['React', 'GSAP', 'TypeScript'],
-  },
-  {
-    id: 7,
-    section: 'feature',
-    title: 'Animation as Functional Substitute for Text',
-    description: 'Study about change blindness',
-    color: '#ff6200',
-    size: 210,
-    expandScale: 1.7,
-    offsetX: 350,
-    image: '/projects/anim.png',
-    url: 'https://animation-as-comunication.vercel.app/',
-    extraCount: 0,
-    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Figma'],
   },
 ];
