@@ -98,7 +98,7 @@ function Contacts() {
               ))}
             </div>
 
-            <footer className='text-center font-pencil'>
+            <footer className='text-center'>
               <p className='text-black text-lg'>+34 615 180 314</p>
               <p className='text-black text-lg'>Valencia/Madrid, España.</p>
             </footer>
