@@ -142,13 +142,10 @@ function ProjectRowFeature({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className='grid grid-cols-1 items-start gap-4 md:grid-cols-[52px_minmax(0,1fr)_clamp(140px,18vw,200px)] md:gap-[clamp(1rem,2.5vw,1.5rem)]'
       style={{
-        display: 'grid',
-        gridTemplateColumns: '52px 1fr clamp(140px,18vw,200px)',
-        gap: 'clamp(1rem,2.5vw,1.5rem)',
         padding: 'clamp(1.4rem,3vh,2.2rem) 0',
         borderBottom: '1px solid rgba(17,17,17,0.07)',
-        alignItems: 'start',
         cursor: 'default',
         background: hovered ? 'rgba(222,10,0,0.025)' : 'transparent',
         transition: 'background 0.2s ease',
@@ -156,15 +153,8 @@ function ProjectRowFeature({
         animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: 11,
-          paddingTop: 4,
-        }}
-      >
+      {/* Número + etiqueta: fila en móvil, columna en desktop */}
+      <div className='flex flex-row items-center gap-3 md:flex-col md:items-start md:gap-[11px] md:pt-1'>
         <span
           style={{
             fontSize: 42,
@@ -192,16 +182,18 @@ function ProjectRowFeature({
         </span>
       </div>
 
+      {/* Texto */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <h3
           className='text-zinc-900 tracking-tighter'
           style={{
             fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-            fontSize: 'clamp(38px,6vw,60px)',
+            fontSize: 'clamp(30px,6vw,60px)',
             fontWeight: 700,
             margin: 0,
             lineHeight: 0.93,
             textTransform: 'uppercase',
+            overflowWrap: 'anywhere',
           }}
         >
           {project.title}
@@ -272,23 +264,23 @@ function ProjectRowFeature({
         )}
       </div>
 
+      {/* Imagen: a todo el ancho en móvil */}
       <div
+        className='w-full md:self-center'
         style={{
-          width: '100%',
           aspectRatio: '4/3',
           border: `0.5px solid ${hovered ? 'rgba(222,10,0,0.40)' : 'rgba(17,17,17,0.10)'}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          alignSelf: 'center',
           background: WHITE,
           transition: 'border-color 0.25s',
         }}
       >
         {project.youtubeId ? (
           <iframe
-            src={`https://www.youtube.com/embed/${project.youtubeId}?autoplay=1&mute=1&loop=1&controls=0&playlist=${project.youtubeId}`}
+            src={`https://www.youtube.com/embed/${project.youtubeId}?autoplay=1&mute=1&loop=1&controls=0&playsinline=1&playlist=${project.youtubeId}`}
             style={{ width: '100%', height: '100%', border: 'none' }}
             allow='autoplay; encrypted-media'
           />
@@ -341,13 +333,10 @@ function ProjectRowCompact({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className='grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3 md:grid-cols-[52px_minmax(0,1fr)_auto] md:gap-6'
       style={{
-        display: 'grid',
-        gridTemplateColumns: '52px 1fr auto',
-        gap: 24,
         padding: '20px 0',
         borderBottom: '0.5px solid rgba(17,17,17,0.06)',
-        alignItems: 'center',
         cursor: 'default',
         background: hovered ? 'rgba(222,10,0,0.02)' : 'transparent',
         transition: 'background 0.15s',
@@ -374,6 +363,7 @@ function ProjectRowCompact({
             fontWeight: 700,
             margin: 0,
             textTransform: 'uppercase',
+            overflowWrap: 'anywhere',
             color: hovered ? '#111' : 'rgba(17,17,17,0.70)',
             transition: 'color 0.2s',
           }}
@@ -401,7 +391,7 @@ function ProjectRowCompact({
             transition: 'color 0.2s',
           }}
         >
-          Ver
+          EXPLORE
         </a>
       )}
     </div>
