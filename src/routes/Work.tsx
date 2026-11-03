@@ -245,12 +245,34 @@ function ProjectRowFeature({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 5,
-              marginTop: 2,
+              marginTop: 4,
               transition: 'color 0.2s',
               width: 'fit-content',
             }}
           >
             Go to project
+          </a>
+        )}
+        {project.url2 && (
+          <a
+            href={project.url2}
+            target='_blank'
+            rel='noreferrer'
+            className='text-zinc-400 hover:text-zinc-900'
+            style={{
+              fontSize: 11,
+              letterSpacing: '0.10em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              marginTop: 1,
+              transition: 'color 0.2s',
+              width: 'fit-content',
+            }}
+          >
+            Go to documentation
           </a>
         )}
       </div>

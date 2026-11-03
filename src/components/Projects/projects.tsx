@@ -17,6 +17,7 @@ export interface Project {
   image?: string;
   youtubeId?: string;
   section?: 'feature' | 'project' | 'experiment';
+  url2?: string;
 }
 
 export const projects: Project[] = [
@@ -25,12 +26,27 @@ export const projects: Project[] = [
     section: 'feature',
     title: 'Animation as Functional Substitute for Text',
     description: 'Study about change blindness',
-    color: '#ff6200',
+    color: '#5EACED',
     size: 210,
     expandScale: 1.7,
     offsetX: 350,
     image: '/projects/anim.png',
     url: 'https://animation-as-comunication.vercel.app/',
+    url2: 'https://app.notion.com/p/component-animation-trilogy-3778d03cc89680dea806d56069e2376b?source=copy_link',
+    extraCount: 0,
+    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Figma'],
+  },
+  {
+    id: 5,
+    section: 'feature',
+    title: 'Football B2B',
+    description: 'Study about B2B football software',
+    color: '#ff6200',
+    size: 210,
+    expandScale: 1.7,
+    offsetX: 350,
+    image: '/projects/football.png',
+    url2: 'https://app.notion.com/p/SaaS-Football-Academy-3608d03cc89680f3a004ebd86ba23143',
     extraCount: 0,
     stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Figma'],
   },
@@ -115,12 +131,13 @@ export const projects: Project[] = [
     section: 'feature',
     title: 'Wealth Watcher',
     description: 'B2B dashboard',
-    color: '#ff6200',
+    color: '#06063F',
     size: 210,
     expandScale: 1.7,
     offsetX: 350,
     image: '/projects/WAVES.webp',
     url: 'https://horizon-wealth-dashboard.vercel.app/',
+    url2: 'https://app.notion.com/p/Case-Study-B2B-Wealth-Management-Dashboard-b83dc31e4e2144bd9469a83947d1c2d9?source=copy_link',
     extraCount: 0,
     stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS'],
   },
