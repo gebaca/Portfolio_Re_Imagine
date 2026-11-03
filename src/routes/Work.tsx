@@ -1,7 +1,3 @@
-// ============================================================================
-// WORK.tsx — Tullet × Swiss · consistente con About.tsx
-// ============================================================================
-
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { gsap } from 'gsap';
 import CircleSVG from '../components/Circle/circleSVG';
@@ -13,7 +9,6 @@ import type { Project } from '../components/Projects/projects';
 const RED = '#DE0A00';
 const WHITE = '#FAFAF8';
 
-// ─── Stack colors — mismo sistema que badges de tecnología ───────────────────
 const STACK_COLORS: Record<string, { bg: string; text: string }> = {
   JavaScript: { bg: '#FEF08A', text: '#713F12' },
   TypeScript: { bg: '#DBEAFE', text: '#1E40AF' },
@@ -691,7 +686,6 @@ function Work() {
           </div>
         )}
 
-        {/* ── CORREGIDO: 'fixed' cambiado por 'absolute' para evitar fijarse en viewport móvil ── */}
         {!circleState?.scaledRect && (
           <div
             ref={(el) => {
@@ -738,7 +732,7 @@ function Work() {
                 style={{
                   display: 'flex',
                   alignItems: 'baseline',
-                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif,",
                   fontSize: 'clamp(85px,14vw,140px)',
                   fontWeight: 700,
                   textTransform: 'uppercase',

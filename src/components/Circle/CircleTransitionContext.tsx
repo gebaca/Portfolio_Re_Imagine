@@ -122,9 +122,7 @@ export const CircleTransitionProvider = ({
       ease: 'power4.inOut',
       onComplete: () => {
         navigate('/');
-        // Limpiamos en el siguiente tick, después de que Home monte
-        // Usamos requestAnimationFrame en lugar de setTimeout para
-        // que ocurra justo después del primer paint de Home
+
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             clearCircleState();
