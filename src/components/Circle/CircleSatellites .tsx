@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import CircleSVG from './circleSVG';
+import CircleSVGDeformed from './CircleSVGDeformed.tsx';
 
 interface CircleSatellitesProps {
   color: string;
@@ -8,14 +8,6 @@ interface CircleSatellitesProps {
   positionX: number;
 }
 
-/*
-  FADE IN — parámetros
-  ────────────────────
-  FADE_DURATION  : duración del fade de cada satélite individual (ms)
-  STAGGER_TOTAL  : tiempo total repartido entre todos los satélites (ms)
-                   el delay de cada uno = (i / count) * STAGGER_TOTAL
-                   → los últimos empiezan STAGGER_TOTAL ms después que el primero
-*/
 const FADE_DURATION = 700; // ms — cuánto tarda cada círculo en aparecer
 const STAGGER_TOTAL = 2400; // ms — ventana total de escalonado
 
@@ -57,7 +49,10 @@ const CircleSatellites = ({
             animationDelay: `${(i / count) * STAGGER_TOTAL}ms`,
           }}
         >
-          <CircleSVG color={color} style={{ width: '100%', height: '100%' }} />
+          <CircleSVGDeformed
+            color={color}
+            style={{ width: '100%', height: '100%' }}
+          />
         </div>
       ))}
 
