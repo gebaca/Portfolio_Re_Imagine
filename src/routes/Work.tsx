@@ -49,6 +49,7 @@ function getStackColor(label: string) {
 
 const CONTENT_START = 1.75;
 const STEP = 0.1;
+const EXP_PREVIEW = 5;
 
 function StackTag({ label }: { label: string }) {
   const { bg, text } = getStackColor(label);
@@ -72,56 +73,39 @@ function StackTag({ label }: { label: string }) {
 }
 
 function SectionDivider({
-  letter,
   label,
-  count,
   bold = false,
   delay,
 }: {
-  letter: string;
   label: string;
-  count: number;
   bold?: boolean;
   delay: number;
 }) {
   return (
-    <div
-      style={{ opacity: 0, animation: `wkUp 0.40s ease forwards ${delay}s` }}
-    >
+    <div>
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '52px 1fr auto',
-          alignItems: 'center',
-          gap: 20,
           paddingTop: 54,
           paddingBottom: 13,
+          opacity: 0,
+          animation: `wkUp 0.40s ease forwards ${delay}s`,
         }}
       >
         <span
-          style={{
-            fontSize: 13,
-            color: RED,
-            letterSpacing: '0.16em',
-            fontWeight: 500,
-          }}
-        >
-          {letter}
-        </span>
-        <span
-          className='text-zinc-400 tracking-widest uppercase'
-          style={{ fontSize: 12 }}
+          className='text-zinc-700 tracking-widest uppercase'
+          style={{ fontSize: 12, fontWeight: 500 }}
         >
           {label}
         </span>
-        <span style={{ fontSize: 12, color: 'rgba(17,17,17,0.30)' }}>
-          {String(count).padStart(2, '0')}
-        </span>
       </div>
       <div
+        className='wk-line'
         style={{
           height: 1,
-          background: bold ? 'rgba(17,17,17,0.28)' : 'rgba(17,17,17,0.11)',
+          background: bold ? 'rgba(17,17,17,0.45)' : 'rgba(17,17,17,0.2)',
+          transformOrigin: 'left center',
+          transform: 'scaleX(0)',
+          animation: `wkLine 0.9s cubic-bezier(0.65,0,0.35,1) forwards ${delay + 0.1}s`,
         }}
       />
     </div>
@@ -130,59 +114,22 @@ function SectionDivider({
 
 function ProjectRowFeature({
   project,
-  index,
   delay,
 }: {
   project: Project;
-  index: number;
   delay: number;
 }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className='grid grid-cols-1 items-start gap-4 md:grid-cols-[52px_minmax(0,1fr)_clamp(140px,18vw,200px)] md:gap-[clamp(1rem,2.5vw,1.5rem)]'
+      className='wk-feature grid grid-cols-1 items-start gap-5 md:grid-cols-[minmax(0,1fr)_clamp(160px,22vw,240px)] md:gap-[clamp(1.5rem,3vw,2.5rem)]'
       style={{
         padding: 'clamp(1.4rem,3vh,2.2rem) 0',
-        borderBottom: '1px solid rgba(17,17,17,0.07)',
+        borderBottom: '1px solid rgba(17,17,17,0.12)',
         cursor: 'default',
-        background: hovered ? 'rgba(222,10,0,0.025)' : 'transparent',
-        transition: 'background 0.2s ease',
         opacity: 0,
         animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
-      {/* Número + etiqueta: fila en móvil, columna en desktop */}
-      <div className='flex flex-row items-center gap-3 md:flex-col md:items-start md:gap-[11px] md:pt-1'>
-        <span
-          style={{
-            fontSize: 42,
-            fontWeight: 400,
-            color: hovered ? RED : 'rgba(17,17,17,0.12)',
-            lineHeight: 1,
-            letterSpacing: '-0.045em',
-            transition: 'color 0.25s ease',
-          }}
-        >
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <span
-          style={{
-            fontSize: 9,
-            letterSpacing: '0.20em',
-            textTransform: 'uppercase',
-            color: RED,
-            border: `0.5px solid ${RED}`,
-            padding: '2px 5px',
-            display: 'inline-block',
-          }}
-        >
-          Case Study
-        </span>
-      </div>
-
-      {/* Texto */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <h3
           className='text-zinc-900 tracking-tighter'
@@ -199,7 +146,7 @@ function ProjectRowFeature({
           {project.title}
         </h3>
         <p
-          className='text-zinc-600'
+          className='text-zinc-700'
           style={{
             fontFamily: 'Pencil-Regular, sans-serif',
             fontSize: 'clamp(1rem,1.4vw,1.1rem)',
@@ -223,9 +170,10 @@ function ProjectRowFeature({
             href={project.url}
             target='_blank'
             rel='noreferrer'
-            className='text-zinc-400 hover:text-zinc-900'
+            className='text-zinc-700 hover:text-zinc-900'
             style={{
               fontSize: 11,
+              fontWeight: 500,
               letterSpacing: '0.10em',
               textTransform: 'uppercase',
               textDecoration: 'none',
@@ -245,9 +193,10 @@ function ProjectRowFeature({
             href={project.url2}
             target='_blank'
             rel='noreferrer'
-            className='text-zinc-400 hover:text-zinc-900'
+            className='text-zinc-700 hover:text-zinc-900'
             style={{
               fontSize: 11,
+              fontWeight: 500,
               letterSpacing: '0.10em',
               textTransform: 'uppercase',
               textDecoration: 'none',
@@ -264,22 +213,21 @@ function ProjectRowFeature({
         )}
       </div>
 
-      {/* Imagen: a todo el ancho en móvil */}
       <div
-        className='w-full md:self-center'
+        className='wk-thumb w-full md:self-center'
         style={{
           aspectRatio: '4/3',
-          border: `0.5px solid ${hovered ? 'rgba(222,10,0,0.40)' : 'rgba(17,17,17,0.10)'}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
           background: WHITE,
-          transition: 'border-color 0.25s',
         }}
       >
         {project.youtubeId ? (
           <iframe
+            title={project.title}
+            loading='lazy'
             src={`https://www.youtube.com/embed/${project.youtubeId}?autoplay=1&mute=1&loop=1&controls=0&playsinline=1&playlist=${project.youtubeId}`}
             style={{ width: '100%', height: '100%', border: 'none' }}
             allow='autoplay; encrypted-media'
@@ -288,13 +236,14 @@ function ProjectRowFeature({
           <img
             src={project.image}
             alt={project.title}
+            loading='lazy'
+            decoding='async'
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
           <div
+            className='wk-ph'
             style={{
-              opacity: hovered ? 0.55 : 0.18,
-              transition: 'opacity 0.25s',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -321,42 +270,25 @@ function ProjectRowFeature({
 
 function ProjectRowCompact({
   project,
-  index,
   delay,
 }: {
   project: Project;
-  index: number;
   delay: number;
 }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className='grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3 md:grid-cols-[52px_minmax(0,1fr)_auto] md:gap-6'
+      className='wk-compact grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 md:gap-6'
       style={{
         padding: '20px 0',
-        borderBottom: '0.5px solid rgba(17,17,17,0.06)',
+        borderBottom: '0.5px solid rgba(17,17,17,0.14)',
         cursor: 'default',
-        background: hovered ? 'rgba(222,10,0,0.02)' : 'transparent',
-        transition: 'background 0.15s',
         opacity: 0,
         animation: `wkUp 0.40s ease forwards ${delay}s`,
       }}
     >
-      <span
-        style={{
-          fontSize: 22,
-          color: hovered ? RED : 'rgba(17,17,17,0.15)',
-          letterSpacing: '-0.02em',
-          transition: 'color 0.2s',
-        }}
-      >
-        {String(index + 1).padStart(2, '0')}
-      </span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
         <h3
-          className='tracking-tighter'
+          className='wk-ctitle tracking-tighter'
           style={{
             fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             fontSize: 'clamp(22px,2.8vw,30px)',
@@ -364,8 +296,6 @@ function ProjectRowCompact({
             margin: 0,
             textTransform: 'uppercase',
             overflowWrap: 'anywhere',
-            color: hovered ? '#111' : 'rgba(17,17,17,0.70)',
-            transition: 'color 0.2s',
           }}
         >
           {project.title}
@@ -381,9 +311,10 @@ function ProjectRowCompact({
           href={project.url}
           target='_blank'
           rel='noreferrer'
-          className='text-zinc-400 hover:text-zinc-900'
+          className='text-zinc-700 hover:text-zinc-900'
           style={{
             fontSize: 11,
+            fontWeight: 500,
             letterSpacing: '0.10em',
             textTransform: 'uppercase',
             textDecoration: 'none',
@@ -391,7 +322,7 @@ function ProjectRowCompact({
             transition: 'color 0.2s',
           }}
         >
-          EXPLORE
+          Explore
         </a>
       )}
     </div>
@@ -399,46 +330,36 @@ function ProjectRowCompact({
 }
 
 function ProjectRowExperiment({ project }: { project: Project }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className='wk-exp grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4'
       onClick={() => project.url && window.open(project.url, '_blank')}
       style={{
-        display: 'grid',
-        gridTemplateColumns: '52px 1fr auto',
-        gap: 24,
-        padding: '10px 0',
-        borderBottom: '0.5px solid rgba(17,17,17,0.05)',
-        alignItems: 'center',
+        padding: '12px 0',
+        borderBottom: '0.5px solid rgba(17,17,17,0.12)',
         cursor: project.url ? 'pointer' : 'default',
-        opacity: hovered ? 0.7 : 0.4,
-        transition: 'opacity 0.2s',
       }}
     >
-      <span className='text-zinc-400' style={{ fontSize: 14 }}>
-        —
-      </span>
       <span
-        className='text-zinc-800'
+        className='text-zinc-900'
         style={{
           fontSize: 15,
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
+          overflowWrap: 'anywhere',
         }}
       >
         {project.title}
       </span>
       <span
-        className='text-zinc-400'
+        className='text-zinc-600'
         style={{
           fontSize: 11,
           letterSpacing: '0.10em',
           textTransform: 'uppercase',
         }}
       >
-        Exp
+        View
       </span>
     </div>
   );
@@ -461,18 +382,18 @@ function ProjectRowExperimentAnimated({
 }
 
 function Satellites() {
-  const items = useMemo(
-    () =>
-      Array.from({ length: 70 }, (_, i) => ({
-        id: i,
-        size: Math.random() * 160 + 14,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        opacity: Math.random() * 0.05 + 0.015,
-        delay: (i / 70) * 2500,
-      })),
-    []
-  );
+  const items = useMemo(() => {
+    // Menos nodos en móvil: 70 SVG animados pesan en gamas medias
+    const count = window.innerWidth < 768 ? 28 : 70;
+    return Array.from({ length: count }, (_, i) => ({
+      id: i,
+      size: Math.random() * 160 + 14,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      opacity: Math.random() * 0.05 + 0.015,
+      delay: (i / count) * 2500,
+    }));
+  }, []);
 
   return (
     <div
@@ -552,9 +473,11 @@ function PositionDirectCircle({
   }, [oSlotRef, bgCircleRef]);
   return null;
 }
+
 function Work() {
   const { circleState, bgCircleRef, pageContentRef } = useCircleTransition();
   const [titleReady, setTitleReady] = useState(false);
+  const [showAllExp, setShowAllExp] = useState(false);
   const oSlotRef = useRef<HTMLSpanElement>(null);
 
   const setContentRef = (el: HTMLDivElement | null) => {
@@ -583,7 +506,7 @@ function Work() {
       bg.style.height = `${b.height}px`;
     };
 
-    // Al soltar el overflow aparece la scrollbar y el slot se mueve: recolocamos
+    // Al soltar el overflow puede aparecer la scrollbar y mover el slot: recolocamos
     const t = setTimeout(() => {
       document.body.style.overflow = '';
       requestAnimationFrame(place);
@@ -664,6 +587,37 @@ function Work() {
           from { opacity:0; transform:translateX(10px); }
           to   { opacity:1; transform:translateX(0); }
         }
+        @keyframes wkLine {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+
+        /* Estado base de las filas */
+        .wk-feature { transition: background 0.2s ease; }
+        .wk-feature .wk-thumb { border: 0.5px solid rgba(17,17,17,0.18); transition: border-color 0.25s; }
+        .wk-feature .wk-ph { opacity: 0.3; transition: opacity 0.25s; }
+
+        .wk-compact { transition: background 0.15s; }
+        .wk-compact .wk-ctitle { color: rgba(17,17,17,0.85); transition: color 0.2s; }
+
+        .wk-exp { opacity: 0.85; transition: opacity 0.2s; }
+
+        /* Hover solo en dispositivos con puntero real: en táctil no se queda pegado */
+        @media (hover: hover) {
+          .wk-feature:hover { background: rgba(222,10,0,0.025); }
+          .wk-feature:hover .wk-thumb { border-color: rgba(222,10,0,0.45); }
+          .wk-feature:hover .wk-ph { opacity: 0.6; }
+
+          .wk-compact:hover { background: rgba(222,10,0,0.02); }
+          .wk-compact:hover .wk-ctitle { color: #111; }
+
+          .wk-exp:hover { opacity: 1; }
+        }
+
+        /* Quien tiene las animaciones desactivadas ve la línea ya dibujada */
+        @media (prefers-reduced-motion: reduce) {
+          .wk-line { animation: none !important; transform: scaleX(1) !important; }
+        }
       `}</style>
 
       <div
@@ -672,7 +626,7 @@ function Work() {
           background: WHITE,
           color: '#111',
           position: 'relative',
-          minHeight: '100vh',
+          minHeight: '100dvh',
         }}
       >
         <Satellites />
@@ -736,7 +690,7 @@ function Work() {
             <div
               style={{
                 paddingBottom: 48,
-                borderBottom: '1px solid rgba(17,17,17,0.09)',
+                borderBottom: '1px solid rgba(17,17,17,0.15)',
               }}
             >
               <div
@@ -744,8 +698,8 @@ function Work() {
                 style={{
                   display: 'flex',
                   alignItems: 'baseline',
-                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif,",
-                  fontSize: 'clamp(85px,14vw,140px)',
+                  fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                  fontSize: 'clamp(64px,14vw,140px)',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   lineHeight: 1,
@@ -790,27 +744,24 @@ function Work() {
               </div>
 
               <div
+                className='flex flex-col items-start gap-5 md:flex-row md:items-end md:justify-between'
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-end',
                   opacity: 0,
                   animation: `wkUp 0.55s ease forwards ${CONTENT_START + 0.45}s`,
                 }}
               >
                 <p
-                  className='text-zinc-400 tracking-widest uppercase'
+                  className='text-zinc-600 tracking-widest uppercase'
                   style={{ fontSize: 12, margin: 0 }}
                 >
                   Design · Engineering · Experiments
                 </p>
                 <div
-                  className='text-zinc-400'
+                  className='text-zinc-600 text-left md:text-right'
                   style={{
                     fontSize: 12,
                     letterSpacing: '0.10em',
                     lineHeight: 2.3,
-                    textAlign: 'right',
                   }}
                 >
                   <strong className='text-zinc-900' style={{ fontWeight: 600 }}>
@@ -832,46 +783,20 @@ function Work() {
             </div>
 
             {/* SECCIONES */}
-            <SectionDivider
-              letter='A.'
-              label='Case Studies'
-              count={caseStudies.length}
-              bold
-              delay={nd()}
-            />
-            {caseStudies.map((p, i) => (
-              <ProjectRowFeature
-                key={p.id}
-                project={p}
-                index={i}
-                delay={nd()}
-              />
+            <SectionDivider label='Case Studies' bold delay={nd()} />
+            {caseStudies.map((p) => (
+              <ProjectRowFeature key={p.title} project={p} delay={nd()} />
             ))}
 
-            <SectionDivider
-              letter='B.'
-              label='Projects'
-              count={projectList.length}
-              delay={nd()}
-            />
-            {projectList.map((p, i) => (
-              <ProjectRowCompact
-                key={p.id}
-                project={p}
-                index={caseStudies.length + i}
-                delay={nd()}
-              />
+            <SectionDivider label='Projects' delay={nd()} />
+            {projectList.map((p) => (
+              <ProjectRowCompact key={p.title} project={p} delay={nd()} />
             ))}
 
-            <SectionDivider
-              letter='C.'
-              label='Experiments'
-              count={experiments.length}
-              delay={nd()}
-            />
+            <SectionDivider label='Experiments' delay={nd()} />
             {experiments.length === 0 ? (
               <div
-                className='text-zinc-400 text-center'
+                className='text-zinc-600 text-center'
                 style={{
                   padding: '2rem 0',
                   fontSize: 13,
@@ -883,13 +808,44 @@ function Work() {
                 coming soon
               </div>
             ) : (
-              experiments.map((p) => (
-                <ProjectRowExperimentAnimated
-                  key={p.id}
-                  project={p}
-                  delay={nd()}
-                />
-              ))
+              <>
+                {experiments.map((p, i) => {
+                  const extra = i >= EXP_PREVIEW;
+                  if (extra && !showAllExp) return null;
+                  return (
+                    <ProjectRowExperimentAnimated
+                      key={p.title}
+                      project={p}
+                      delay={extra ? (i - EXP_PREVIEW) * 0.05 : nd()}
+                    />
+                  );
+                })}
+
+                {experiments.length > EXP_PREVIEW && (
+                  <button
+                    onClick={() => setShowAllExp((v) => !v)}
+                    className='text-zinc-700 hover:text-zinc-900'
+                    style={{
+                      marginTop: 20,
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      fontSize: 11,
+                      fontWeight: 500,
+                      letterSpacing: '0.10em',
+                      textTransform: 'uppercase',
+                      transition: 'color 0.2s',
+                      opacity: 0,
+                      animation: `wkFade 0.4s ease forwards ${nd()}s`,
+                    }}
+                  >
+                    {showAllExp
+                      ? 'Show less'
+                      : `Show all (${experiments.length})`}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
