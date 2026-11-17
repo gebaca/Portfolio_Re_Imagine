@@ -14,15 +14,15 @@ import type { Skill, SkillGroup } from '../components/Icons/skills';
 const experiences = [
   {
     title: 'FICIV',
-    subtitle: 'Festival Internacional de Cine Infantil de Valencia',
+    subtitle: "International Festival of Children's Cinema of Valencia",
     description:
-      'Apoyo tecnológico y creativo en un entorno cultural dinámico. Una experiencia clave para entender la unión entre el arte visual y la ejecución técnica.',
+      'Technological and creative support within a dynamic cultural environment. A key experience for understanding the connection between visual art and technical execution.',
   },
   {
     title: 'Mutua Madrileña',
-    subtitle: 'Programador Junior',
+    subtitle: 'Programmer Junior',
     description:
-      'Primer contacto con desarrollo corporativo de alto nivel. Aprendizaje intensivo sobre flujos de trabajo profesionales, resolución de bugs y despliegues en entornos reales.',
+      'First contact with high-level corporate development. Intensive learning about professional workflows, bug fixing, and deployments in real environments.',
   },
 ];
 
