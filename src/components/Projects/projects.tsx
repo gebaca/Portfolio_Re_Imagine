@@ -39,7 +39,7 @@ export const projects: Project[] = [
     title: 'Threaded',
     subtitle: 'Animation for communication',
     description:
-      'A design research project exploring how animation can help users notice and understand permission changes in complex software.\n\nThe paper introduces Trace, a visual prototype demonstrating how changes in access permissions could be communicated through motion and visual cues.',
+      'A design research project exploring how animation can help users notice and understand permission changes in complex software.\n\nThe paper introduces Threaded, a visual prototype demonstrating how changes in access permissions could be communicated through motion and visual cues.',
     results:
       '8/9 participants noticed the change in the standard interface, compared with 9/9 using Threaded.',
     color: '#5EACED',
