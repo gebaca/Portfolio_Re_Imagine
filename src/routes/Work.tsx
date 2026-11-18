@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import { projects } from '../components/Projects/projects';
-import type { Project } from '../components/Projects/projects';
+import type { Project, GalleryItem } from '../components/Projects/projects';
 
 // ─── Paleta ──────────────────────────────────────────────────────────────────
 const RED = '#DE0A00';
@@ -263,6 +263,174 @@ function ProjectRowFeature({
             </span>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function GalleryMedia({ item }: { item: GalleryItem }) {
+  if (!item.src) {
+    // Placeholder hasta que se añada el recurso
+    return (
+      <span
+        style={{
+          fontSize: 11,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'rgba(17,17,17,0.4)',
+        }}
+      >
+        Asset pending
+      </span>
+    );
+  }
+  return (
+    <picture style={{ display: 'block', width: '100%', height: '100%' }}>
+      {item.poster && (
+        <source media='(prefers-reduced-motion: reduce)' srcSet={item.poster} />
+      )}
+      <img
+        src={item.src}
+        alt={item.alt}
+        loading='lazy'
+        decoding='async'
+        draggable={false}
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+      />
+    </picture>
+  );
+}
+
+function ProjectRowResearch({
+  project,
+  delay,
+}: {
+  project: Project;
+  delay: number;
+}) {
+  return (
+    <div
+      className='wk-feature'
+      style={{
+        padding: 'clamp(1.4rem,3vh,2.2rem) 0',
+        borderBottom: '1px solid rgba(17,17,17,0.12)',
+        cursor: 'default',
+        opacity: 0,
+        animation: `wkUp 0.40s ease forwards ${delay}s`,
+      }}
+    >
+      {/* Texto */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <h3
+          className='text-zinc-900 tracking-tighter'
+          style={{
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+            fontSize: 'clamp(30px,6vw,60px)',
+            fontWeight: 700,
+            margin: 0,
+            lineHeight: 0.93,
+            textTransform: 'uppercase',
+            overflowWrap: 'anywhere',
+          }}
+        >
+          {project.title}
+        </h3>
+        {project.subtitle && (
+          <p
+            className='text-zinc-600 tracking-widest uppercase'
+            style={{ fontSize: 12, margin: 0 }}
+          >
+            {project.subtitle}
+          </p>
+        )}
+        {project.description.split('\n\n').map((para) => (
+          <p
+            key={para}
+            className='text-zinc-700'
+            style={{
+              fontFamily: 'Pencil-Regular, sans-serif',
+              fontSize: 'clamp(1rem,1.4vw,1.1rem)',
+              lineHeight: 1.8,
+              margin: 0,
+              maxWidth: '52ch',
+              fontWeight: 400,
+            }}
+          >
+            {para}
+          </p>
+        ))}
+        {project.results && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span
+              className='text-zinc-600 tracking-widest uppercase'
+              style={{ fontSize: 11, fontWeight: 500 }}
+            >
+              Results
+            </span>
+            <p
+              className='text-zinc-900'
+              style={{
+                fontFamily: 'Pencil-Regular, sans-serif',
+                fontSize: 'clamp(1rem,1.4vw,1.1rem)',
+                lineHeight: 1.6,
+                margin: 0,
+                maxWidth: '52ch',
+              }}
+            >
+              {project.results}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Enlace al paper */}
+      {project.paperUrl && (
+        <a
+          href={project.paperUrl}
+          target='_blank'
+          rel='noreferrer'
+          className='text-zinc-700 hover:text-zinc-900'
+          style={{
+            fontSize: 11,
+            fontWeight: 500,
+            letterSpacing: '0.10em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            marginTop: 16,
+            transition: 'color 0.2s',
+            width: 'fit-content',
+          }}
+        >
+          Read the research paper ↗
+        </a>
+      )}
+
+      {/* Galería */}
+      <div className='wk-gallery' style={{ marginTop: 28 }}>
+        {project.gallery?.map((item) => (
+          <figure key={item.label} style={{ margin: 0 }}>
+            <div
+              className='wk-thumb'
+              style={{
+                aspectRatio: '4/3',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                background: WHITE,
+              }}
+            >
+              <GalleryMedia item={item} />
+            </div>
+            <figcaption
+              className='text-zinc-600 tracking-widest uppercase'
+              style={{ fontSize: 11, fontWeight: 500, marginTop: 10 }}
+            >
+              {item.label}
+            </figcaption>
+          </figure>
+        ))}
       </div>
     </div>
   );
@@ -602,6 +770,29 @@ function Work() {
 
         .wk-exp { opacity: 0.85; transition: opacity 0.2s; }
 
+        /* Galería: scroll horizontal con snap en móvil, 3 columnas en escritorio */
+        .wk-gallery {
+          display: flex;
+          gap: 12px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          overscroll-behavior-x: contain;
+          scroll-snap-type: x mandatory;
+          scrollbar-width: none;
+        }
+        .wk-gallery::-webkit-scrollbar { display: none; }
+        .wk-gallery > figure { flex: 0 0 82%; scroll-snap-align: start; }
+
+        @media (min-width: 768px) {
+          .wk-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            overflow: visible;
+            scroll-snap-type: none;
+          }
+          .wk-gallery > figure { flex: none; }
+        }
+
         /* Hover solo en dispositivos con puntero real: en táctil no se queda pegado */
         @media (hover: hover) {
           .wk-feature:hover { background: rgba(222,10,0,0.025); }
@@ -784,9 +975,13 @@ function Work() {
 
             {/* SECCIONES */}
             <SectionDivider label='Case Studies' bold delay={nd()} />
-            {caseStudies.map((p) => (
-              <ProjectRowFeature key={p.title} project={p} delay={nd()} />
-            ))}
+            {caseStudies.map((p) =>
+              p.gallery ? (
+                <ProjectRowResearch key={p.title} project={p} delay={nd()} />
+              ) : (
+                <ProjectRowFeature key={p.title} project={p} delay={nd()} />
+              )
+            )}
 
             <SectionDivider label='Projects' delay={nd()} />
             {projectList.map((p) => (

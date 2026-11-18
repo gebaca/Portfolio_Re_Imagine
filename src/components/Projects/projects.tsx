@@ -1,9 +1,18 @@
 import type { ReactNode } from 'react';
 
+export interface GalleryItem {
+  label: string;
+  alt: string;
+  src: string; // ruta del archivo en /public (vacío = placeholder)
+  poster?: string; // opcional: fotograma estático para prefers-reduced-motion
+}
+
 export interface Project {
   id: number;
   title: string;
+  subtitle?: string;
   description: string;
+  results?: string;
   color: string;
   size?: number;
   expandScale?: number;
@@ -14,9 +23,11 @@ export interface Project {
   extraCount?: number;
   url?: string;
   url2?: string;
+  paperUrl?: string;
   stack?: string[];
   image?: string;
   youtubeId?: string;
+  gallery?: GalleryItem[];
   section?: 'feature' | 'project' | 'experiment';
 }
 
@@ -25,18 +36,32 @@ export const projects: Project[] = [
   {
     id: 1,
     section: 'feature',
-    title: 'Animation as Functional Substitute for Text',
+    title: 'Threaded',
+    subtitle: 'Animation for communication',
     description:
-      'A study on change blindness: how animated transitions can replace written explanations in B2B dashboards.',
+      'A design research project exploring how animation can help users notice and understand permission changes in complex software.\n\nThe paper introduces Trace, a visual prototype demonstrating how changes in access permissions could be communicated through motion and visual cues.',
+    results:
+      '8/9 participants noticed the change in the standard interface, compared with 9/9 using Threaded.',
     color: '#5EACED',
-    size: 210,
-    expandScale: 1.7,
-    offsetX: 350,
-    image: '/projects/anim.png',
-    url: 'https://animation-as-comunication.vercel.app/',
-    url2: 'https://app.notion.com/p/component-animation-trilogy-3778d03cc89680dea806d56069e2376b?source=copy_link',
-    extraCount: 0,
-    stack: ['React', 'TypeScript', 'GSAP', 'Tailwind CSS', 'Figma'],
+    // TODO: pega aquí la URL del paper de investigación
+    paperUrl: '',
+    gallery: [
+      {
+        label: '01 — Standard',
+        alt: 'Standard interface: a permission change without a prominent visual cue',
+        src: '/projects/trace/Animation.gif', // TODO: GIF de la interfaz estándar
+      },
+      {
+        label: '02 — Threaded',
+        alt: 'Threaded prototype: the same permission change communicated through motion and visual cues',
+        src: '/projects/trace/Animation-new.gif', // TODO: GIF del prototipo Trace
+      },
+      {
+        label: '03 — Research findings',
+        alt: 'Study results: 8 of 9 participants noticed the change in the standard interface, 9 of 9 with Threaded',
+        src: '/projects/trace/cap.png', // TODO: imagen estática de resultados
+      },
+    ],
   },
   {
     id: 2,
