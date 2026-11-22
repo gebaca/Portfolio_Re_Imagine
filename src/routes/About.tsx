@@ -1,28 +1,52 @@
-import React, { useId, useState } from 'react';
+import React from 'react';
 import CircleSVG from '../components/Circle/circleSVG';
 import { useCircleTransition } from '../components/Circle/CircleTransitionContext';
 import CircleSatellites from '../components/Circle/CircleSatellites ';
 import { FadeInParent } from '../components/Effects/FadeInParent';
+import { ICONS } from '../components/Icons/Icons';
 import { useGiantCircle } from '../hooks/useGiantCircle';
-import {
-  skillGroups,
-  coreCompetencies,
-  skillIconSrc,
-} from '../components/Icons/skills';
-import type { Skill, SkillGroup } from '../components/Icons/skills';
+
+const artTools = [
+  { name: 'Autodesk', icon: ICONS.autodesk },
+  { name: 'Creative Cloud', icon: ICONS.creative_cloud },
+  { name: 'Figma', icon: ICONS.figma },
+  { name: 'Unity', icon: ICONS.unity },
+];
+
+const codeTools = [
+  { name: 'React', icon: ICONS.react },
+  { name: 'TypeScript', icon: ICONS.ts },
+  { name: 'JavaScript', icon: ICONS.js },
+  { name: 'Python', icon: ICONS.py },
+  { name: 'C#', icon: ICONS.csharp },
+  { name: 'GSAP', icon: ICONS.gsap },
+];
+
+const officeTools = [
+  { name: 'Git', icon: ICONS.git },
+  { name: 'Jira', icon: ICONS.jira },
+  { name: 'Trello', icon: ICONS.trello },
+  { name: 'Bitbucket', icon: ICONS.bitbucket },
+];
+
+const toolSections = [
+  { label: 'Art', icon: ICONS.ART, tools: artTools },
+  { label: 'Code', icon: ICONS.ProgrammingCircle, tools: codeTools },
+  { label: 'Work', icon: ICONS.workCircle, tools: officeTools },
+];
 
 const experiences = [
   {
     title: 'FICIV',
-    subtitle: "International Festival of Children's Cinema of Valencia",
+    subtitle: 'Festival Internacional de Cine Infantil de Valencia',
     description:
-      'Technological and creative support within a dynamic cultural environment. A key experience for understanding the connection between visual art and technical execution.',
+      'Apoyo tecnológico y creativo en un entorno cultural dinámico. Una experiencia clave para entender la unión entre el arte visual y la ejecución técnica.',
   },
   {
     title: 'Mutua Madrileña',
-    subtitle: 'Programmer Junior',
+    subtitle: 'Programador Junior',
     description:
-      'First contact with high-level corporate development. Intensive learning about professional workflows, bug fixing, and deployments in real environments.',
+      'Primer contacto con desarrollo corporativo de alto nivel. Aprendizaje intensivo sobre flujos de trabajo profesionales, resolución de bugs y despliegues en entornos reales.',
   },
 ];
 
@@ -90,33 +114,58 @@ function About() {
               </p>
             </div>
 
-            {/* SKILLS */}
+            {/* TOOLS */}
             <h2 className='text-zinc-900 text-4xl md:text-5xl tracking-wide text-center mb-12 mt-32'>
-              SKILLS
+              TOOLS
             </h2>
 
-            <div className='w-full flex flex-col gap-14'>
-              {skillGroups.map((group) => (
-                <SkillRow key={group.title} group={group} />
-              ))}
+            <div className='w-full flex flex-col gap-16'>
+              {toolSections.map(({ label, icon, tools }) => (
+                <div key={label}>
+                  {/* Desktop: circle + icons in a row */}
+                  {/* Mobile: label + icons in grid */}
+                  <div className='flex flex-col md:flex-row md:items-center gap-6 md:gap-8'>
+                    {/* Circle — desktop only */}
+                    <div className='hidden md:block flex-shrink-0 w-60 h-60'>
+                      {icon}
+                    </div>
 
-              <BasicExperience groups={skillGroups} />
+                    {/* Mobile label */}
+                    <p className='md:hidden font-pencil text-2xl tracking-widest uppercase text-black'>
+                      {label}
+                    </p>
 
-              <div>
-                <p className='font-pencil text-2xl tracking-widest uppercase text-black mb-5'>
-                  Core Competencies
-                </p>
-                <div className='flex flex-wrap gap-2'>
-                  {coreCompetencies.map((c) => (
-                    <span
-                      key={c}
-                      className='text-sm font-medium text-zinc-800 border border-zinc-300 rounded-full px-4 py-2'
-                    >
-                      {c}
-                    </span>
-                  ))}
+                    {/* Icons grid */}
+                    <div className='grid grid-cols-4 md:flex md:flex-wrap gap-4 md:gap-5'>
+                      {tools.map(({ name, icon: toolIcon }) => (
+                        <IconItem key={name} name={name} icon={toolIcon} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Divider on mobile — wavy SVG horizontal */}
+                  <div
+                    className='md:hidden mt-8 w-full overflow-hidden'
+                    style={{ height: 14, position: 'relative' }}
+                  >
+                    <img
+                      src='/Vector_17.svg'
+                      alt=''
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        width: 14,
+                        height: '100vw',
+                        objectFit: 'fill',
+                        transform: 'translate(-50%, -50%) rotate(-90deg)',
+                        transformOrigin: 'center center',
+                        opacity: 0.3,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
 
             {/* EXPERIENCE */}
@@ -168,11 +217,11 @@ function About() {
                   EDUCATION
                 </h2>
                 <p className='text-zinc-950 text-base md:text-lg font-medium mt-2 text-center px-4'>
-                  Polytechnic University of Valencia — Design and Development of
-                  Interactive Experiences
+                  Universidad Politécnica de Valencia — Diseño y Desarrollo de
+                  Experiencias interactivas
                 </p>
                 <p className='text-zinc-950 text-base md:text-lg font-medium mt-2 text-center px-4'>
-                  ESAT — UX/UI and Front-end Development
+                  ESAT — Diseño y Desarrollo Web
                 </p>
               </div>
             </div>
@@ -183,108 +232,13 @@ function About() {
   );
 }
 
-/* Categoría: título + logos de las skills core, sin círculos */
-function SkillRow({ group }: { group: SkillGroup }) {
-  const core = group.skills.filter((s) => s.level === 'core');
-  if (core.length === 0) return null;
-
+function IconItem({ name, icon }: { name: string; icon?: React.ReactNode }) {
   return (
-    <div>
-      <p className='font-pencil text-2xl tracking-widest uppercase text-black mb-6'>
-        {group.title}
-      </p>
-      <div className='flex flex-wrap gap-x-6 gap-y-8 md:gap-x-8'>
-        {core.map((s) => (
-          <SkillIcon key={s.name} skill={s} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkillIcon({ skill }: { skill: Skill }) {
-  return (
-    <div className='group flex flex-col items-center gap-2 w-[72px] md:w-24'>
-      <div className='w-14 h-14 md:w-20 md:h-20 flex items-center justify-center'>
-        <img
-          src={skillIconSrc(skill)}
-          alt=''
-          loading='lazy'
-          className='max-w-full max-h-full object-contain grayscale opacity-80 transition duration-300 group-hover:grayscale-0 group-hover:opacity-100 motion-reduce:transition-none'
-          onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
-        />
-      </div>
-      <span className='text-[10px] md:text-xs font-bold text-zinc-700 text-center leading-tight'>
-        {skill.name}
+    <div className='flex flex-col items-center gap-1'>
+      <div className='w-14 h-14 md:w-20 md:h-20'>{icon}</div>
+      <span className='text-[9px] md:text-[10px] font-bold text-zinc-500 text-center'>
+        {name}
       </span>
-    </div>
-  );
-}
-
-/* Basic Experience: desplegable, solo texto, agrupado por categoría */
-function BasicExperience({ groups }: { groups: SkillGroup[] }) {
-  const [open, setOpen] = useState(false);
-  const panelId = useId();
-
-  const basicGroups = groups
-    .map((g) => ({
-      title: g.title,
-      skills: g.skills.filter((s) => s.level === 'basic'),
-    }))
-    .filter((g) => g.skills.length > 0);
-
-  const total = basicGroups.reduce((n, g) => n + g.skills.length, 0);
-  if (total === 0) return null;
-
-  return (
-    <div>
-      <p className='font-pencil text-2xl tracking-widest uppercase text-black mb-2'>
-        Basic Experience
-      </p>
-      <p className='text-sm text-zinc-600 mb-4'>
-        Tools I have used and can work with at a basic level.
-      </p>
-
-      <div
-        id={panelId}
-        className='grid transition-[grid-template-rows,opacity] duration-500 ease-out motion-reduce:transition-none'
-        style={{
-          gridTemplateRows: open ? '1fr' : '0fr',
-          opacity: open ? 1 : 0,
-        }}
-      >
-        <div className='overflow-hidden'>
-          <div className='flex flex-col gap-5 pb-4'>
-            {basicGroups.map((g) => (
-              <div key={g.title}>
-                <p className='text-xs tracking-widest uppercase text-zinc-600 mb-2'>
-                  {g.title}
-                </p>
-                <div className='flex flex-wrap gap-2'>
-                  {g.skills.map((s) => (
-                    <span
-                      key={s.name}
-                      className='text-sm font-medium text-zinc-700 border border-zinc-300 rounded-full px-4 py-1.5'
-                    >
-                      {s.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <button
-        type='button'
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-controls={panelId}
-        className='text-xs tracking-widest uppercase text-zinc-700 hover:text-zinc-900 transition-colors'
-      >
-        {open ? 'Hide' : `Show all (${total})`}
-      </button>
     </div>
   );
 }
